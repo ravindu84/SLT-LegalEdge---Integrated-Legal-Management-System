@@ -1,0 +1,37 @@
+// app global css in SCSS form
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+.q-layout {
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+// Smooth scrollbar across app
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f4f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #b0c4de;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #003f87;
+}
+
+// Global card defaults
+.q-card {
+  border-radius: 10px !important;
+}
+
+// Rounded borders utility (for Quasar items)
+.rounded-borders {
+  border-radius: 8px !important;
+}
