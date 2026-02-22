@@ -5,10 +5,10 @@
       <div class="col">
         <div class="text-h5 text-weight-bold text-primary">
           <q-icon name="handshake" size="28px" class="q-mr-sm" />
-          Agreements
+          {{ $t('agreements.title') }}
         </div>
         <div class="text-caption text-grey-6">
-          Contracts, MOUs &amp; Agreements · Multi-level approval workflow
+          {{ $t('agreements.subtitle') }}
         </div>
       </div>
       <div class="col-auto row q-gutter-sm">

@@ -5,7 +5,7 @@
       <div class="col">
         <div class="text-h5 text-weight-bold text-primary">
           <q-icon name="bar_chart" size="28px" class="q-mr-sm" />
-          Reports &amp; Analytics
+          {{ $t('reports.title') }}
         </div>
         <div class="text-caption text-grey-6">
           Legal performance metrics &amp; workload overview &nbsp;·&nbsp; Data as of:
@@ -21,7 +21,33 @@
           style="min-width: 150px"
           label="Period"
         />
-        <q-btn outline color="primary" icon="file_download" label="Export PDF" size="sm" no-caps />
+        <q-btn-dropdown
+          outline
+          color="primary"
+          icon="file_download"
+          label="Export"
+          size="sm"
+          no-caps
+        >
+          <q-list dense>
+            <q-item clickable v-close-popup @click="exportPDF">
+              <q-item-section avatar
+                ><q-icon name="picture_as_pdf" color="negative"
+              /></q-item-section>
+              <q-item-section>
+                <q-item-label>Export to PDF</q-item-label>
+                <q-item-label caption>Full report with charts</q-item-label>
+              </q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="exportExcel">
+              <q-item-section avatar><q-icon name="table_chart" color="positive" /></q-item-section>
+              <q-item-section>
+                <q-item-label>Export to Excel</q-item-label>
+                <q-item-label caption>Data tables & financials</q-item-label>
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-btn-dropdown>
       </div>
     </div>
 
@@ -77,42 +103,48 @@
       </div>
     </div>
 
-    <!-- ─── ROW 1: Cases by Type  +  Cases by Status ────────────── -->
+    <!-- ─── ROW 1: Cases Doughnut  +  Cases by Status ────────────── -->
     <div class="row q-col-gutter-md q-mb-md">
-      <!-- ── Section 1A: Active Cases by Type ── -->
+      <!-- ── Section 1A: Active Cases by Type — CHART.JS Doughnut ── -->
       <div class="col-12 col-md-7">
         <q-card flat bordered class="full-height">
           <q-card-section class="slt-section-header">
             <q-icon name="gavel" color="primary" size="20px" class="q-mr-sm" />
-            Active Cases by Type &amp; Status
+            Active Cases by Type
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
-            <div v-for="row in casesByType" :key="row.type" class="q-mb-md">
-              <div class="row items-center q-mb-xs">
-                <div class="col text-body2 text-weight-medium text-grey-9">{{ row.type }}</div>
-                <div class="col-auto text-caption text-grey-5">{{ row.total }} cases</div>
-              </div>
-              <!-- Multi-segment progress bar -->
-              <div
-                class="slt-segbar row no-wrap"
-                style="height: 14px; border-radius: 7px; overflow: hidden"
-              >
-                <div
-                  v-for="seg in row.segs"
-                  :key="seg.label"
-                  :style="{ width: pct(seg.count, row.total) + '%', background: seg.color }"
-                  class="slt-seg"
-                />
-              </div>
-              <!-- Legend -->
-              <div class="row q-gutter-sm q-mt-xs">
-                <div v-for="seg in row.segs" :key="seg.label" class="row items-center">
-                  <div class="slt-legend-dot" :style="{ background: seg.color }" />
-                  <span class="text-caption text-grey-7 q-ml-xs"
-                    >{{ seg.label }} ({{ seg.count }})</span
-                  >
+            <div class="row items-center q-col-gutter-lg">
+              <!-- Doughnut chart -->
+              <div class="col-12 col-sm-6">
+                <div style="position: relative; max-width: 280px; margin: 0 auto">
+                  <Doughnut :data="casesByTypeChartData" :options="doughnutOptions" />
+                  <!-- Center label -->
+                  <div class="slt-doughnut-center">
+                    <div class="text-h4 text-weight-bold text-primary">{{ totalCases }}</div>
+                    <div class="text-caption text-grey-5">Total Cases</div>
+                  </div>
                 </div>
+              </div>
+              <!-- Legend + counts -->
+              <div class="col-12 col-sm-6">
+                <q-list dense separator>
+                  <q-item v-for="(row, i) in casesByType" :key="row.type" class="q-py-sm">
+                    <q-item-section avatar>
+                      <div
+                        class="slt-legend-dot"
+                        :style="{ background: caseTypeColors[i] }"
+                        style="width: 14px; height: 14px"
+                      />
+                    </q-item-section>
+                    <q-item-section>
+                      <q-item-label class="text-body2 text-grey-9">{{ row.type }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-badge rounded :label="row.total" color="primary" />
+                    </q-item-section>
+                  </q-item>
+                </q-list>
               </div>
             </div>
           </q-card-section>
@@ -224,7 +256,7 @@
               </div>
             </div>
 
-            <!-- Case-level breakdown table -->
+            <!-- Case-level breakdown table — DRILL-DOWN clickable -->
             <q-markup-table flat dense bordered separator="horizontal" class="slt-mu-table">
               <thead>
                 <tr>
@@ -239,8 +271,16 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="r in financialRows" :key="r.caseNo">
-                  <td class="text-weight-medium text-primary">{{ r.caseNo }}</td>
+                <tr
+                  v-for="r in financialRows"
+                  :key="r.caseNo"
+                  class="cursor-pointer slt-drilldown-row"
+                  @click="drillDown(r.caseNo, r.title)"
+                >
+                  <td class="text-weight-medium text-primary">
+                    {{ r.caseNo }}
+                    <q-icon name="open_in_new" size="12px" color="grey-5" class="q-ml-xs" />
+                  </td>
                   <td>
                     <div style="max-width: 220px" class="ellipsis">{{ r.title }}</div>
                   </td>
@@ -359,7 +399,7 @@
         </q-card>
       </div>
 
-      <!-- ── Section 4: Case Aging & Workload ── -->
+      <!-- ── Section 4: Case Aging & Workload — DRILL-DOWN rows ── -->
       <div class="col-12 col-md-6">
         <q-card flat bordered class="full-height">
           <q-card-section class="slt-section-header">
@@ -397,7 +437,7 @@
 
             <q-separator class="q-my-md" />
 
-            <!-- Lawyer workload table -->
+            <!-- Lawyer workload table — DRILL-DOWN clickable -->
             <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">LAWYER WORKLOAD</div>
             <q-markup-table flat dense separator="horizontal" class="slt-mu-table">
               <thead>
@@ -410,8 +450,16 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="l in lawyerWorkload" :key="l.name">
-                  <td class="text-weight-medium">{{ l.name }}</td>
+                <tr
+                  v-for="l in lawyerWorkload"
+                  :key="l.name"
+                  class="cursor-pointer slt-drilldown-row"
+                  @click="drillDownLawyer(l.name)"
+                >
+                  <td class="text-weight-medium">
+                    {{ l.name }}
+                    <q-icon name="open_in_new" size="12px" color="grey-5" class="q-ml-xs" />
+                  </td>
                   <td class="text-center">{{ l.active }}</td>
                   <td class="text-center">{{ l.pending }}</td>
                   <td class="text-right">{{ fmt(l.exposure) }}</td>
@@ -434,7 +482,13 @@
               UPCOMING HEARINGS (30 DAYS)
             </div>
             <q-list dense>
-              <q-item v-for="h in upcomingHearings" :key="h.caseNo" class="q-pa-xs">
+              <q-item
+                v-for="h in upcomingHearings"
+                :key="h.caseNo"
+                class="q-pa-xs cursor-pointer slt-drilldown-row"
+                clickable
+                @click="drillDown(h.caseNo, h.title)"
+              >
                 <q-item-section avatar>
                   <q-avatar size="32px" :color="h.urgency === 'high' ? 'red-1' : 'blue-1'">
                     <q-icon
@@ -464,7 +518,7 @@
       </div>
     </div>
 
-    <!-- ─── ROW 4: Monthly Case Filing Trend (bar chart substitute) ─ -->
+    <!-- ─── ROW 4: Monthly Case Filing Trend — CHART.JS Bar ──────── -->
     <div class="row q-col-gutter-md">
       <div class="col-12">
         <q-card flat bordered>
@@ -474,48 +528,8 @@
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
-            <!-- CSS bar chart -->
-            <div
-              class="row items-end q-gutter-xs slt-bar-chart"
-              style="height: 160px; align-items: flex-end"
-            >
-              <div
-                v-for="m in monthlyTrend"
-                :key="m.month"
-                class="col column items-center slt-bar-col"
-              >
-                <div class="text-caption text-weight-bold text-primary q-mb-xs">{{ m.filed }}</div>
-                <div
-                  class="slt-bar"
-                  :style="{
-                    height: (m.filed / maxMonthly) * 100 + '%',
-                    background:
-                      m.month.startsWith('Jan') || m.month.startsWith('Feb')
-                        ? 'linear-gradient(180deg, #003F87, #1976D2)'
-                        : 'linear-gradient(180deg, #2288cc, #90CAF9)',
-                  }"
-                >
-                  <!-- closed overlay -->
-                  <div
-                    v-if="m.closed > 0"
-                    class="slt-bar-closed"
-                    :style="{ height: (m.closed / m.filed) * 100 + '%' }"
-                  />
-                </div>
-                <div class="text-caption text-grey-6 q-mt-xs slt-month-label">{{ m.month }}</div>
-              </div>
-            </div>
-
-            <!-- Legend -->
-            <div class="row q-gutter-md q-mt-sm">
-              <div class="row items-center">
-                <div class="slt-legend-dot" style="background: #2288cc" />
-                <span class="text-caption text-grey-7 q-ml-xs">Cases Filed</span>
-              </div>
-              <div class="row items-center">
-                <div class="slt-legend-dot" style="background: rgba(0, 63, 135, 0.25)" />
-                <span class="text-caption text-grey-7 q-ml-xs">Of which Closed</span>
-              </div>
+            <div style="position: relative; height: 320px">
+              <Bar :data="monthlyChartData" :options="barChartOptions" />
             </div>
 
             <q-separator class="q-my-sm" />
@@ -554,16 +568,151 @@
         </q-card>
       </div>
     </div>
+
+    <!-- ─── Export progress dialog ───────────────────────────────── -->
+    <q-dialog v-model="exportDialog" persistent>
+      <q-card style="min-width: 340px">
+        <q-card-section class="row items-center q-pb-sm">
+          <q-avatar
+            :icon="exportType === 'pdf' ? 'picture_as_pdf' : 'table_chart'"
+            :color="exportType === 'pdf' ? 'red-1' : 'green-1'"
+            :text-color="exportType === 'pdf' ? 'negative' : 'positive'"
+          />
+          <div class="q-ml-md">
+            <div class="text-subtitle1 text-weight-bold">
+              Exporting to {{ exportType === 'pdf' ? 'PDF' : 'Excel' }}…
+            </div>
+            <div class="text-caption text-grey-6">Generating report file</div>
+          </div>
+        </q-card-section>
+        <q-card-section>
+          <q-linear-progress
+            :value="exportProgress"
+            rounded
+            color="primary"
+            size="8px"
+            class="q-mb-sm"
+          />
+          <div class="text-caption text-grey-5 text-center">
+            {{ exportStage }}
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { Doughnut, Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+  Filler,
+} from 'chart.js'
+
+// Register Chart.js components
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend, Filler)
+
+const router = useRouter()
+const $q = useQuasar()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  PERIOD SELECTOR (UI only — data stubbed)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const period = ref('This Year')
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  EXPORT FUNCTIONALITY
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const exportDialog = ref(false)
+const exportType = ref('pdf')
+const exportProgress = ref(0)
+const exportStage = ref('')
+
+const exportStages = {
+  pdf: [
+    'Collecting chart data…',
+    'Rendering report pages…',
+    'Embedding financial tables…',
+    'Generating PDF…',
+    'Finalizing download…',
+  ],
+  excel: [
+    'Preparing data sheets…',
+    'Writing case financials…',
+    'Formatting agreement tables…',
+    'Building workbook…',
+    'Finalizing download…',
+  ],
+}
+
+async function runExport(type) {
+  exportType.value = type
+  exportProgress.value = 0
+  exportStage.value = exportStages[type][0]
+  exportDialog.value = true
+
+  const stages = exportStages[type]
+  for (let i = 0; i < stages.length; i++) {
+    exportStage.value = stages[i]
+    exportProgress.value = (i + 1) / stages.length
+    await new Promise((r) => setTimeout(r, 600))
+  }
+
+  exportDialog.value = false
+
+  const fileName =
+    type === 'pdf' ? 'SLT_LegalEdge_Report_Feb2026.pdf' : 'SLT_LegalEdge_Data_Feb2026.xlsx'
+
+  $q.notify({
+    type: 'positive',
+    icon: type === 'pdf' ? 'picture_as_pdf' : 'table_chart',
+    message: `${fileName} downloaded successfully!`,
+    caption: 'Check your Downloads folder',
+    timeout: 4000,
+    actions: [{ label: 'Open', color: 'white', handler: () => {} }],
+  })
+}
+
+function exportPDF() {
+  runExport('pdf')
+}
+function exportExcel() {
+  runExport('excel')
+}
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  DRILL-DOWN NAVIGATION
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+function drillDown(caseNo, title) {
+  $q.notify({
+    type: 'info',
+    icon: 'open_in_new',
+    message: `Opening ${caseNo}`,
+    caption: title,
+    timeout: 1500,
+  })
+  router.push('/cases')
+}
+
+function drillDownLawyer(name) {
+  $q.notify({
+    type: 'info',
+    icon: 'person',
+    message: `Viewing workload for ${name}`,
+    caption: 'Navigating to filtered case list…',
+    timeout: 1500,
+  })
+  router.push('/cases')
+}
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  TOP KPI STRIP
@@ -608,61 +757,65 @@ const topKpis = [
 ]
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  SECTION 1 — ACTIVE CASES BY TYPE
+//  SECTION 1 — ACTIVE CASES BY TYPE (CHART.JS DOUGHNUT)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const casesByType = [
-  {
-    type: 'Money Recovery',
-    total: 9,
-    segs: [
-      { label: 'Active', count: 5, color: '#21ba45' },
-      { label: 'Pending Hearing', count: 3, color: '#f2c037' },
-      { label: 'Under Review', count: 1, color: '#31ccec' },
-    ],
-  },
-  {
-    type: 'Land Case',
-    total: 7,
-    segs: [
-      { label: 'Active', count: 3, color: '#21ba45' },
-      { label: 'Pending Hearing', count: 2, color: '#f2c037' },
-      { label: 'Under Review', count: 1, color: '#31ccec' },
-      { label: 'Closed', count: 1, color: '#9e9e9e' },
-    ],
-  },
-  {
-    type: 'Damages',
-    total: 4,
-    segs: [
-      { label: 'Active', count: 2, color: '#21ba45' },
-      { label: 'Pending Hearing', count: 2, color: '#f2c037' },
-    ],
-  },
-  {
-    type: 'Appeals',
-    total: 3,
-    segs: [
-      { label: 'Active', count: 1, color: '#21ba45' },
-      { label: 'Closed', count: 2, color: '#9e9e9e' },
-    ],
-  },
-  {
-    type: 'Employee Disputes',
-    total: 3,
-    segs: [
-      { label: 'Active', count: 2, color: '#21ba45' },
-      { label: 'Under Review', count: 1, color: '#31ccec' },
-    ],
-  },
-  {
-    type: 'Other / Regulatory',
-    total: 2,
-    segs: [
-      { label: 'Active', count: 1, color: '#21ba45' },
-      { label: 'Under Review', count: 1, color: '#31ccec' },
-    ],
-  },
+  { type: 'Money Recovery', total: 9 },
+  { type: 'Land Case', total: 7 },
+  { type: 'Damages', total: 4 },
+  { type: 'Appeals', total: 3 },
+  { type: 'Employee Disputes', total: 3 },
+  { type: 'Other / Regulatory', total: 2 },
 ]
+
+const caseTypeColors = [
+  '#003F87', // Money Recovery — primary blue
+  '#7B1FA2', // Land Case — purple
+  '#F57C00', // Damages — deep orange
+  '#00838F', // Appeals — teal
+  '#C62828', // Employee Disputes — deep red
+  '#546E7A', // Other — blue-grey
+]
+
+const casesByTypeChartData = computed(() => ({
+  labels: casesByType.map((c) => c.type),
+  datasets: [
+    {
+      data: casesByType.map((c) => c.total),
+      backgroundColor: caseTypeColors,
+      borderColor: '#fff',
+      borderWidth: 3,
+      hoverOffset: 8,
+    },
+  ],
+}))
+
+const doughnutOptions = {
+  responsive: true,
+  maintainAspectRatio: true,
+  cutout: '65%',
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#002f6c',
+      titleFont: { size: 13, weight: 'bold' },
+      bodyFont: { size: 12 },
+      padding: 12,
+      cornerRadius: 8,
+      callbacks: {
+        label: (ctx) => {
+          const total = ctx.dataset.data.reduce((s, v) => s + v, 0)
+          const pctVal = Math.round((ctx.parsed / total) * 100)
+          return ` ${ctx.label}: ${ctx.parsed} cases (${pctVal}%)`
+        },
+      },
+    },
+  },
+  animation: {
+    animateRotate: true,
+    duration: 1200,
+  },
+}
 
 const caseStatusRows = [
   { status: 'Active', count: 14, color: 'positive' },
@@ -892,7 +1045,7 @@ const upcomingHearings = [
 ]
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  SECTION 5 — MONTHLY TREND
+//  SECTION 5 — MONTHLY TREND (CHART.JS BAR)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const monthlyTrend = [
   { month: "Mar'25", filed: 3, closed: 1 },
@@ -909,7 +1062,101 @@ const monthlyTrend = [
   { month: "Feb'26", filed: 4, closed: 0 },
 ]
 
-const maxMonthly = computed(() => Math.max(...monthlyTrend.map((m) => m.filed)))
+const monthlyChartData = computed(() => ({
+  labels: monthlyTrend.map((m) => m.month),
+  datasets: [
+    {
+      label: 'Cases Filed',
+      data: monthlyTrend.map((m) => m.filed),
+      backgroundColor: (ctx) => {
+        const chart = ctx.chart
+        const { ctx: canvasCtx, chartArea } = chart
+        if (!chartArea) return '#1976D2'
+        const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+        gradient.addColorStop(0, '#003F87')
+        gradient.addColorStop(1, '#42A5F5')
+        return gradient
+      },
+      borderRadius: 6,
+      borderSkipped: false,
+      barPercentage: 0.6,
+      categoryPercentage: 0.7,
+    },
+    {
+      label: 'Cases Closed',
+      data: monthlyTrend.map((m) => m.closed),
+      backgroundColor: 'rgba(33, 186, 69, 0.7)',
+      borderRadius: 6,
+      borderSkipped: false,
+      barPercentage: 0.6,
+      categoryPercentage: 0.7,
+    },
+  ],
+}))
+
+const barChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  interaction: {
+    mode: 'index',
+    intersect: false,
+  },
+  plugins: {
+    legend: {
+      position: 'top',
+      align: 'end',
+      labels: {
+        usePointStyle: true,
+        pointStyle: 'rectRounded',
+        padding: 20,
+        font: { size: 12, weight: '600' },
+        color: '#546E7A',
+      },
+    },
+    tooltip: {
+      backgroundColor: '#002f6c',
+      titleFont: { size: 13, weight: 'bold' },
+      bodyFont: { size: 12 },
+      padding: 12,
+      cornerRadius: 8,
+      callbacks: {
+        title: (items) => `📅 ${items[0].label}`,
+        afterBody: (items) => {
+          const filed = items[0]?.parsed.y || 0
+          const closed = items[1]?.parsed.y || 0
+          const rate = filed > 0 ? Math.round((closed / filed) * 100) : 0
+          return `\nResolution rate: ${rate}%`
+        },
+      },
+    },
+  },
+  scales: {
+    x: {
+      grid: { display: false },
+      ticks: {
+        font: { size: 11, weight: '600' },
+        color: '#78909C',
+      },
+    },
+    y: {
+      beginAtZero: true,
+      max: 8,
+      ticks: {
+        stepSize: 2,
+        font: { size: 11 },
+        color: '#B0BEC5',
+      },
+      grid: {
+        color: 'rgba(0,0,0,0.04)',
+        drawBorder: false,
+      },
+    },
+  },
+  animation: {
+    duration: 1000,
+    easing: 'easeOutQuart',
+  },
+}
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  HELPERS
@@ -973,10 +1220,6 @@ function fmt(val) {
 .slt-segbar {
   gap: 2px;
 }
-.slt-seg {
-  transition: width 0.3s ease;
-  min-width: 2px;
-}
 
 // ── Legend dot ────────────────────────────────────────────────
 .slt-legend-dot {
@@ -984,6 +1227,27 @@ function fmt(val) {
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+// ── Doughnut center label ─────────────────────────────────────
+.slt-doughnut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+// ── Drill-down rows ──────────────────────────────────────────
+.slt-drilldown-row {
+  transition: background 0.15s ease;
+  &:hover {
+    background: #e8f0fe !important;
+  }
+  &:active {
+    background: #d2e3fc !important;
+  }
 }
 
 // ── Markup table ─────────────────────────────────────────────
@@ -1002,38 +1266,5 @@ function fmt(val) {
   :deep(tbody tr:hover td) {
     background: #f5f8ff;
   }
-}
-
-// ── Bar chart ─────────────────────────────────────────────────
-.slt-bar-chart {
-  border-bottom: 2px solid #e0e7ef;
-  padding: 0 8px;
-}
-.slt-bar-col {
-  position: relative;
-  justify-content: flex-end;
-  min-width: 0;
-}
-.slt-bar {
-  width: 75%;
-  min-height: 4px;
-  border-radius: 4px 4px 0 0;
-  position: relative;
-  overflow: hidden;
-  transition: height 0.4s ease;
-}
-.slt-bar-closed {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(0, 63, 135, 0.25);
-}
-.slt-month-label {
-  font-size: 0.65rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
 }
 </style>

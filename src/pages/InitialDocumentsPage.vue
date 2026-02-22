@@ -5,10 +5,10 @@
       <div class="col">
         <div class="text-h5 text-weight-bold text-primary">
           <q-icon name="description" size="28px" class="q-mr-sm" />
-          Initial Documents
+          {{ $t('initialDocs.title') }}
         </div>
         <div class="text-caption text-grey-6">
-          Manage incoming legal intake documents · Approved documents are promoted to Active Cases
+          {{ $t('initialDocs.subtitle') }}
         </div>
       </div>
       <div class="col-auto row q-gutter-sm">

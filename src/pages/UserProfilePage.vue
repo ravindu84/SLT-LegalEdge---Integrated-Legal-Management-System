@@ -5,9 +5,9 @@
       <div class="col">
         <div class="text-h5 text-weight-bold text-primary">
           <q-icon name="person" size="28px" class="q-mr-sm" />
-          My Profile
+          {{ $t('profile.title') }}
         </div>
-        <div class="text-caption text-grey-6">Manage your account and preferences</div>
+        <div class="text-caption text-grey-6">{{ $t('profile.subtitle') }}</div>
       </div>
     </div>
 

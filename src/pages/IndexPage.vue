@@ -3,15 +3,17 @@
     <!-- ─── Page Header ──────────────────────────────────────── -->
     <div class="row items-center q-mb-lg">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">Dashboard</div>
-        <div class="text-caption text-grey-6">Welcome back, Admin · {{ currentDate }}</div>
+        <div class="text-h5 text-weight-bold text-primary">{{ $t('dashboard.title') }}</div>
+        <div class="text-caption text-grey-6">
+          {{ $t('dashboard.welcome') }} · {{ currentDate }}
+        </div>
       </div>
       <div class="col-auto">
         <q-btn
           unelevated
           color="primary"
           icon="refresh"
-          label="Refresh"
+          :label="$t('dashboard.refresh')"
           class="q-mr-sm"
           size="sm"
           @click="refreshData"
@@ -20,7 +22,7 @@
           outline
           color="primary"
           icon="bar_chart"
-          label="View Reports"
+          :label="$t('dashboard.viewReports')"
           size="sm"
           @click="router.push('/reports')"
         />
@@ -38,10 +40,12 @@
             </div>
             <div class="q-ml-md col">
               <div class="text-h4 text-weight-bold text-primary">{{ stats.activeCases }}</div>
-              <div class="text-subtitle2 text-grey-7">Active Legal Cases</div>
+              <div class="text-subtitle2 text-grey-7">{{ $t('dashboard.activeCases') }}</div>
               <div class="row items-center q-mt-xs">
                 <q-icon name="trending_up" color="positive" size="16px" />
-                <span class="text-caption text-positive q-ml-xs">+4 this month</span>
+                <span class="text-caption text-positive q-ml-xs">{{
+                  $t('dashboard.thisMonth')
+                }}</span>
               </div>
             </div>
             <q-circular-progress
@@ -57,7 +61,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section class="q-py-sm">
-            <span class="text-caption text-grey-6">14 active · 6 pending hearing</span>
+            <span class="text-caption text-grey-6">{{ $t('dashboard.activeCount') }}</span>
           </q-card-section>
         </q-card>
       </div>
@@ -71,10 +75,12 @@
             </div>
             <div class="q-ml-md col">
               <div class="text-h4 text-weight-bold text-orange-9">{{ stats.pendingDocs }}</div>
-              <div class="text-subtitle2 text-grey-7">Pending Initial Docs</div>
+              <div class="text-subtitle2 text-grey-7">{{ $t('dashboard.pendingDocs') }}</div>
               <div class="row items-center q-mt-xs">
                 <q-icon name="schedule" color="warning" size="16px" />
-                <span class="text-caption text-warning q-ml-xs">5 require attention</span>
+                <span class="text-caption text-warning q-ml-xs">{{
+                  $t('dashboard.requireAttention')
+                }}</span>
               </div>
             </div>
             <q-circular-progress
@@ -90,7 +96,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section class="q-py-sm">
-            <span class="text-caption text-grey-6">9 pending · 3 awaiting supervisor</span>
+            <span class="text-caption text-grey-6">{{ $t('dashboard.pendingCount') }}</span>
           </q-card-section>
         </q-card>
       </div>
@@ -106,10 +112,12 @@
               <div class="text-h4 text-weight-bold text-green-9">
                 {{ stats.agreementsAwaiting }}
               </div>
-              <div class="text-subtitle2 text-grey-7">Agreements Awaiting Approval</div>
+              <div class="text-subtitle2 text-grey-7">{{ $t('dashboard.agreementsAwaiting') }}</div>
               <div class="row items-center q-mt-xs">
                 <q-icon name="hourglass_empty" color="teal-6" size="16px" />
-                <span class="text-caption text-teal-6 q-ml-xs">2 at final level</span>
+                <span class="text-caption text-teal-6 q-ml-xs">{{
+                  $t('dashboard.atFinalLevel')
+                }}</span>
               </div>
             </div>
             <q-circular-progress
@@ -125,7 +133,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section class="q-py-sm">
-            <span class="text-caption text-grey-6">7 in review · 2 near expiry</span>
+            <span class="text-caption text-grey-6">{{ $t('dashboard.agreementCount') }}</span>
           </q-card-section>
         </q-card>
       </div>
@@ -137,7 +145,7 @@
         <q-card flat bordered>
           <q-card-section class="q-pb-xs">
             <div class="text-subtitle1 text-weight-bold text-primary">
-              Approval Workflow Overview
+              {{ $t('dashboard.workflowOverview') }}
             </div>
           </q-card-section>
           <q-card-section class="row q-col-gutter-sm q-pt-xs">
@@ -161,7 +169,7 @@
         <q-card flat bordered>
           <q-card-section class="row items-center q-pb-none">
             <div class="text-subtitle1 text-weight-bold text-primary col">
-              Recent Case Activities
+              {{ $t('dashboard.recentActivities') }}
             </div>
             <q-input
               v-model="tableFilter"
@@ -222,7 +230,9 @@
         <!-- Quick Actions -->
         <q-card flat bordered class="q-mb-md">
           <q-card-section class="q-pb-sm">
-            <div class="text-subtitle1 text-weight-bold text-primary">Quick Actions</div>
+            <div class="text-subtitle1 text-weight-bold text-primary">
+              {{ $t('dashboard.quickActions') }}
+            </div>
           </q-card-section>
           <q-list separator>
             <q-item
@@ -252,7 +262,9 @@
         <!-- Upcoming Hearings -->
         <q-card flat bordered>
           <q-card-section class="q-pb-sm">
-            <div class="text-subtitle1 text-weight-bold text-primary">Upcoming Hearings</div>
+            <div class="text-subtitle1 text-weight-bold text-primary">
+              {{ $t('dashboard.upcomingHearings') }}
+            </div>
           </q-card-section>
           <q-list>
             <q-item
@@ -285,8 +297,10 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 // ── Computed current date display ─────────────────────────────
 const currentDate = computed(() => {
@@ -306,24 +320,42 @@ const stats = ref({
 })
 
 // ── Workflow pipeline ─────────────────────────────────────────
-const workflowStages = [
-  { label: 'Draft', icon: 'edit_note', color: 'grey-7', count: 12 },
-  { label: 'In Review', icon: 'rate_review', color: 'warning', count: 8 },
-  { label: 'Approval', icon: 'pending_actions', color: 'info', count: 5 },
-  { label: 'Active', icon: 'check_circle', color: 'positive', count: 21 },
-]
+const workflowStages = computed(() => [
+  { label: t('dashboard.draft'), icon: 'edit_note', color: 'grey-7', count: 12 },
+  { label: t('dashboard.inReview'), icon: 'rate_review', color: 'warning', count: 8 },
+  { label: t('dashboard.approval'), icon: 'pending_actions', color: 'info', count: 5 },
+  { label: t('dashboard.active'), icon: 'check_circle', color: 'positive', count: 21 },
+])
 
 // ── Table ─────────────────────────────────────────────────────
 const tableFilter = ref('')
 
-const columns = [
-  { name: 'caseId', label: 'Case ID', field: 'caseId', align: 'left', sortable: true },
-  { name: 'title', label: 'Case Title', field: 'title', align: 'left', sortable: true },
-  { name: 'type', label: 'Type', field: 'type', align: 'center', sortable: true },
-  { name: 'status', label: 'Status', field: 'status', align: 'center', sortable: true },
-  { name: 'assignedTo', label: 'Assigned To', field: 'assignedTo', align: 'left', sortable: false },
-  { name: 'lastUpdated', label: 'Updated', field: 'lastUpdated', align: 'right', sortable: true },
-]
+const columns = computed(() => [
+  { name: 'caseId', label: t('dashboard.caseId'), field: 'caseId', align: 'left', sortable: true },
+  { name: 'title', label: t('dashboard.caseTitle'), field: 'title', align: 'left', sortable: true },
+  { name: 'type', label: t('dashboard.type'), field: 'type', align: 'center', sortable: true },
+  {
+    name: 'status',
+    label: t('dashboard.status'),
+    field: 'status',
+    align: 'center',
+    sortable: true,
+  },
+  {
+    name: 'assignedTo',
+    label: t('dashboard.assignedTo'),
+    field: 'assignedTo',
+    align: 'left',
+    sortable: false,
+  },
+  {
+    name: 'lastUpdated',
+    label: t('dashboard.updated'),
+    field: 'lastUpdated',
+    align: 'right',
+    sortable: true,
+  },
+])
 
 const recentActivities = [
   {
@@ -403,36 +435,36 @@ function statusColor(status) {
 }
 
 // ── Quick Actions ─────────────────────────────────────────────
-const quickActions = [
+const quickActions = computed(() => [
   {
-    label: 'New Initial Document',
-    caption: 'Start case intake process',
+    label: t('dashboard.newInitialDoc'),
+    caption: t('dashboard.startIntake'),
     icon: 'add_circle',
     color: 'primary',
     route: '/initial-docs',
   },
   {
-    label: 'Upload Agreement',
-    caption: 'Add new contract or MOU',
+    label: t('dashboard.uploadAgreement'),
+    caption: t('dashboard.addContract'),
     icon: 'upload_file',
     color: 'teal',
     route: '/agreements',
   },
   {
-    label: 'Pending Approvals',
-    caption: '3 items need your approval',
+    label: t('dashboard.pendingApprovals'),
+    caption: t('dashboard.itemsNeedApproval'),
     icon: 'verified',
     color: 'negative',
     route: '/approvals',
   },
   {
-    label: 'Generate Report',
-    caption: 'Monthly legal summary',
+    label: t('dashboard.generateReport'),
+    caption: t('dashboard.monthlySummary'),
     icon: 'summarize',
     color: 'purple',
     route: '/reports',
   },
-]
+])
 
 // ── Upcoming Hearings ─────────────────────────────────────────
 const upcomingHearings = [
@@ -533,6 +565,58 @@ function refreshData() {
 
   :deep(tbody tr:hover) {
     background: #f0f5ff !important;
+  }
+}
+</style>
+
+<!-- ─── DARK MODE OVERRIDES (unscoped to override body.body--dark) ─── -->
+<style lang="scss">
+body.body--dark {
+  .slt-dashboard {
+    background: #121212 !important;
+  }
+
+  .slt-stage-card {
+    background: #252525 !important;
+    border-color: #333 !important;
+
+    &:hover {
+      background: #2c2c2c !important;
+    }
+  }
+
+  .slt-widget {
+    &:hover {
+      box-shadow: 0 6px 24px rgba(144, 202, 249, 0.1) !important;
+    }
+  }
+
+  .slt-widget-icon-wrap {
+    &.bg-blue-1 {
+      background: rgba(25, 118, 210, 0.15) !important;
+    }
+    &.bg-orange-1 {
+      background: rgba(245, 124, 0, 0.15) !important;
+    }
+    &.bg-green-1 {
+      background: rgba(46, 125, 50, 0.15) !important;
+    }
+  }
+
+  .slt-table {
+    .q-table__top,
+    .q-table__bottom {
+      background: #1e1e1e !important;
+    }
+
+    thead tr th {
+      background: #252525 !important;
+      color: #90caf9 !important;
+    }
+
+    tbody tr:hover {
+      background: #2c2c2c !important;
+    }
   }
 }
 </style>

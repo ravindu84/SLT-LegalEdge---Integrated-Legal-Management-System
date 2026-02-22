@@ -5,7 +5,7 @@
       <div class="col">
         <div class="text-h5 text-weight-bold text-primary">
           <q-icon name="task_alt" size="28px" class="q-mr-sm" />
-          Approvals Inbox
+          {{ $t('approvals.title') }}
         </div>
         <div class="text-caption text-grey-6">
           Logged in as: <strong>K. Fernando, AGM – Legal</strong> &nbsp;·&nbsp; Items requiring your

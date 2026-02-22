@@ -81,16 +81,16 @@
           <q-list style="min-width: 180px">
             <q-item clickable v-close-popup :to="'/profile'">
               <q-item-section avatar><q-icon name="person" /></q-item-section>
-              <q-item-section>My Profile</q-item-section>
+              <q-item-section>{{ $t('common.myProfile') }}</q-item-section>
             </q-item>
             <q-item clickable v-close-popup :to="'/settings'">
               <q-item-section avatar><q-icon name="settings" /></q-item-section>
-              <q-item-section>Settings</q-item-section>
+              <q-item-section>{{ $t('nav.settings') }}</q-item-section>
             </q-item>
             <q-separator />
             <q-item clickable v-close-popup class="text-negative" @click="logout">
               <q-item-section avatar><q-icon name="logout" color="negative" /></q-item-section>
-              <q-item-section>Logout</q-item-section>
+              <q-item-section>{{ $t('common.logout') }}</q-item-section>
             </q-item>
           </q-list>
         </q-btn-dropdown>
@@ -127,7 +127,7 @@
           header
           class="text-white text-caption text-weight-bold opacity-60 q-pl-md q-mt-sm"
         >
-          MAIN MENU
+          {{ $t('nav.mainMenu') }}
         </q-item-label>
 
         <template v-for="item in navItems" :key="item.label">
@@ -182,12 +182,14 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useAuthStore } from 'src/stores/authStore'
 import { useNotificationStore } from 'src/stores/notificationStore'
 import NotificationsDrawer from 'src/components/NotificationsDrawer.vue'
 
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
 const authStore = useAuthStore()
 const notifStore = useNotificationStore()
 
@@ -205,74 +207,74 @@ function logout() {
 }
 
 // ── Breadcrumbs ───────────────────────────────────────────────────
-const routeMeta = {
-  '/': { label: 'Dashboard', icon: 'dashboard' },
-  '/initial-docs': { label: 'Initial Documents', icon: 'description' },
-  '/cases': { label: 'Legal Cases', icon: 'gavel' },
-  '/agreements': { label: 'Agreements', icon: 'handshake' },
-  '/approvals': { label: 'Approvals', icon: 'verified' },
-  '/reports': { label: 'Reports', icon: 'bar_chart' },
-  '/settings': { label: 'Settings', icon: 'settings' },
-  '/profile': { label: 'My Profile', icon: 'person' },
+const routeMetaKeys = {
+  '/': { key: 'breadcrumb.dashboard', icon: 'dashboard' },
+  '/initial-docs': { key: 'breadcrumb.initialDocs', icon: 'description' },
+  '/cases': { key: 'breadcrumb.legalCases', icon: 'gavel' },
+  '/agreements': { key: 'breadcrumb.agreements', icon: 'handshake' },
+  '/approvals': { key: 'breadcrumb.approvals', icon: 'verified' },
+  '/reports': { key: 'breadcrumb.reports', icon: 'bar_chart' },
+  '/settings': { key: 'breadcrumb.settings', icon: 'settings' },
+  '/profile': { key: 'breadcrumb.profile', icon: 'person' },
 }
 
 const breadcrumbs = computed(() => {
   const path = route.path
   if (path === '/') return []
-  const crumbs = [{ label: 'Home', icon: 'home', to: '/' }]
-  const meta = routeMeta[path]
-  if (meta) crumbs.push({ label: meta.label, icon: meta.icon })
+  const crumbs = [{ label: t('breadcrumb.home'), icon: 'home', to: '/' }]
+  const meta = routeMetaKeys[path]
+  if (meta) crumbs.push({ label: t(meta.key), icon: meta.icon })
   return crumbs
 })
 
 // ── Navigation items ──────────────────────────────────────────────
 const navItems = computed(() => [
   {
-    label: 'Dashboard',
-    caption: 'Overview & analytics',
+    label: t('nav.dashboard'),
+    caption: t('nav.dashboardCaption'),
     icon: 'dashboard',
     route: '/',
   },
-  { separator: 'LEGAL CASES' },
+  { separator: t('nav.legalCasesGroup') },
   {
-    label: 'Initial Documents',
-    caption: 'Document intake',
+    label: t('nav.initialDocs'),
+    caption: t('nav.initialDocsCaption'),
     icon: 'description',
     route: '/initial-docs',
     badge: '5',
     badgeColor: 'warning',
   },
   {
-    label: 'Legal Cases',
-    caption: 'Active case management',
+    label: t('nav.legalCases'),
+    caption: t('nav.legalCasesCaption'),
     icon: 'gavel',
     route: '/cases',
   },
-  { separator: 'AGREEMENTS' },
+  { separator: t('nav.agreementsGroup') },
   {
-    label: 'Agreements',
-    caption: 'Contracts & MOUs',
+    label: t('nav.agreements'),
+    caption: t('nav.agreementsCaption'),
     icon: 'handshake',
     route: '/agreements',
   },
   {
-    label: 'Approvals',
-    caption: 'Multi-level approvals',
+    label: t('nav.approvals'),
+    caption: t('nav.approvalsCaption'),
     icon: 'verified',
     route: '/approvals',
     badge: String(notifStore.unreadCount),
     badgeColor: 'negative',
   },
-  { separator: 'SYSTEM' },
+  { separator: t('nav.systemGroup') },
   {
-    label: 'Reports',
-    caption: 'Analytics & reports',
+    label: t('nav.reports'),
+    caption: t('nav.reportsCaption'),
     icon: 'bar_chart',
     route: '/reports',
   },
   {
-    label: 'Settings',
-    caption: 'System configuration',
+    label: t('nav.settings'),
+    caption: t('nav.settingsCaption'),
     icon: 'settings',
     route: '/settings',
   },

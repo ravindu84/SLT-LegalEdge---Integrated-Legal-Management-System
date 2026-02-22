@@ -1,987 +1,650 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div class="row items-center q-mb-lg">
       <div class="col">
         <div class="text-h5 text-weight-bold text-primary">
           <q-icon name="settings" size="28px" class="q-mr-sm" />
-          System Settings
+          {{ $t('settings.pageTitle') }}
         </div>
         <div class="text-caption text-grey-6">
-          User management, workflow configuration &amp; system administration
+          {{ $t('settings.pageSubtitle') }}
         </div>
       </div>
     </div>
 
-    <!-- ─── Tabbed Settings ──────────────────────────────────────── -->
-    <q-card flat bordered>
-      <q-tabs
-        v-model="activeTab"
-        align="left"
-        indicator-color="accent"
-        active-color="primary"
-        class="bg-grey-1"
-        dense
-      >
-        <q-tab name="users" icon="group" label="Users & Roles" no-caps />
-        <q-tab name="workflow" icon="account_tree" label="Workflow Config" no-caps />
-        <q-tab name="notif" icon="notifications" label="Notifications" no-caps />
-        <q-tab name="casetypes" icon="category" label="Case Types" no-caps />
-        <q-tab name="audit" icon="manage_search" label="Audit Trail" no-caps />
-      </q-tabs>
-      <q-separator />
-
-      <q-tab-panels v-model="activeTab" animated>
-        <!-- ╔═══════════════════════════════════════════════════════
-             TAB 1 — USERS & ROLES
-        ═══════════════════════════════════════════════════════════╗ -->
-        <q-tab-panel name="users" class="q-pa-none">
-          <div class="q-pa-md row items-center justify-between">
-            <div class="text-subtitle1 text-weight-bold text-grey-8">System Users</div>
-            <q-btn
-              unelevated
-              no-caps
-              color="primary"
-              icon="person_add"
-              label="Add User"
-              size="sm"
-              @click="openUserDialog(null)"
-            />
-          </div>
+    <div class="row q-col-gutter-lg">
+      <!-- ─── LEFT COLUMN — Profile & Security ───────────────────── -->
+      <div class="col-12 col-md-7">
+        <!-- ═════════════ SECTION 1: USER PROFILE ═════════════ -->
+        <q-card flat bordered class="q-mb-lg slt-settings-card">
+          <q-card-section class="slt-section-header">
+            <q-icon name="person" color="primary" size="20px" class="q-mr-sm" />
+            {{ $t('settings.userProfile') }}
+          </q-card-section>
           <q-separator />
 
-          <q-table
-            :rows="users"
-            :columns="userCols"
-            row-key="id"
-            flat
-            class="slt-table"
-            :pagination="{ rowsPerPage: 8 }"
-          >
-            <!-- Avatar + Name cell -->
-            <template #body-cell-name="props">
-              <q-td :props="props">
-                <div class="row items-center q-gutter-sm">
-                  <q-avatar
-                    size="34px"
-                    :color="roleColor(props.row.role)"
-                    text-color="white"
-                    font-size="13px"
-                  >
-                    {{ initials(props.row.name) }}
-                  </q-avatar>
-                  <div>
-                    <div class="text-weight-bold text-grey-9">{{ props.row.name }}</div>
-                    <div class="text-caption text-grey-5">{{ props.row.email }}</div>
-                  </div>
+          <q-card-section class="q-pa-lg">
+            <!-- Avatar row -->
+            <div class="row items-center q-mb-lg">
+              <q-avatar size="88px" class="slt-avatar-ring">
+                <div class="slt-avatar-inner text-white text-h4 text-weight-bold">
+                  {{ initials }}
                 </div>
-              </q-td>
-            </template>
-
-            <!-- Role badge -->
-            <template #body-cell-role="props">
-              <q-td :props="props">
-                <q-badge rounded :color="roleColor(props.row.role)" :label="props.row.role" />
-              </q-td>
-            </template>
-
-            <!-- Status chip -->
-            <template #body-cell-active="props">
-              <q-td :props="props" class="text-center">
-                <q-chip
-                  dense
-                  :color="props.row.active ? 'positive' : 'grey-4'"
-                  :text-color="props.row.active ? 'white' : 'grey-7'"
-                  :icon="props.row.active ? 'check_circle' : 'cancel'"
-                  :label="props.row.active ? 'Active' : 'Inactive'"
-                  size="sm"
-                />
-              </q-td>
-            </template>
-
-            <!-- Actions -->
-            <template #body-cell-actions="props">
-              <q-td :props="props" class="text-center">
-                <q-btn
-                  flat
-                  round
-                  dense
-                  icon="edit"
-                  size="sm"
-                  color="primary"
-                  @click="openUserDialog(props.row)"
-                >
-                  <q-tooltip>Edit User</q-tooltip>
-                </q-btn>
-                <q-btn
-                  flat
-                  round
-                  dense
-                  :icon="props.row.active ? 'person_off' : 'person'"
-                  :color="props.row.active ? 'negative' : 'positive'"
-                  size="sm"
-                  @click="toggleUserActive(props.row)"
-                >
-                  <q-tooltip>{{ props.row.active ? 'Deactivate' : 'Activate' }}</q-tooltip>
-                </q-btn>
-              </q-td>
-            </template>
-          </q-table>
-        </q-tab-panel>
-
-        <!-- ╔═══════════════════════════════════════════════════════
-             TAB 2 — WORKFLOW CONFIG
-        ═══════════════════════════════════════════════════════════╗ -->
-        <q-tab-panel name="workflow" class="q-pa-md">
-          <div class="text-subtitle1 text-weight-bold text-grey-8 q-mb-md">
-            Approval Workflow Configuration
-          </div>
-
-          <div v-for="module in workflowModules" :key="module.name">
-            <q-card flat bordered class="q-mb-md">
-              <q-card-section class="row items-center bg-grey-1 q-py-sm">
-                <q-icon :name="module.icon" color="primary" size="20px" class="q-mr-sm" />
-                <div class="text-weight-bold text-grey-9">{{ module.name }}</div>
-                <q-space />
-                <q-toggle
-                  v-model="module.enabled"
-                  color="primary"
-                  dense
-                  :label="module.enabled ? 'Enabled' : 'Disabled'"
-                />
-              </q-card-section>
-              <q-separator />
-              <q-card-section class="q-pa-md">
-                <div class="row q-col-gutter-md">
-                  <div class="col-12 col-sm-6">
-                    <q-input
-                      v-model="module.l1Approver"
-                      outlined
-                      dense
-                      label="L1 Approver Role"
-                      hint="Role required for first-level approval"
-                    >
-                      <template #prepend><q-icon name="approval" color="warning" /></template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 col-sm-6">
-                    <q-input
-                      v-model="module.l2Approver"
-                      outlined
-                      dense
-                      label="L2 Approver Role"
-                      hint="Role required for final approval"
-                    >
-                      <template #prepend><q-icon name="verified" color="positive" /></template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 col-sm-4">
-                    <q-input
-                      v-model.number="module.slaHours"
-                      outlined
-                      dense
-                      type="number"
-                      label="SLA (hours)"
-                      hint="Max hours per approval stage"
-                    >
-                      <template #prepend><q-icon name="timer" /></template>
-                    </q-input>
-                  </div>
-                  <div class="col-12 col-sm-8">
-                    <q-toggle
-                      v-model="module.requireRemarks"
-                      color="primary"
-                      label="Mandatory remarks on approve/reject"
-                    />
-                    <br />
-                    <q-toggle
-                      v-model="module.notifyOnEachStage"
-                      color="info"
-                      label="Notify submitter on each stage change"
-                    />
-                  </div>
-                </div>
-              </q-card-section>
-            </q-card>
-          </div>
-
-          <div class="row justify-end">
-            <q-btn
-              unelevated
-              no-caps
-              color="primary"
-              icon="save"
-              label="Save Workflow Config"
-              @click="saveWorkflow"
-            />
-          </div>
-        </q-tab-panel>
-
-        <!-- ╔═══════════════════════════════════════════════════════
-             TAB 3 — NOTIFICATIONS
-        ═══════════════════════════════════════════════════════════╗ -->
-        <q-tab-panel name="notif" class="q-pa-md">
-          <div class="text-subtitle1 text-weight-bold text-grey-8 q-mb-md">
-            Notification &amp; Alert Settings
-          </div>
-
-          <div class="row q-col-gutter-md">
-            <div v-for="cat in notifCategories" :key="cat.key" class="col-12 col-sm-6">
-              <q-card flat bordered>
-                <q-card-section class="row items-center bg-grey-1 q-py-sm">
-                  <q-icon :name="cat.icon" color="primary" size="18px" class="q-mr-sm" />
-                  <div class="text-weight-bold text-grey-9 col">{{ cat.label }}</div>
-                  <q-toggle v-model="cat.enabled" color="primary" dense />
-                </q-card-section>
-                <q-separator />
-                <q-card-section class="q-pa-sm q-pl-md">
-                  <div v-for="sub in cat.subs" :key="sub.key" class="q-mb-xs">
-                    <q-toggle
-                      v-model="sub.enabled"
-                      :disable="!cat.enabled"
-                      color="primary"
-                      :label="sub.label"
-                      size="sm"
-                      dense
-                    />
-                  </div>
-                </q-card-section>
-              </q-card>
-            </div>
-          </div>
-
-          <div class="row justify-end q-mt-md">
-            <q-btn
-              unelevated
-              no-caps
-              color="primary"
-              icon="save"
-              label="Save Notification Settings"
-              @click="saveNotif"
-            />
-          </div>
-        </q-tab-panel>
-
-        <!-- ╔═══════════════════════════════════════════════════════
-             TAB 4 — CASE TYPES
-        ═══════════════════════════════════════════════════════════╗ -->
-        <q-tab-panel name="casetypes" class="q-pa-none">
-          <div class="q-pa-md row items-center justify-between">
-            <div class="text-subtitle1 text-weight-bold text-grey-8">
-              Supported Case Types (BRD: OTH-FR-01)
-            </div>
-            <q-btn unelevated no-caps color="primary" icon="add" label="Add Type" size="sm" />
-          </div>
-          <q-separator />
-
-          <q-markup-table flat dense separator="horizontal" class="slt-mu-table">
-            <thead>
-              <tr>
-                <th class="text-left">Case Type</th>
-                <th class="text-left">BRD FR ID</th>
-                <th class="text-left">Specific Fields</th>
-                <th class="text-center">Configurable</th>
-                <th class="text-center">Active</th>
-                <th class="text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="ct in caseTypes" :key="ct.type">
-                <td class="text-weight-bold text-grey-9">{{ ct.type }}</td>
-                <td><q-badge outline color="primary" :label="ct.frId" /></td>
-                <td>
-                  <div class="row q-gutter-xs">
-                    <q-chip
-                      v-for="f in ct.fields"
-                      :key="f"
-                      dense
-                      size="sm"
-                      color="blue-1"
-                      text-color="primary"
-                      :label="f"
-                    />
-                  </div>
-                </td>
-                <td class="text-center">
-                  <q-icon
-                    :name="ct.configurable ? 'check_circle' : 'remove'"
-                    :color="ct.configurable ? 'positive' : 'grey-4'"
+              </q-avatar>
+              <div class="q-ml-lg">
+                <div class="text-h6 text-weight-bold text-grey-9">{{ profile.fullName }}</div>
+                <div class="text-body2 text-grey-6">{{ profile.role }}</div>
+                <div class="row q-gutter-sm q-mt-sm">
+                  <q-btn
+                    outline
+                    dense
+                    no-caps
+                    color="primary"
+                    icon="upload"
+                    :label="$t('settings.changePhoto')"
+                    size="sm"
+                    @click="changePhoto"
                   />
-                </td>
-                <td class="text-center">
-                  <q-toggle v-model="ct.active" color="primary" dense />
-                </td>
-                <td class="text-center">
-                  <q-btn flat round dense icon="edit" size="sm" color="grey-7">
-                    <q-tooltip>Edit Type</q-tooltip>
-                  </q-btn>
-                </td>
-              </tr>
-            </tbody>
-          </q-markup-table>
-        </q-tab-panel>
+                  <q-btn
+                    flat
+                    dense
+                    no-caps
+                    color="grey-7"
+                    icon="delete_outline"
+                    :label="$t('settings.removePhoto')"
+                    size="sm"
+                    @click="removePhoto"
+                  />
+                </div>
+              </div>
+            </div>
 
-        <!-- ╔═══════════════════════════════════════════════════════
-             TAB 5 — AUDIT TRAIL
-        ═══════════════════════════════════════════════════════════╗ -->
-        <q-tab-panel name="audit" class="q-pa-none">
-          <!-- Filters -->
-          <div class="q-pa-md row q-col-gutter-sm items-center bg-grey-1">
-            <div class="col-12 col-sm-3">
-              <q-input v-model="auditFilter" dense outlined clearable placeholder="Search actions…">
-                <template #prepend><q-icon name="search" /></template>
-              </q-input>
+            <!-- Form fields -->
+            <div class="row q-col-gutter-md">
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="profile.fullName"
+                  outlined
+                  dense
+                  :label="$t('settings.fullName')"
+                  :rules="[(v) => !!v || 'Name is required']"
+                >
+                  <template #prepend><q-icon name="badge" color="grey-6" /></template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="profile.email"
+                  outlined
+                  dense
+                  :label="$t('settings.email')"
+                  type="email"
+                  :rules="[(v) => !!v || 'Email is required']"
+                >
+                  <template #prepend><q-icon name="email" color="grey-6" /></template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="profile.department"
+                  outlined
+                  dense
+                  :label="$t('settings.department')"
+                  readonly
+                >
+                  <template #prepend><q-icon name="business" color="grey-6" /></template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="profile.role"
+                  outlined
+                  dense
+                  :label="$t('settings.role')"
+                  readonly
+                >
+                  <template #prepend
+                    ><q-icon name="admin_panel_settings" color="grey-6"
+                  /></template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="profile.employeeId"
+                  outlined
+                  dense
+                  :label="$t('settings.employeeId')"
+                  readonly
+                >
+                  <template #prepend><q-icon name="fingerprint" color="grey-6" /></template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input v-model="profile.phone" outlined dense :label="$t('settings.phone')">
+                  <template #prepend><q-icon name="phone" color="grey-6" /></template>
+                </q-input>
+              </div>
             </div>
-            <div class="col-6 col-sm-2">
-              <q-select
-                v-model="auditModule"
-                dense
-                outlined
-                clearable
-                :options="[
-                  'All Modules',
-                  'Agreements',
-                  'Legal Cases',
-                  'Initial Docs',
-                  'Settings',
-                  'Login',
-                ]"
-                label="Module"
-              />
-            </div>
-            <div class="col-6 col-sm-2">
-              <q-select
-                v-model="auditUser"
-                dense
-                outlined
-                clearable
-                :options="['All Users', ...users.map((u) => u.name)]"
-                label="User"
-              />
-            </div>
-            <div class="col-auto">
+
+            <div class="row justify-end q-mt-lg">
               <q-btn
-                flat
-                icon="restart_alt"
-                color="grey-7"
-                dense
-                @click="
-                  auditFilter = ''
-                  auditModule = null
-                  auditUser = null
-                "
-              >
-                <q-tooltip>Reset</q-tooltip>
-              </q-btn>
-            </div>
-            <div class="col-auto q-ml-auto">
-              <q-btn
-                outline
+                unelevated
                 no-caps
-                size="sm"
-                icon="file_download"
                 color="primary"
-                label="Export Log"
+                icon="save"
+                :label="$t('settings.saveProfile')"
+                :loading="savingProfile"
+                @click="saveProfile"
               />
             </div>
-          </div>
+          </q-card-section>
+        </q-card>
+
+        <!-- ═════════════ SECTION 2: SECURITY ═════════════ -->
+        <q-card flat bordered class="slt-settings-card">
+          <q-card-section class="slt-section-header">
+            <q-icon name="lock" color="primary" size="20px" class="q-mr-sm" />
+            {{ $t('settings.security') }}
+          </q-card-section>
           <q-separator />
 
-          <q-table
-            :rows="filteredAuditLog"
-            :columns="auditCols"
-            row-key="id"
-            flat
-            class="slt-table"
-            :pagination="{ rowsPerPage: 12 }"
-          >
-            <!-- Action badge -->
-            <template #body-cell-action="props">
-              <q-td :props="props">
-                <q-badge rounded :color="auditActionColor(props.value)" :label="props.value" />
-              </q-td>
-            </template>
+          <q-card-section class="q-pa-lg">
+            <div class="row q-col-gutter-md">
+              <div class="col-12">
+                <q-input
+                  v-model="passwordForm.currentPassword"
+                  outlined
+                  dense
+                  :label="$t('settings.currentPassword')"
+                  :type="showCurrentPw ? 'text' : 'password'"
+                  :rules="[(v) => !!v || 'Current password is required']"
+                >
+                  <template #prepend><q-icon name="lock_outline" color="grey-6" /></template>
+                  <template #append>
+                    <q-icon
+                      :name="showCurrentPw ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      color="grey-5"
+                      @click="showCurrentPw = !showCurrentPw"
+                    />
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="passwordForm.newPassword"
+                  outlined
+                  dense
+                  :label="$t('settings.newPassword')"
+                  :type="showNewPw ? 'text' : 'password'"
+                  :rules="[
+                    (v) => !!v || 'New password is required',
+                    (v) => (v && v.length >= 8) || 'Minimum 8 characters',
+                  ]"
+                >
+                  <template #prepend><q-icon name="lock" color="grey-6" /></template>
+                  <template #append>
+                    <q-icon
+                      :name="showNewPw ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      color="grey-5"
+                      @click="showNewPw = !showNewPw"
+                    />
+                  </template>
+                </q-input>
+              </div>
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="passwordForm.confirmPassword"
+                  outlined
+                  dense
+                  :label="$t('settings.confirmPassword')"
+                  :type="showConfirmPw ? 'text' : 'password'"
+                  :rules="[
+                    (v) => !!v || 'Please confirm your password',
+                    (v) => v === passwordForm.newPassword || 'Passwords do not match',
+                  ]"
+                >
+                  <template #prepend><q-icon name="lock_clock" color="grey-6" /></template>
+                  <template #append>
+                    <q-icon
+                      :name="showConfirmPw ? 'visibility_off' : 'visibility'"
+                      class="cursor-pointer"
+                      color="grey-5"
+                      @click="showConfirmPw = !showConfirmPw"
+                    />
+                  </template>
+                </q-input>
+              </div>
+            </div>
 
-            <!-- Module badge -->
-            <template #body-cell-module="props">
-              <q-td :props="props">
-                <q-badge outline :color="auditModuleColor(props.value)" :label="props.value" />
-              </q-td>
-            </template>
-          </q-table>
-        </q-tab-panel>
-      </q-tab-panels>
-    </q-card>
-
-    <!-- ═══════════════════════════════════════════════════════════
-         USER ADD / EDIT DIALOG
-    ════════════════════════════════════════════════════════════ -->
-    <q-dialog v-model="showUserDialog" persistent>
-      <q-card style="width: 480px; max-width: 95vw">
-        <q-bar class="slt-dialog-bar text-white">
-          <q-icon name="person" />
-          <div class="text-weight-bold q-ml-sm">
-            {{ editingUser ? 'Edit User' : 'Add New User' }}
-          </div>
-          <q-space />
-          <q-btn dense flat icon="close" @click="showUserDialog = false" />
-        </q-bar>
-
-        <q-card-section class="q-pa-md">
-          <div class="row q-col-gutter-md">
-            <div class="col-12">
-              <q-input
-                v-model="userForm.name"
-                outlined
-                dense
-                label="Full Name *"
-                :rules="[(v) => !!v || 'Required']"
+            <!-- Password strength indicator -->
+            <div v-if="passwordForm.newPassword" class="q-mt-sm">
+              <div class="row items-center q-mb-xs">
+                <div class="text-caption text-grey-6 q-mr-sm">
+                  {{ $t('settings.strengthWeak').split('')[0] === 'W' ? 'Strength' : '' }}:
+                </div>
+                <q-badge rounded :color="passwordStrength.color" :label="passwordStrength.label" />
+              </div>
+              <q-linear-progress
+                :value="passwordStrength.score / 4"
+                :color="passwordStrength.color"
+                rounded
+                size="6px"
               />
             </div>
-            <div class="col-12">
-              <q-input
-                v-model="userForm.email"
-                outlined
-                dense
-                label="Email Address *"
-                type="email"
-                :rules="[(v) => !!v || 'Required']"
-              />
-            </div>
-            <div class="col-12 col-sm-6">
-              <q-select
-                v-model="userForm.role"
-                :options="['Legal Officer', 'Manager', 'Executive', 'Admin']"
-                outlined
-                dense
-                label="Role *"
-                :rules="[(v) => !!v || 'Required']"
-              />
-            </div>
-            <div class="col-12 col-sm-6">
-              <q-input v-model="userForm.department" outlined dense label="Department" />
-            </div>
-            <div class="col-12">
-              <q-toggle v-model="userForm.active" color="primary" label="Account Active" />
-            </div>
-          </div>
-        </q-card-section>
 
-        <q-separator />
-        <q-card-actions align="right" class="q-pa-md">
-          <q-btn flat no-caps label="Cancel" color="grey-7" @click="showUserDialog = false" />
-          <q-btn
-            unelevated
-            no-caps
-            color="primary"
-            icon="save"
-            :label="editingUser ? 'Save Changes' : 'Add User'"
-            @click="saveUser"
-          />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+            <q-separator class="q-my-lg" />
+
+            <div class="row items-center justify-between">
+              <div class="text-caption text-grey-5">
+                <q-icon name="info" size="14px" class="q-mr-xs" />
+                {{ $t('settings.passwordHint') }}
+              </div>
+              <q-btn
+                unelevated
+                no-caps
+                color="negative"
+                icon="lock_reset"
+                :label="$t('settings.updatePassword')"
+                :loading="updatingPassword"
+                @click="updatePassword"
+              />
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- ─── RIGHT COLUMN — Preferences ─────────────────────────── -->
+      <div class="col-12 col-md-5">
+        <!-- ═════════════ SECTION 3: APP PREFERENCES ═════════════ -->
+        <q-card flat bordered class="q-mb-lg slt-settings-card">
+          <q-card-section class="slt-section-header">
+            <q-icon name="tune" color="primary" size="20px" class="q-mr-sm" />
+            {{ $t('settings.appPreferences') }}
+          </q-card-section>
+          <q-separator />
+
+          <q-list separator>
+            <!-- Theme Toggle -->
+            <q-item>
+              <q-item-section avatar>
+                <q-avatar :color="$q.dark.isActive ? 'blue-grey-9' : 'amber-2'" size="42px">
+                  <q-icon
+                    :name="$q.dark.isActive ? 'dark_mode' : 'light_mode'"
+                    :color="$q.dark.isActive ? 'amber-4' : 'orange-8'"
+                    size="22px"
+                  />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-weight-bold text-grey-9">{{
+                  $t('settings.themeMode')
+                }}</q-item-label>
+                <q-item-label caption>
+                  {{ $q.dark.isActive ? $t('settings.darkActive') : $t('settings.lightActive') }}
+                </q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-toggle
+                  :model-value="$q.dark.isActive"
+                  color="primary"
+                  checked-icon="dark_mode"
+                  unchecked-icon="light_mode"
+                  @update:model-value="toggleDarkMode"
+                />
+              </q-item-section>
+            </q-item>
+
+            <!-- Language Selection -->
+            <q-item>
+              <q-item-section avatar>
+                <q-avatar color="blue-1" size="42px">
+                  <q-icon name="translate" color="primary" size="22px" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-weight-bold text-grey-9">{{
+                  $t('settings.language')
+                }}</q-item-label>
+                <q-item-label caption>{{ $t('settings.languageCaption') }}</q-item-label>
+              </q-item-section>
+              <q-item-section side style="min-width: 180px">
+                <q-select
+                  v-model="selectedLanguage"
+                  :options="languageOptions"
+                  dense
+                  outlined
+                  emit-value
+                  map-options
+                  option-value="value"
+                  option-label="label"
+                  @update:model-value="onLanguageChange"
+                />
+              </q-item-section>
+            </q-item>
+
+            <!-- Date Format -->
+            <q-item>
+              <q-item-section avatar>
+                <q-avatar color="green-1" size="42px">
+                  <q-icon name="calendar_today" color="positive" size="22px" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-weight-bold text-grey-9">{{
+                  $t('settings.dateFormat')
+                }}</q-item-label>
+                <q-item-label caption>{{ $t('settings.dateFormatCaption') }}</q-item-label>
+              </q-item-section>
+              <q-item-section side style="min-width: 180px">
+                <q-select
+                  v-model="dateFormat"
+                  :options="['DD/MM/YYYY', 'MM/DD/YYYY', 'YYYY-MM-DD']"
+                  dense
+                  outlined
+                />
+              </q-item-section>
+            </q-item>
+
+            <!-- Timezone -->
+            <q-item>
+              <q-item-section avatar>
+                <q-avatar color="purple-1" size="42px">
+                  <q-icon name="schedule" color="purple-7" size="22px" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-weight-bold text-grey-9">{{
+                  $t('settings.timezone')
+                }}</q-item-label>
+                <q-item-label caption>{{ $t('settings.timezoneCaption') }}</q-item-label>
+              </q-item-section>
+              <q-item-section side style="min-width: 180px">
+                <q-select
+                  v-model="timezone"
+                  :options="['Asia/Colombo (UTC+5:30)', 'UTC', 'Asia/Kolkata (UTC+5:30)']"
+                  dense
+                  outlined
+                />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card>
+
+        <!-- ═════════════ SECTION 4: NOTIFICATION PREFERENCES ═════════════ -->
+        <q-card flat bordered class="q-mb-lg slt-settings-card">
+          <q-card-section class="slt-section-header">
+            <q-icon name="notifications_active" color="primary" size="20px" class="q-mr-sm" />
+            {{ $t('settings.notifications') }}
+          </q-card-section>
+          <q-separator />
+
+          <q-list separator>
+            <q-item v-for="notif in notificationSettings" :key="notif.key" tag="label">
+              <q-item-section avatar>
+                <q-avatar :color="notif.bg" size="42px">
+                  <q-icon :name="notif.icon" :color="notif.iconColor" size="22px" />
+                </q-avatar>
+              </q-item-section>
+              <q-item-section>
+                <q-item-label class="text-weight-bold text-grey-9">{{ notif.label }}</q-item-label>
+                <q-item-label caption>{{ notif.description }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-toggle v-model="notif.enabled" color="positive" />
+              </q-item-section>
+            </q-item>
+          </q-list>
+        </q-card>
+
+        <!-- ═════════════ SECTION 5: ABOUT / SYSTEM ═════════════ -->
+        <q-card flat bordered class="slt-settings-card">
+          <q-card-section class="slt-section-header">
+            <q-icon name="info" color="primary" size="20px" class="q-mr-sm" />
+            {{ $t('settings.systemInfo') }}
+          </q-card-section>
+          <q-separator />
+
+          <q-card-section class="q-pa-md">
+            <q-list dense>
+              <q-item v-for="info in systemInfo" :key="info.label">
+                <q-item-section>
+                  <q-item-label caption>{{ info.label }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-item-label class="text-body2 text-weight-medium text-grey-8">
+                    {{ info.value }}
+                  </q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, reactive } from 'vue'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 
 const $q = useQuasar()
+const { t, locale } = useI18n()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  TAB STATE
+//  SECTION 1 — USER PROFILE
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const activeTab = ref('users')
+const profile = reactive({
+  fullName: 'Ravindu Chinthana',
+  email: 'ravindu.c@slt.com.lk',
+  department: 'Legal Division',
+  role: 'Legal Manager',
+  employeeId: 'SLT-014539',
+  phone: '+94 11 2 021 021',
+})
 
-// ══════════════════════════════════════════════════════════════
-//  TAB 1 — USERS & ROLES
-// ══════════════════════════════════════════════════════════════
-const users = ref([
-  {
-    id: 1,
-    name: 'K. Fernando',
-    email: 'k.fernando@slt.com.lk',
-    role: 'Manager',
-    department: 'Legal',
-    active: true,
-    lastLogin: '2026-02-22 08:15',
-  },
-  {
-    id: 2,
-    name: 'N. Silva',
-    email: 'n.silva@slt.com.lk',
-    role: 'Legal Officer',
-    department: 'Legal',
-    active: true,
-    lastLogin: '2026-02-22 09:42',
-  },
-  {
-    id: 3,
-    name: 'P. Jayawardena',
-    email: 'p.jayawardena@slt.com.lk',
-    role: 'Legal Officer',
-    department: 'Legal',
-    active: true,
-    lastLogin: '2026-02-21 14:30',
-  },
-  {
-    id: 4,
-    name: 'S. Dissanayake',
-    email: 's.dissanayake@slt.com.lk',
-    role: 'Legal Officer',
-    department: 'Legal',
-    active: true,
-    lastLogin: '2026-02-22 11:05',
-  },
-  {
-    id: 5,
-    name: 'S. Karunaratne',
-    email: 's.karunaratne@slt.com.lk',
-    role: 'Executive',
-    department: 'Legal',
-    active: true,
-    lastLogin: '2026-02-20 16:00',
-  },
-  {
-    id: 6,
-    name: 'D. Wijesinghe',
-    email: 'd.wijesinghe@slt.com.lk',
-    role: 'Legal Officer',
-    department: 'Admin',
-    active: true,
-    lastLogin: '2026-02-19 10:22',
-  },
-  {
-    id: 7,
-    name: 'A. Bandara, PC',
-    email: 'a.bandara@slt.com.lk',
-    role: 'Legal Officer',
-    department: 'Legal',
-    active: true,
-    lastLogin: '2026-02-18 09:00',
-  },
-  {
-    id: 8,
-    name: 'System Admin',
-    email: 'admin@slt.com.lk',
-    role: 'Admin',
-    department: 'IT',
-    active: true,
-    lastLogin: '2026-02-22 07:55',
-  },
-  {
-    id: 9,
-    name: 'R. Kulathunga',
-    email: 'r.kulathunga@slt.com.lk',
-    role: 'Legal Officer',
-    department: 'Legal',
-    active: false,
-    lastLogin: '2026-01-15 13:00',
-  },
-])
+const initials = computed(() => {
+  const parts = profile.fullName.trim().split(/\s+/)
+  return parts.length >= 2
+    ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+    : (parts[0]?.[0] || '?').toUpperCase()
+})
 
-const userCols = [
-  { name: 'name', label: 'User', field: 'name', align: 'left', sortable: true },
-  { name: 'role', label: 'Role', field: 'role', align: 'left', sortable: true },
-  { name: 'department', label: 'Department', field: 'department', align: 'left', sortable: true },
-  { name: 'lastLogin', label: 'Last Login', field: 'lastLogin', align: 'left', sortable: true },
-  { name: 'active', label: 'Status', field: 'active', align: 'center', sortable: false },
-  { name: 'actions', label: 'Actions', field: 'actions', align: 'center', sortable: false },
-]
+const savingProfile = ref(false)
 
-function roleColor(role) {
-  return (
-    {
-      Admin: 'deep-purple-7',
-      Executive: 'positive',
-      Manager: 'primary',
-      'Legal Officer': 'info',
-    }[role] || 'grey-6'
-  )
-}
-
-function initials(name) {
-  return name
-    .split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-}
-
-function toggleUserActive(user) {
-  user.active = !user.active
-  $q.notify({
-    type: user.active ? 'positive' : 'warning',
-    icon: user.active ? 'check_circle' : 'person_off',
-    message: `${user.name} ${user.active ? 'activated' : 'deactivated'}.`,
-    timeout: 2000,
-  })
-}
-
-// User dialog
-const showUserDialog = ref(false)
-const editingUser = ref(null)
-const userForm = ref({ name: '', email: '', role: 'Legal Officer', department: '', active: true })
-
-function openUserDialog(user) {
-  editingUser.value = user
-  userForm.value = user
-    ? { ...user }
-    : { name: '', email: '', role: 'Legal Officer', department: '', active: true }
-  showUserDialog.value = true
-}
-
-function saveUser() {
-  if (editingUser.value) {
-    const idx = users.value.findIndex((u) => u.id === editingUser.value.id)
-    if (idx !== -1) users.value[idx] = { ...editingUser.value, ...userForm.value }
-    $q.notify({ type: 'positive', icon: 'check', message: 'User updated.', timeout: 1800 })
-  } else {
-    users.value.push({ id: Date.now(), lastLogin: '—', ...userForm.value })
-    $q.notify({ type: 'positive', icon: 'person_add', message: 'User added.', timeout: 1800 })
-  }
-  showUserDialog.value = false
-}
-
-// ══════════════════════════════════════════════════════════════
-//  TAB 2 — WORKFLOW CONFIG
-// ══════════════════════════════════════════════════════════════
-const workflowModules = ref([
-  {
-    name: 'Agreement Approval',
-    icon: 'handshake',
-    enabled: true,
-    l1Approver: 'Manager',
-    l2Approver: 'Executive',
-    slaHours: 48,
-    requireRemarks: true,
-    notifyOnEachStage: true,
-  },
-  {
-    name: 'Initial Document Approval',
-    icon: 'description',
-    enabled: true,
-    l1Approver: 'Manager',
-    l2Approver: 'Executive',
-    slaHours: 72,
-    requireRemarks: true,
-    notifyOnEachStage: false,
-  },
-  {
-    name: 'Case Closure',
-    icon: 'gavel',
-    enabled: true,
-    l1Approver: 'Manager',
-    l2Approver: '',
-    slaHours: 24,
-    requireRemarks: true,
-    notifyOnEachStage: false,
-  },
-])
-
-function saveWorkflow() {
+async function saveProfile() {
+  savingProfile.value = true
+  await new Promise((r) => setTimeout(r, 800))
+  savingProfile.value = false
   $q.notify({
     type: 'positive',
-    icon: 'save',
-    message: 'Workflow configuration saved.',
+    icon: 'check_circle',
+    message: t('settings.profileSaved'),
+    caption: `Changes saved for ${profile.fullName}`,
+    timeout: 3000,
+  })
+}
+
+function changePhoto() {
+  $q.notify({
+    type: 'info',
+    icon: 'upload',
+    message: 'Photo upload dialog',
+    caption: 'File picker will open here in production',
     timeout: 2000,
   })
 }
 
-// ══════════════════════════════════════════════════════════════
-//  TAB 3 — NOTIFICATIONS
-// ══════════════════════════════════════════════════════════════
-const notifCategories = ref([
+function removePhoto() {
+  $q.notify({
+    type: 'warning',
+    icon: 'delete_outline',
+    message: 'Profile photo removed',
+    timeout: 2000,
+  })
+}
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  SECTION 2 — SECURITY
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const passwordForm = reactive({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
+
+const showCurrentPw = ref(false)
+const showNewPw = ref(false)
+const showConfirmPw = ref(false)
+const updatingPassword = ref(false)
+
+const passwordStrength = computed(() => {
+  const pw = passwordForm.newPassword
+  if (!pw) return { score: 0, label: '', color: 'grey-4' }
+  let score = 0
+  if (pw.length >= 8) score++
+  if (/[A-Z]/.test(pw)) score++
+  if (/[0-9]/.test(pw)) score++
+  if (/[^A-Za-z0-9]/.test(pw)) score++
+
+  const levels = [
+    { score: 1, label: t('settings.strengthWeak'), color: 'negative' },
+    { score: 2, label: t('settings.strengthFair'), color: 'warning' },
+    { score: 3, label: t('settings.strengthGood'), color: 'info' },
+    { score: 4, label: t('settings.strengthStrong'), color: 'positive' },
+  ]
+  const level = levels[Math.max(0, score - 1)] || levels[0]
+  return { score, ...level }
+})
+
+async function updatePassword() {
+  if (!passwordForm.currentPassword || !passwordForm.newPassword) {
+    $q.notify({ type: 'negative', message: 'Please fill in all password fields.' })
+    return
+  }
+  if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+    $q.notify({ type: 'negative', message: 'Passwords do not match.' })
+    return
+  }
+  if (passwordForm.newPassword.length < 8) {
+    $q.notify({ type: 'negative', message: 'Password must be at least 8 characters.' })
+    return
+  }
+
+  updatingPassword.value = true
+  await new Promise((r) => setTimeout(r, 1000))
+  updatingPassword.value = false
+
+  passwordForm.currentPassword = ''
+  passwordForm.newPassword = ''
+  passwordForm.confirmPassword = ''
+
+  $q.notify({
+    type: 'positive',
+    icon: 'lock',
+    message: t('settings.passwordChanged'),
+    caption: 'You may need to re-login on other devices.',
+    timeout: 4000,
+  })
+}
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  SECTION 3 — APP PREFERENCES
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+
+// — Dark mode toggle (wired to Quasar API)
+function toggleDarkMode(val) {
+  $q.dark.set(val)
+  $q.notify({
+    icon: val ? 'dark_mode' : 'light_mode',
+    message: val ? t('settings.darkEnabled') : t('settings.lightEnabled'),
+    color: val ? 'blue-grey-9' : 'amber-8',
+    textColor: 'white',
+    timeout: 1500,
+  })
+}
+
+// — Language selector
+const languageOptions = [
+  { label: 'English', value: 'en-US' },
+  { label: 'සිංහල (Sinhala)', value: 'si' },
+  { label: 'தமிழ் (Tamil)', value: 'ta' },
+]
+
+const selectedLanguage = ref(locale.value)
+
+function onLanguageChange(val) {
+  locale.value = val
+  const selected = languageOptions.find((l) => l.value === val)
+  $q.notify({
+    type: 'positive',
+    icon: 'translate',
+    message: t('settings.languageChanged', { lang: selected?.label || val }),
+    timeout: 3000,
+  })
+}
+
+// — Date format & timezone
+const dateFormat = ref('DD/MM/YYYY')
+const timezone = ref('Asia/Colombo (UTC+5:30)')
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  SECTION 4 — NOTIFICATION PREFERENCES
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const notificationSettings = computed(() => [
   {
-    key: 'expiry',
-    label: 'Agreement Expiry Alerts',
-    icon: 'event_busy',
+    key: 'email',
+    label: t('settings.emailNotif'),
+    description: t('settings.emailNotifDesc'),
+    icon: 'email',
+    iconColor: 'primary',
+    bg: 'blue-1',
     enabled: true,
-    subs: [
-      { key: 'exp90', label: 'Alert 90 days before expiry', enabled: true },
-      { key: 'exp30', label: 'Alert 30 days before expiry', enabled: true },
-      { key: 'exp7', label: 'Alert 7 days before expiry', enabled: true },
-    ],
   },
   {
-    key: 'approval',
-    label: 'Approval Reminders',
-    icon: 'task_alt',
+    key: 'push',
+    label: t('settings.pushNotif'),
+    description: t('settings.pushNotifDesc'),
+    icon: 'campaign',
+    iconColor: 'orange-8',
+    bg: 'orange-1',
     enabled: true,
-    subs: [
-      { key: 'apr24', label: 'Remind approver after 24h pending', enabled: true },
-      { key: 'apr48', label: 'Remind approver after 48h pending', enabled: true },
-      { key: 'aprEsc', label: 'Escalate after SLA breach', enabled: false },
-    ],
-  },
-  {
-    key: 'caseasgn',
-    label: 'Case Assignment',
-    icon: 'assignment_ind',
-    enabled: true,
-    subs: [
-      { key: 'casNew', label: 'Notify officer on case assignment', enabled: true },
-      { key: 'casUpd', label: 'Notify on case status change', enabled: true },
-    ],
   },
   {
     key: 'hearing',
-    label: 'Court Hearing Reminders',
+    label: t('settings.hearingReminder'),
+    description: t('settings.hearingReminderDesc'),
     icon: 'event',
+    iconColor: 'negative',
+    bg: 'red-1',
     enabled: true,
-    subs: [
-      { key: 'hr7', label: 'Remind 7 days before hearing', enabled: true },
-      { key: 'hr1', label: 'Remind 1 day before hearing', enabled: true },
-      { key: 'hrDay', label: 'Morning reminder on hearing day', enabled: false },
-    ],
+  },
+  {
+    key: 'expiry',
+    label: t('settings.expiryAlert'),
+    description: t('settings.expiryAlertDesc'),
+    icon: 'event_busy',
+    iconColor: 'purple-7',
+    bg: 'purple-1',
+    enabled: false,
   },
 ])
 
-function saveNotif() {
-  $q.notify({
-    type: 'positive',
-    icon: 'save',
-    message: 'Notification settings saved.',
-    timeout: 2000,
-  })
-}
-
-// ══════════════════════════════════════════════════════════════
-//  TAB 4 — CASE TYPES
-// ══════════════════════════════════════════════════════════════
-const caseTypes = ref([
-  {
-    type: 'Money Recovery',
-    frId: 'MR-FR-01',
-    fields: ['Claim Amount', 'Recovered Amount', 'Outstanding Balance'],
-    configurable: false,
-    active: true,
-  },
-  {
-    type: 'Damages Recovery',
-    frId: 'DR-FR-01',
-    fields: ['Damage Assessment', 'Compensation Amount', 'Settlement Details'],
-    configurable: false,
-    active: true,
-  },
-  {
-    type: 'Appeals',
-    frId: 'AP-FR-01',
-    fields: ['Original Case Link', 'Appeal Deadline', 'Appeal Outcome'],
-    configurable: false,
-    active: true,
-  },
-  {
-    type: 'Land Cases',
-    frId: 'LC-FR-01',
-    fields: ['Land Reference No.', 'Survey Plan', 'Deed No.', 'Ownership History'],
-    configurable: false,
-    active: true,
-  },
-  {
-    type: 'Criminal Cases',
-    frId: 'CR-FR-01',
-    fields: ['Charges / Statute', 'Hearing History'],
-    configurable: false,
-    active: true,
-  },
-  {
-    type: 'Inquiries / Disciplinary',
-    frId: 'INQ-FR-01',
-    fields: ['Panel Members', 'Findings', 'Decision'],
-    configurable: false,
-    active: true,
-  },
-  {
-    type: 'Other Legal Matters',
-    frId: 'OTH-FR-01',
-    fields: ['Configurable Fields', 'Custom Templates'],
-    configurable: true,
-    active: true,
-  },
-])
-
-// ══════════════════════════════════════════════════════════════
-//  TAB 5 — AUDIT TRAIL
-// ══════════════════════════════════════════════════════════════
-const auditFilter = ref('')
-const auditModule = ref(null)
-const auditUser = ref(null)
-
-const auditLog = ref([
-  {
-    id: 1,
-    at: '2026-02-22 11:42',
-    user: 'K. Fernando',
-    module: 'Agreements',
-    action: 'Approved',
-    detail: 'Oracle Licensing Agreement advanced to Pending L2',
-  },
-  {
-    id: 2,
-    at: '2026-02-22 11:30',
-    user: 'N. Silva',
-    module: 'Legal Cases',
-    action: 'Created',
-    detail: 'New case LC-2026-009 created (Money Recovery)',
-  },
-  {
-    id: 3,
-    at: '2026-02-22 10:55',
-    user: 'S. Dissanayake',
-    module: 'Initial Docs',
-    action: 'Submitted',
-    detail: 'ID/SLT/2026/016 submitted for manager approval',
-  },
-  {
-    id: 4,
-    at: '2026-02-22 10:20',
-    user: 'System Admin',
-    module: 'Settings',
-    action: 'Modified',
-    detail: 'Workflow SLA updated for Agreement Approval',
-  },
-  {
-    id: 5,
-    at: '2026-02-22 09:42',
-    user: 'N. Silva',
-    module: 'Login',
-    action: 'Login',
-    detail: 'Signed in as Legal Officer',
-  },
-  {
-    id: 6,
-    at: '2026-02-22 09:10',
-    user: 'P. Jayawardena',
-    module: 'Legal Cases',
-    action: 'Updated',
-    detail: 'Hearing date updated for LC-2026-002',
-  },
-  {
-    id: 7,
-    at: '2026-02-22 08:55',
-    user: 'K. Fernando',
-    module: 'Agreements',
-    action: 'Rejected',
-    detail: 'Tower Site Maintenance Contract rejected — missing section 4',
-  },
-  {
-    id: 8,
-    at: '2026-02-22 08:30',
-    user: 'System Admin',
-    module: 'Settings',
-    action: 'Created',
-    detail: 'New user R. Kulathunga added (Legal Officer)',
-  },
-  {
-    id: 9,
-    at: '2026-02-21 17:10',
-    user: 'S. Karunaratne',
-    module: 'Agreements',
-    action: 'Approved',
-    detail: 'Network Maintenance SLA final L2 approval — now Active',
-  },
-  {
-    id: 10,
-    at: '2026-02-21 15:30',
-    user: 'D. Wijesinghe',
-    module: 'Initial Docs',
-    action: 'Created',
-    detail: 'ID/SLT/2026/017 created (Damages — Galle MC)',
-  },
-  {
-    id: 11,
-    at: '2026-02-21 14:00',
-    user: 'A. Bandara, PC',
-    module: 'Legal Cases',
-    action: 'Closed',
-    detail: 'Case LC-2025-044 closed with conclusion entered',
-  },
-  {
-    id: 12,
-    at: '2026-02-21 11:45',
-    user: 'N. Silva',
-    module: 'Legal Cases',
-    action: 'Note Added',
-    detail: 'Internal note added to LC-2026-001 regarding evidence',
-  },
-  {
-    id: 13,
-    at: '2026-02-20 16:00',
-    user: 'S. Karunaratne',
-    module: 'Login',
-    action: 'Login',
-    detail: 'Signed in as Executive (L2)',
-  },
-  {
-    id: 14,
-    at: '2026-02-20 14:20',
-    user: 'P. Jayawardena',
-    module: 'Agreements',
-    action: 'Created',
-    detail: 'Fleet Vehicle Maintenance Contract created (Draft)',
-  },
-  {
-    id: 15,
-    at: '2026-02-19 09:15',
-    user: 'System Admin',
-    module: 'Settings',
-    action: 'Modified',
-    detail: 'Notification: 30-day expiry alert enabled',
-  },
-])
-
-const filteredAuditLog = computed(() => {
-  return auditLog.value.filter((row) => {
-    const matchText =
-      !auditFilter.value ||
-      JSON.stringify(row).toLowerCase().includes(auditFilter.value.toLowerCase())
-    const matchModule =
-      !auditModule.value || auditModule.value === 'All Modules' || row.module === auditModule.value
-    const matchUser =
-      !auditUser.value || auditUser.value === 'All Users' || row.user === auditUser.value
-    return matchText && matchModule && matchUser
-  })
-})
-
-const auditCols = [
-  { name: 'at', label: 'Timestamp', field: 'at', align: 'left', sortable: true },
-  { name: 'user', label: 'User', field: 'user', align: 'left', sortable: true },
-  { name: 'module', label: 'Module', field: 'module', align: 'left', sortable: true },
-  { name: 'action', label: 'Action', field: 'action', align: 'left', sortable: true },
-  { name: 'detail', label: 'Detail', field: 'detail', align: 'left', sortable: false },
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  SECTION 5 — SYSTEM INFO
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const systemInfo = [
+  { label: 'Application', value: 'SLT LegalEdge v1.0.0' },
+  { label: 'Framework', value: 'Vue 3 + Quasar 2.18' },
+  { label: 'Build', value: '2026.02.22-stable' },
+  { label: 'Environment', value: 'Production' },
+  { label: 'Last Login', value: '22 Feb 2026, 09:14 AM' },
+  { label: 'Session Expires', value: '23 Feb 2026, 09:14 AM' },
 ]
-
-function auditActionColor(action) {
-  return (
-    {
-      Approved: 'positive',
-      Rejected: 'negative',
-      Created: 'primary',
-      Updated: 'info',
-      Modified: 'warning',
-      Submitted: 'info',
-      Closed: 'grey-6',
-      Login: 'grey-7',
-      'Note Added': 'purple-6',
-    }[action] || 'grey-6'
-  )
-}
-
-function auditModuleColor(mod) {
-  return (
-    {
-      Agreements: 'primary',
-      'Legal Cases': 'purple-7',
-      'Initial Docs': 'orange-8',
-      Settings: 'grey-7',
-      Login: 'teal-7',
-    }[mod] || 'grey-6'
-  )
-}
 </script>
 
 <style lang="scss" scoped>
@@ -990,39 +653,39 @@ function auditModuleColor(mod) {
   min-height: 100vh;
 }
 
-.slt-dialog-bar {
-  background: linear-gradient(135deg, #002f6c, #003f87);
-  min-height: 44px;
-}
-
-.slt-table {
-  :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
-    font-weight: 700;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-  }
-  :deep(tbody tr:hover) {
-    background: #f0f5ff !important;
+.slt-settings-card {
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease;
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 63, 135, 0.08);
   }
 }
 
-.slt-mu-table {
-  :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
-    font-weight: 700;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-    padding: 8px 12px;
-  }
-  :deep(tbody tr td) {
-    padding: 6px 12px;
-  }
-  :deep(tbody tr:hover td) {
-    background: #f5f8ff;
-  }
+.slt-section-header {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #003f87;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #eef2f8;
+  padding: 12px 16px;
+}
+
+// ── Avatar ring effect ───────────────────────────────────────
+.slt-avatar-ring {
+  background: linear-gradient(135deg, #003f87, #1976d2, #42a5f5);
+  padding: 3px;
+}
+.slt-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #003f87, #0d47a1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
