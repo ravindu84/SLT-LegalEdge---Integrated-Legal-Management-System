@@ -14,8 +14,10 @@
       </div>
       <div class="col-auto row q-gutter-sm">
         <q-select
-          v-model="period"
+          v-model="timeframe"
           :options="periodOptions"
+          emit-value
+          map-options
           dense
           outlined
           style="min-width: 150px"
@@ -658,12 +660,12 @@ const { t } = useI18n()
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  PERIOD SELECTOR (UI only — data stubbed)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const period = ref('This Year')
+const timeframe = ref('thisYear')
 const periodOptions = computed(() => [
-  t('reports.thisMonth'),
-  t('reports.last3Months'),
-  t('reports.thisYear'),
-  t('reports.allTime'),
+  { label: t('reports.thisMonth'), value: 'thisMonth' },
+  { label: t('reports.last3Months'), value: 'last3Months' },
+  { label: t('reports.thisYear'), value: 'thisYear' },
+  { label: t('reports.allTime'), value: 'allTime' },
 ])
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
