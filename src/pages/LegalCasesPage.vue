@@ -231,6 +231,19 @@
             Case #{{ activeCase.caseNo }} — {{ activeCase.title }}
           </div>
           <q-space />
+          <!-- Case Type Shift Button -->
+          <q-btn
+            flat
+            dense
+            icon="swap_horiz"
+            color="amber-4"
+            size="sm"
+            class="q-mr-sm"
+            :disable="activeCase.status === 'Closed'"
+            @click="showTypeShiftDialog = true"
+          >
+            <q-tooltip>Change Case Type (Supervisor Approval Required)</q-tooltip>
+          </q-btn>
           <q-badge
             :color="statusColor(activeCase.status)"
             :label="activeCase.status"
@@ -255,16 +268,12 @@
           <q-tab
             name="type_fields"
             :icon="typeIcon(activeCase.caseType)"
-            :label="
-              activeCase.caseType === 'Money Recovery'
-                ? 'Financial Details'
-                : activeCase.caseType === 'Land Case'
-                  ? 'Land Details'
-                  : 'Case Details'
-            "
+            :label="typeTabLabel(activeCase.caseType)"
           />
           <q-tab name="proceedings" icon="event_note" label="Proceedings" />
           <q-tab name="documents" icon="folder_open" label="Documents" />
+          <q-tab name="notes" icon="comment" label="Notes" />
+          <q-tab name="audit" icon="history" label="Audit Trail" />
         </q-tabs>
 
         <q-separator />
@@ -511,6 +520,32 @@
                 </div>
               </div>
 
+              <!-- Ownership History -->
+              <div class="slt-section-label q-mt-xl q-mb-sm">Ownership History</div>
+              <q-table
+                :rows="activeCase.poly.ownershipHistory || []"
+                :columns="ownershipCols"
+                flat
+                bordered
+                dense
+                row-key="id"
+                no-data-label="No ownership records"
+                class="slt-inner-table"
+              >
+                <template #top-right v-if="editMode">
+                  <q-btn
+                    flat
+                    dense
+                    icon="add"
+                    color="primary"
+                    label="Add Record"
+                    size="sm"
+                    no-caps
+                    @click="addOwnershipRow"
+                  />
+                </template>
+              </q-table>
+
               <!-- Land boundary map placeholder -->
               <div class="slt-map-placeholder q-mt-md row items-center justify-center">
                 <div class="column items-center text-grey-5">
@@ -520,7 +555,481 @@
               </div>
             </template>
 
-            <!-- ── OTHER TYPES ─────────────────────────────────── -->
+            <!-- ── DAMAGES RECOVERY ────────────────────────────── -->
+            <template v-else-if="activeCase.caseType === 'Damages'">
+              <div class="slt-section-label q-mb-md">Damage Assessment & Recovery</div>
+
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model.number="activeCase.poly.assessedDamage"
+                    outlined
+                    label="Assessed Damage Value (LKR)"
+                    type="number"
+                    min="0"
+                    :disable="!editMode"
+                  >
+                    <template #prepend><span class="text-caption text-grey-6">LKR</span></template>
+                  </q-input>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model.number="activeCase.poly.compensationClaimed"
+                    outlined
+                    label="Compensation Claimed (LKR)"
+                    type="number"
+                    min="0"
+                    :disable="!editMode"
+                  >
+                    <template #prepend><span class="text-caption text-grey-6">LKR</span></template>
+                  </q-input>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model.number="activeCase.poly.compensationReceived"
+                    outlined
+                    label="Compensation Received (LKR)"
+                    type="number"
+                    min="0"
+                    :disable="!editMode"
+                  >
+                    <template #prepend><span class="text-caption text-grey-6">LKR</span></template>
+                  </q-input>
+                </div>
+              </div>
+
+              <!-- Damage Summary -->
+              <div class="row q-col-gutter-md q-mt-sm">
+                <div class="col-12 col-sm-6">
+                  <q-input
+                    v-model="activeCase.poly.damageType"
+                    outlined
+                    label="Type of Damage"
+                    :disable="!editMode"
+                    hint="e.g. Fiber Cut, Property Damage, Equipment Loss"
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-select
+                    v-model="activeCase.poly.assessmentStatus"
+                    outlined
+                    label="Assessment Status"
+                    :disable="!editMode"
+                    :options="[
+                      'Pending Assessment',
+                      'Assessment Complete',
+                      'Under Dispute',
+                      'Settled',
+                    ]"
+                    emit-value
+                    map-options
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    v-model="activeCase.poly.damageDescription"
+                    outlined
+                    label="Damage Description"
+                    type="textarea"
+                    rows="3"
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+
+              <!-- Settlement Management -->
+              <div class="slt-section-label q-mt-xl q-mb-sm">Settlement Details</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <q-select
+                    v-model="activeCase.poly.settlementStatus"
+                    outlined
+                    label="Settlement Status"
+                    :disable="!editMode"
+                    :options="['Not Initiated', 'Negotiating', 'Settled', 'Failed']"
+                    emit-value
+                    map-options
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model.number="activeCase.poly.settlementAmount"
+                    outlined
+                    label="Settlement Amount (LKR)"
+                    type="number"
+                    :disable="!editMode"
+                  >
+                    <template #prepend><span class="text-caption text-grey-6">LKR</span></template>
+                  </q-input>
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.settlementDate"
+                    outlined
+                    label="Settlement Date"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    v-model="activeCase.poly.settlementRemarks"
+                    outlined
+                    label="Settlement Remarks"
+                    type="textarea"
+                    rows="2"
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+            </template>
+
+            <!-- ── APPEALS ─────────────────────────────────────── -->
+            <template v-else-if="activeCase.caseType === 'Appeals'">
+              <div class="slt-section-label q-mb-md">Appeal Details</div>
+
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-6">
+                  <q-select
+                    v-model="activeCase.poly.originalCaseNo"
+                    outlined
+                    label="Original Case Reference *"
+                    :disable="!editMode"
+                    :options="originalCaseOptions"
+                    emit-value
+                    map-options
+                    hint="Link to the original case record"
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-input
+                    v-model="activeCase.poly.originalCourt"
+                    outlined
+                    label="Original Court"
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.appealFilingDate"
+                    outlined
+                    label="Appeal Filing Date *"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.appealDeadline"
+                    outlined
+                    label="Appeal Deadline"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                    :class="{ 'slt-deadline-urgent': isUrgent(activeCase.poly.appealDeadline) }"
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.hearingDeadline"
+                    outlined
+                    label="Hearing Deadline"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+
+              <!-- Appeal Outcome -->
+              <div class="slt-section-label q-mt-xl q-mb-sm">Appeal Outcome</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <q-select
+                    v-model="activeCase.poly.appealOutcome"
+                    outlined
+                    label="Outcome"
+                    :disable="!editMode"
+                    :options="['Pending', 'Allowed', 'Dismissed', 'Partially Allowed', 'Remanded']"
+                    emit-value
+                    map-options
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.judgmentDate"
+                    outlined
+                    label="Judgment Date"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.judgmentRef"
+                    outlined
+                    label="Judgment Reference No."
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    v-model="activeCase.poly.judgmentSummary"
+                    outlined
+                    label="Judgment Summary"
+                    type="textarea"
+                    rows="3"
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+            </template>
+
+            <!-- ── CRIMINAL CASES ──────────────────────────────── -->
+            <template v-else-if="activeCase.caseType === 'Criminal'">
+              <div class="slt-section-label q-mb-md">Criminal Case — Charges & Offences</div>
+
+              <!-- Charges Table -->
+              <q-table
+                :rows="activeCase.poly.charges || []"
+                :columns="chargeCols"
+                flat
+                bordered
+                dense
+                row-key="id"
+                no-data-label="No charges recorded"
+                class="slt-inner-table"
+              >
+                <template #top-right v-if="editMode">
+                  <q-btn
+                    flat
+                    dense
+                    icon="add"
+                    color="primary"
+                    label="Add Charge"
+                    size="sm"
+                    no-caps
+                    @click="addChargeRow"
+                  />
+                </template>
+              </q-table>
+
+              <div class="row q-col-gutter-md q-mt-md">
+                <div class="col-12 col-sm-6">
+                  <q-input
+                    v-model="activeCase.poly.investigatingOfficer"
+                    outlined
+                    label="Investigating Officer"
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-input
+                    v-model="activeCase.poly.prosecutionAuthority"
+                    outlined
+                    label="Prosecution Authority"
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-select
+                    v-model="activeCase.poly.bail"
+                    outlined
+                    label="Bail Status"
+                    :disable="!editMode"
+                    :options="['Not Applicable', 'Bail Granted', 'Bail Denied', 'Bail Revoked']"
+                    emit-value
+                    map-options
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-input
+                    v-model="activeCase.poly.nextCourtDate"
+                    outlined
+                    label="Next Court Date"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+
+              <!-- Court Hearing History -->
+              <div class="slt-section-label q-mt-xl q-mb-sm">Court Hearing History</div>
+              <q-table
+                :rows="activeCase.poly.hearingHistory || []"
+                :columns="hearingHistoryCols"
+                flat
+                bordered
+                dense
+                row-key="id"
+                no-data-label="No hearing history"
+                class="slt-inner-table"
+              >
+                <template #top-right v-if="editMode">
+                  <q-btn
+                    flat
+                    dense
+                    icon="add"
+                    color="primary"
+                    label="Add Entry"
+                    size="sm"
+                    no-caps
+                    @click="addHearingHistoryRow"
+                  />
+                </template>
+              </q-table>
+            </template>
+
+            <!-- ── INQUIRIES / DISCIPLINARY ─────────────────────── -->
+            <template v-else-if="activeCase.caseType === 'Inquiry'">
+              <div class="slt-section-label q-mb-md">Inquiry / Disciplinary Investigation</div>
+
+              <!-- Inquiry Panel -->
+              <div class="slt-section-label q-mb-sm" style="border-bottom-color: #8b5cf6">
+                Inquiry Panel Members
+              </div>
+              <q-table
+                :rows="activeCase.poly.panelMembers || []"
+                :columns="panelCols"
+                flat
+                bordered
+                dense
+                row-key="id"
+                no-data-label="No panel members assigned"
+                class="slt-inner-table"
+              >
+                <template #top-right v-if="editMode">
+                  <q-btn
+                    flat
+                    dense
+                    icon="add"
+                    color="primary"
+                    label="Add Member"
+                    size="sm"
+                    no-caps
+                    @click="addPanelMember"
+                  />
+                </template>
+              </q-table>
+
+              <div class="row q-col-gutter-md q-mt-md">
+                <div class="col-12 col-sm-6">
+                  <q-select
+                    v-model="activeCase.poly.inquiryType"
+                    outlined
+                    label="Inquiry Type"
+                    :disable="!editMode"
+                    :options="[
+                      'Disciplinary',
+                      'Preliminary',
+                      'Formal Investigation',
+                      'Special Inquiry',
+                    ]"
+                    emit-value
+                    map-options
+                  />
+                </div>
+                <div class="col-12 col-sm-6">
+                  <q-select
+                    v-model="activeCase.poly.inquiryStatus"
+                    outlined
+                    label="Inquiry Status"
+                    :disable="!editMode"
+                    :options="[
+                      'Initiated',
+                      'Investigation On',
+                      'Findings Submitted',
+                      'Decision Pending',
+                      'Concluded',
+                    ]"
+                    emit-value
+                    map-options
+                  />
+                </div>
+              </div>
+
+              <!-- Findings & Recommendations -->
+              <div class="slt-section-label q-mt-xl q-mb-sm">Findings & Recommendations</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12">
+                  <q-input
+                    v-model="activeCase.poly.findings"
+                    outlined
+                    label="Investigation Findings"
+                    type="textarea"
+                    rows="4"
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    v-model="activeCase.poly.recommendations"
+                    outlined
+                    label="Panel Recommendations"
+                    type="textarea"
+                    rows="3"
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+
+              <!-- Decision Tracking -->
+              <div class="slt-section-label q-mt-xl q-mb-sm">Management Decision</div>
+              <div class="row q-col-gutter-md">
+                <div class="col-12 col-sm-4">
+                  <q-select
+                    v-model="activeCase.poly.decisionOutcome"
+                    outlined
+                    label="Decision"
+                    :disable="!editMode"
+                    :options="[
+                      'Pending',
+                      'Warning Issued',
+                      'Suspension',
+                      'Termination',
+                      'Exonerated',
+                      'Further Investigation',
+                    ]"
+                    emit-value
+                    map-options
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.decisionDate"
+                    outlined
+                    label="Decision Date"
+                    type="date"
+                    stack-label
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12 col-sm-4">
+                  <q-input
+                    v-model="activeCase.poly.decisionAuthority"
+                    outlined
+                    label="Decision Authority"
+                    :disable="!editMode"
+                  />
+                </div>
+                <div class="col-12">
+                  <q-input
+                    v-model="activeCase.poly.decisionRemarks"
+                    outlined
+                    label="Remarks"
+                    type="textarea"
+                    rows="2"
+                    :disable="!editMode"
+                  />
+                </div>
+              </div>
+            </template>
+
+            <!-- ── OTHER TYPES (catch-all) ─────────────────────── -->
             <template v-else>
               <div class="slt-section-label q-mb-md">Case-Specific Details</div>
               <div class="row q-col-gutter-md">
@@ -685,12 +1194,12 @@
                 </q-item-section>
                 <q-item-section side>
                   <div class="row q-gutter-xs">
-                    <q-btn flat round dense icon="visibility" color="primary" size="sm">
-                      <q-tooltip>Preview</q-tooltip>
-                    </q-btn>
-                    <q-btn flat round dense icon="download" color="grey-7" size="sm">
-                      <q-tooltip>Download</q-tooltip>
-                    </q-btn>
+                    <q-btn flat round dense icon="visibility" color="primary" size="sm"
+                      ><q-tooltip>Preview</q-tooltip></q-btn
+                    >
+                    <q-btn flat round dense icon="download" color="grey-7" size="sm"
+                      ><q-tooltip>Download</q-tooltip></q-btn
+                    >
                   </div>
                 </q-item-section>
               </q-item>
@@ -700,6 +1209,94 @@
                 >
               </q-item>
             </q-list>
+          </q-tab-panel>
+
+          <!-- ╔═══════════════════════════ NOTES & COMMENTS TAB ══╗ -->
+          <q-tab-panel name="notes" class="q-pa-md">
+            <div class="row items-center q-mb-md">
+              <div class="slt-section-label col q-mb-none">Internal Notes & Comments</div>
+            </div>
+
+            <!-- Add Note Form -->
+            <q-card flat bordered class="q-mb-md bg-blue-1">
+              <q-card-section>
+                <div class="row q-col-gutter-sm">
+                  <div class="col-12">
+                    <q-input
+                      v-model="newNote"
+                      outlined
+                      dense
+                      label="Add a note or comment…"
+                      type="textarea"
+                      rows="2"
+                      autogrow
+                    />
+                  </div>
+                </div>
+              </q-card-section>
+              <q-card-actions align="right" class="q-pa-md q-pt-none">
+                <q-btn
+                  unelevated
+                  no-caps
+                  color="primary"
+                  icon="send"
+                  label="Add Note"
+                  :disable="!newNote"
+                  @click="addNote"
+                />
+              </q-card-actions>
+            </q-card>
+
+            <!-- Existing Notes -->
+            <q-timeline
+              color="primary"
+              layout="comfortable"
+              v-if="activeCase.notes && activeCase.notes.length"
+            >
+              <q-timeline-entry
+                v-for="(note, idx) in [...activeCase.notes].reverse()"
+                :key="idx"
+                color="blue-6"
+                icon="comment"
+                :subtitle="note.timestamp"
+              >
+                <template #title>
+                  <span class="text-weight-bold">{{ note.author }}</span>
+                  <q-badge v-if="note.isPrivate" color="grey-7" label="Private" class="q-ml-sm" />
+                </template>
+                <div class="text-body2 text-grey-8">{{ note.text }}</div>
+              </q-timeline-entry>
+            </q-timeline>
+
+            <div v-else class="column flex-center text-grey-5 q-py-xl">
+              <q-icon name="chat_bubble_outline" size="48px" />
+              <div class="q-mt-sm text-body2">No notes yet. Add the first note above.</div>
+            </div>
+          </q-tab-panel>
+
+          <!-- ╔═══════════════════════════ AUDIT TRAIL TAB ════════╗ -->
+          <q-tab-panel name="audit" class="q-pa-md">
+            <div class="row items-center q-mb-md">
+              <div class="slt-section-label col q-mb-none">Audit Trail — All Actions</div>
+            </div>
+
+            <q-table
+              :rows="activeCase.auditTrail || []"
+              :columns="auditCols"
+              flat
+              bordered
+              dense
+              row-key="id"
+              no-data-label="No audit entries"
+              :pagination="{ rowsPerPage: 15 }"
+              class="slt-inner-table"
+            >
+              <template #body-cell-action="props">
+                <q-td :props="props">
+                  <q-badge rounded :color="auditActionColor(props.value)" :label="props.value" />
+                </q-td>
+              </template>
+            </q-table>
           </q-tab-panel>
         </q-tab-panels>
 
@@ -1354,7 +1951,6 @@ function fmt(val) {
 
 <style lang="scss" scoped>
 .slt-page-bg {
-  background: #f0f4f9;
   min-height: 100vh;
 }
 

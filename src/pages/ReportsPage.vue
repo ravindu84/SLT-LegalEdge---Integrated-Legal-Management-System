@@ -54,8 +54,11 @@
     <!-- ─── TOP KPI STRIP ────────────────────────────────────────── -->
     <div class="row q-col-gutter-md q-mb-md">
       <div class="col-6 col-sm-3" v-for="kpi in topKpis" :key="kpi.label">
-        <q-card flat bordered class="slt-kpi-card">
-          <q-card-section class="q-pa-md">
+        <q-card flat bordered class="slt-kpi-card" style="height: 100%">
+          <q-card-section
+            class="q-pa-md"
+            style="height: 100%; display: flex; flex-direction: column"
+          >
             <div class="row items-center no-wrap">
               <q-avatar :color="kpi.bg" size="48px">
                 <q-icon :name="kpi.icon" :color="kpi.color" size="24px" />
@@ -64,11 +67,12 @@
                 <div class="text-h5 text-weight-bold" :class="`text-${kpi.color}`">
                   {{ kpi.value }}
                 </div>
-                <div class="text-caption text-grey-6" style="max-width: 120px; line-height: 1.2">
+                <div class="text-caption text-grey-6" style="line-height: 1.2">
                   {{ kpi.label }}
                 </div>
               </div>
             </div>
+            <q-space />
             <div class="row items-center q-mt-sm" v-if="kpi.trend !== undefined">
               <q-icon
                 :name="kpi.trend >= 0 ? 'trending_up' : 'trending_down'"
@@ -1173,7 +1177,6 @@ function fmt(val) {
 
 <style lang="scss" scoped>
 .slt-page-bg {
-  background: #f0f4f9;
   min-height: 100vh;
 }
 

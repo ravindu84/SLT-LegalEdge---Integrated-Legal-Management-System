@@ -1,24 +1,15 @@
 <template>
   <q-layout view="lHh Lpr lFf">
     <!-- ─── TOP HEADER ─────────────────────────────────────── -->
-    <q-header class="slt-header" elevated>
-      <q-toolbar>
-        <!-- Hamburger / drawer toggle -->
-        <q-btn
-          flat
-          dense
-          round
-          icon="menu"
-          color="white"
-          aria-label="Toggle Menu"
-          @click="toggleLeftDrawer"
-        />
+    <q-header class="exec-header" elevated>
+      <q-toolbar class="q-px-md">
+        <!-- Hamburger -->
+        <q-btn flat dense round icon="menu" color="white" @click="toggleLeftDrawer" />
 
-        <!-- Logo + Brand Name -->
-        <q-toolbar-title class="slt-brand-title">
-          <q-icon name="gavel" size="26px" class="q-mr-sm" />
+        <!-- Brand -->
+        <q-toolbar-title class="exec-brand">
+          <q-icon name="gavel" size="24px" class="q-mr-sm" />
           SLT LegalEdge
-          <span class="slt-brand-sub">| Integrated Legal Management</span>
         </q-toolbar-title>
 
         <!-- Global Search -->
@@ -27,12 +18,11 @@
           dense
           outlined
           rounded
-          placeholder="Search cases, agreements…"
-          class="slt-global-search q-mr-md"
-          bg-color="white"
-          style="width: 260px"
+          :placeholder="$t('common.search') || 'Search cases, agreements…'"
+          class="exec-search q-mr-md"
+          style="width: 280px"
         >
-          <template #prepend><q-icon name="search" color="grey-6" /></template>
+          <template #prepend><q-icon name="search" color="grey-5" /></template>
           <template #append>
             <q-icon
               v-if="globalSearch"
@@ -43,7 +33,7 @@
           </template>
         </q-input>
 
-        <!-- Right-side actions -->
+        <!-- Right actions -->
         <q-btn
           flat
           round
@@ -63,22 +53,23 @@
           <q-tooltip>Help</q-tooltip>
         </q-btn>
 
-        <q-separator vertical inset color="white" class="q-mx-sm opacity-40" />
+        <q-separator vertical inset color="white" class="q-mx-sm opacity-30" />
 
+        <!-- User dropdown -->
         <q-btn-dropdown flat no-caps color="white" class="q-ml-sm">
           <template #label>
             <q-avatar
               size="32px"
-              color="white"
-              text-color="primary"
+              color="primary"
+              text-color="white"
               class="q-mr-sm"
-              font-size="14px"
+              font-size="13px"
             >
               {{ authStore.userInitials }}
             </q-avatar>
             <span class="text-body2">{{ authStore.displayName }}</span>
           </template>
-          <q-list style="min-width: 180px">
+          <q-list style="min-width: 200px">
             <q-item clickable v-close-popup :to="'/profile'">
               <q-item-section avatar><q-icon name="person" /></q-item-section>
               <q-item-section>{{ $t('common.myProfile') }}</q-item-section>
@@ -96,8 +87,8 @@
         </q-btn-dropdown>
       </q-toolbar>
 
-      <!-- ─── Breadcrumbs ──────────────────────────────────── -->
-      <div class="slt-breadcrumb-bar q-px-md q-py-xs" v-if="breadcrumbs.length">
+      <!-- Breadcrumbs -->
+      <div class="exec-breadcrumb q-px-md q-py-xs" v-if="breadcrumbs.length">
         <q-breadcrumbs active-color="white" class="text-white opacity-80" separator="›">
           <q-breadcrumbs-el
             v-for="crumb in breadcrumbs"
@@ -111,50 +102,61 @@
     </q-header>
 
     <!-- ─── LEFT SIDEBAR ────────────────────────────────────── -->
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered class="slt-drawer">
-      <!-- Drawer header / logo area -->
-      <div class="slt-drawer-header column items-center justify-center q-py-lg">
-        <q-icon name="gavel" size="42px" color="white" />
-        <div class="text-white text-weight-bold text-h6 q-mt-sm">LegalEdge</div>
-        <div class="text-white text-caption opacity-70">SLT Mobitel PLC</div>
+    <q-drawer v-model="leftDrawerOpen" show-if-above bordered dark class="exec-drawer">
+      <!-- Profile section -->
+      <div class="exec-drawer-profile column items-center q-py-lg">
+        <q-avatar
+          size="64px"
+          color="primary"
+          text-color="white"
+          font-size="24px"
+          class="exec-avatar-ring"
+        >
+          {{ authStore.userInitials }}
+        </q-avatar>
+        <div class="text-white text-weight-bold text-subtitle1 q-mt-sm">
+          {{ authStore.displayName }}
+        </div>
+        <q-badge rounded :color="roleColor" :label="authStore.userRole" class="q-mt-xs" />
+        <div class="row items-center q-mt-xs">
+          <div class="exec-online-dot"></div>
+          <span
+            class="text-caption text-grey-5 q-ml-xs"
+            style="color: rgba(255, 255, 255, 0.5) !important"
+            >Online</span
+          >
+        </div>
       </div>
 
-      <q-separator color="white" class="opacity-20" />
+      <q-separator class="opacity-10" />
 
-      <!-- Navigation items -->
-      <q-list class="q-mt-sm">
-        <q-item-label
-          header
-          class="text-white text-caption text-weight-bold opacity-60 q-pl-md q-mt-sm"
-        >
+      <!-- Navigation -->
+      <q-list class="q-mt-sm q-px-sm">
+        <q-item-label header class="exec-nav-header">
           {{ $t('nav.mainMenu') }}
         </q-item-label>
 
         <template v-for="item in navItems" :key="item.label">
-          <!-- Group header (dividers between sections) -->
-          <q-item-label
-            v-if="item.separator"
-            header
-            class="text-white text-caption text-weight-bold opacity-60 q-pl-md q-mt-md"
-          >
+          <q-item-label v-if="item.separator" header class="exec-nav-header q-mt-md">
             {{ item.separator }}
           </q-item-label>
 
-          <!-- Navigation link -->
           <q-item
             v-else
             :to="item.route"
             exact
             clickable
-            active-class="slt-nav-active"
-            class="slt-nav-item text-white q-mx-sm q-mb-xs rounded-borders"
+            active-class="exec-nav-active"
+            class="exec-nav-item text-white q-mb-xs rounded-borders"
           >
             <q-item-section avatar>
               <q-icon :name="item.icon" size="22px" />
             </q-item-section>
             <q-item-section>
               <q-item-label class="text-weight-medium">{{ item.label }}</q-item-label>
-              <q-item-label caption class="opacity-60 text-white">{{ item.caption }}</q-item-label>
+              <q-item-label caption class="opacity-50 text-white" style="font-size: 0.7rem">
+                {{ item.caption }}
+              </q-item-label>
             </q-item-section>
             <q-item-section v-if="item.badge" side>
               <q-badge :color="item.badgeColor || 'accent'" :label="item.badge" rounded />
@@ -163,8 +165,8 @@
         </template>
       </q-list>
 
-      <!-- Drawer footer -->
-      <div class="slt-drawer-footer absolute-bottom q-pa-md text-white text-caption opacity-40">
+      <!-- Footer -->
+      <div class="exec-drawer-footer absolute-bottom q-pa-md text-caption opacity-30 text-white">
         SLT LegalEdge v1.0.0
       </div>
     </q-drawer>
@@ -206,7 +208,18 @@ function logout() {
   router.push('/login')
 }
 
-// ── Breadcrumbs ───────────────────────────────────────────────────
+// ── Role color ────────────────────────────────────────────────
+const roleColor = computed(() => {
+  const map = {
+    Admin: 'deep-purple',
+    Executive: 'positive',
+    Manager: 'info',
+    'Legal Officer': 'cyan-7',
+  }
+  return map[authStore.userRole] || 'grey-6'
+})
+
+// ── Breadcrumbs ───────────────────────────────────────────────
 const routeMetaKeys = {
   '/': { key: 'breadcrumb.dashboard', icon: 'dashboard' },
   '/initial-docs': { key: 'breadcrumb.initialDocs', icon: 'description' },
@@ -227,7 +240,7 @@ const breadcrumbs = computed(() => {
   return crumbs
 })
 
-// ── Navigation items ──────────────────────────────────────────────
+// ── Navigation items ──────────────────────────────────────────
 const navItems = computed(() => [
   {
     label: t('nav.dashboard'),
@@ -282,82 +295,96 @@ const navItems = computed(() => [
 </script>
 
 <style lang="scss" scoped>
-// ── Header ────────────────────────────────────────────────────
-.slt-header {
+// ── Header — always dark (brand element) ──────────────────────
+.exec-header {
   background: linear-gradient(135deg, #002f6c 0%, #003f87 60%, #0055a5 100%);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
 }
 
-.slt-brand-title {
-  font-size: 1.2rem;
+.exec-brand {
+  font-size: 1.1rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   display: flex;
   align-items: center;
-
-  .slt-brand-sub {
-    font-size: 0.7rem;
-    font-weight: 400;
-    opacity: 0.65;
-    margin-left: 6px;
-    display: none; // hide on mobile
-
-    @media (min-width: 600px) {
-      display: inline;
-    }
-  }
 }
 
-// ── Global search ─────────────────────────────────────────────
-.slt-global-search {
+.exec-search {
+  :deep(.q-field__control) {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.15) !important;
+  }
+  :deep(.q-field__native) {
+    color: #e0e0e0 !important;
+  }
+
   @media (max-width: 768px) {
     display: none !important;
   }
 }
 
-// ── Breadcrumbs ───────────────────────────────────────────────
-.slt-breadcrumb-bar {
+.exec-breadcrumb {
   background: rgba(0, 0, 0, 0.15);
   font-size: 0.78rem;
 }
 
-// ── Drawer ────────────────────────────────────────────────────
-.slt-drawer {
-  background: linear-gradient(180deg, #002056 0%, #003f87 40%, #004fa3 100%);
+// ── Drawer — always dark (brand element) ──────────────────────
+.exec-drawer {
+  background: linear-gradient(180deg, #002056 0%, #003f87 40%, #004fa3 100%) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
-.slt-drawer-header {
-  min-height: 110px;
-  background: rgba(0, 0, 0, 0.2);
+.exec-drawer-profile {
+  min-height: 140px;
+  background: rgba(0, 0, 0, 0.15);
 }
 
-.slt-drawer-footer {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+.exec-avatar-ring {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.25);
+}
+
+.exec-online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf50;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);
+}
+
+.exec-drawer-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 // ── Nav Items ─────────────────────────────────────────────────
-.slt-nav-item {
+.exec-nav-header {
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding-left: 12px;
+}
+
+.exec-nav-item {
   transition: background 0.18s ease;
-  min-height: 48px;
+  min-height: 44px;
+  border-radius: 8px;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.08) !important;
   }
 }
 
-.slt-nav-active {
-  background: rgba(255, 255, 255, 0.18) !important;
+.exec-nav-active {
+  background: rgba(255, 255, 255, 0.15) !important;
   border-left: 3px solid #f7941d !important;
 
-  .q-icon,
+  .q-icon {
+    color: #fff !important;
+  }
   .q-item__label {
     color: #fff !important;
     font-weight: 700;
   }
-}
-
-// ── Page background ───────────────────────────────────────────
-.slt-page-bg {
-  background: #f0f4f9;
 }
 </style>

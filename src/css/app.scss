@@ -1,18 +1,35 @@
-// app global css in SCSS form
+// ══════════════════════════════════════════════════════════════
+//  SLT LegalEdge — Dual Theme Styles (Light default + Dark)
+// ══════════════════════════════════════════════════════════════
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  DARK MODE COLOR TOKENS
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-$dark-bg: #121212;
-$dark-surface: #1e1e1e;
-$dark-surface-2: #252525;
-$dark-surface-3: #2c2c2c;
-$dark-border: #333;
-$dark-text: #e0e0e0;
-$dark-text-dim: #9e9e9e;
-$dark-accent: #90caf9;
+// ── Design Tokens — Dark ──────────────────────────────────────
+$exec-bg: #0a0e1a;
+$exec-surface: #111827;
+$exec-surface-2: #1a2035;
+$exec-surface-3: #232b3e;
+$exec-border: rgba(255, 255, 255, 0.06);
+$exec-text: #e8eaf0;
+$exec-text-dim: #8b95a8;
+$exec-accent: #4fc3f7;
+$exec-glow: rgba(79, 195, 247, 0.08);
 
+// ── Design Tokens — Light ─────────────────────────────────────
+$light-bg: #f0f4f9;
+$light-surface: #ffffff;
+$light-surface-2: #f5f7fa;
+$light-border: #e2e8f0;
+$light-text: #1a202c;
+$light-text-dim: #64748b;
+
+// ── Card accent colors ────────────────────────────────────────
+$card-green: #10b981;
+$card-yellow: #f59e0b;
+$card-blue: #3b82f6;
+$card-red: #ef4444;
+$card-purple: #8b5cf6;
+
+// ── Reset ─────────────────────────────────────────────────────
 * {
   box-sizing: border-box;
 }
@@ -22,9 +39,7 @@ body,
   font-family: 'Inter', 'Roboto', sans-serif;
 }
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  SCROLLBAR  (light)
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+// ── Scrollbar (Light) ─────────────────────────────────────────
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -40,230 +55,418 @@ body,
   background: #003f87;
 }
 
-// ── Global card defaults ─────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  LIGHT MODE DEFAULTS
+// ══════════════════════════════════════════════════════════════
+
+// ── Cards ─────────────────────────────────────────────────────
 .q-card {
-  border-radius: 10px !important;
+  border-radius: 12px !important;
 }
 
-// Rounded borders utility
-.rounded-borders {
-  border-radius: 8px !important;
+// ── Section headers ───────────────────────────────────────────
+.slt-section-header {
+  background: $light-surface-2;
+  color: #003f87;
+  font-weight: 600;
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+// ── Page background ───────────────────────────────────────────
+.slt-page-bg {
+  background: $light-bg;
+}
+
+// ── KPI cards ─────────────────────────────────────────────────
+.slt-kpi-card {
+  border-radius: 12px;
+  transition:
+    box-shadow 0.2s,
+    transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 20px rgba(0, 63, 135, 0.12);
+    transform: translateY(-2px);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  SIDEBAR — Always Dark (brand element, ignores theme toggle)
+// ══════════════════════════════════════════════════════════════
+.exec-drawer {
+  // Force dark background (already in scoped CSS, reinforced here)
+  background: linear-gradient(180deg, #002056 0%, #003f87 40%, #004fa3 100%) !important;
+
+  // All text inside drawer is white/light
+  color: #e8eaf0 !important;
+
+  // Lists
+  .q-list {
+    background: transparent !important;
+    color: #e8eaf0 !important;
+  }
+
+  // Items
+  .q-item {
+    color: #ffffff !important;
+  }
+  .q-item__label {
+    color: #ffffff !important;
+  }
+  .q-item__label--caption {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  .q-item__label--header {
+    color: rgba(255, 255, 255, 0.35) !important;
+  }
+
+  // Separators
+  .q-separator {
+    background: rgba(255, 255, 255, 0.08) !important;
+  }
+
+  // Icons default
+  .q-icon {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  // Badge
+  .q-badge {
+    color: #fff;
+  }
+
+  // Force dark drawer even in Quasar light mode
+  &.q-drawer--standard {
+    background: linear-gradient(180deg, #002056 0%, #003f87 40%, #004fa3 100%) !important;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+//  EXECUTIVE SUMMARY CARDS (look good in both themes)
+// ══════════════════════════════════════════════════════════════
+.exec-card {
+  position: relative;
+  overflow: hidden;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 20px 24px;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    top: -30px;
+    right: -30px;
+    opacity: 0.15;
+  }
+
+  &--green {
+    background: linear-gradient(135deg, #064e3b, #065f46) !important;
+    &::before {
+      background: $card-green;
+    }
+    &:hover {
+      box-shadow: 0 8px 30px rgba($card-green, 0.3);
+    }
+  }
+  &--yellow {
+    background: linear-gradient(135deg, #78350f, #92400e) !important;
+    &::before {
+      background: $card-yellow;
+    }
+    &:hover {
+      box-shadow: 0 8px 30px rgba($card-yellow, 0.3);
+    }
+  }
+  &--blue {
+    background: linear-gradient(135deg, #1e3a5f, #1e40af) !important;
+    &::before {
+      background: $card-blue;
+    }
+    &:hover {
+      box-shadow: 0 8px 30px rgba($card-blue, 0.3);
+    }
+  }
+  &--red {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b) !important;
+    &::before {
+      background: $card-red;
+    }
+    &:hover {
+      box-shadow: 0 8px 30px rgba($card-red, 0.3);
+    }
+  }
+  &--purple {
+    background: linear-gradient(135deg, #3b0764, #581c87) !important;
+    &::before {
+      background: $card-purple;
+    }
+    &:hover {
+      box-shadow: 0 8px 30px rgba($card-purple, 0.3);
+    }
+  }
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  &__value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  &__label {
+    font-size: 0.82rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 500;
+  }
+  &__trend {
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.55);
+    margin-top: 8px;
+  }
 }
 
 // ══════════════════════════════════════════════════════════════
 //  DARK MODE OVERRIDES  (body.body--dark)
 // ══════════════════════════════════════════════════════════════
 body.body--dark {
-  background: $dark-bg !important;
+  background: $exec-bg !important;
 
   // ── Scrollbar ────────────────────────────────────────────
   ::-webkit-scrollbar-track {
-    background: $dark-surface;
+    background: $exec-surface;
   }
   ::-webkit-scrollbar-thumb {
-    background: #555;
+    background: #3a4560;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: $dark-accent;
+    background: $exec-accent;
   }
 
-  // ── Page background class used by all pages ─────────────
+  // ── Page background ──────────────────────────────────────
   .slt-page-bg {
-    background: $dark-bg !important;
+    background: $exec-bg !important;
   }
-
-  // ── Quasar page container ───────────────────────────────
   .q-page-container {
-    background: $dark-bg !important;
+    background: $exec-bg !important;
   }
 
-  // ── Section headers (all pages) ─────────────────────────
+  // ── Section headers ──────────────────────────────────────
   .slt-section-header {
-    background: $dark-surface-2 !important;
-    color: $dark-accent !important;
+    background: $exec-surface-2 !important;
+    color: $exec-accent !important;
   }
 
-  // ── Cards ───────────────────────────────────────────────
+  // ── Cards ────────────────────────────────────────────────
   .q-card {
-    background: $dark-surface !important;
-    border-color: $dark-border !important;
+    background: $exec-surface !important;
+    border-color: $exec-border !important;
+    color: $exec-text;
   }
 
-  // ── Quasar tables ───────────────────────────────────────
+  // ── Tables ───────────────────────────────────────────────
   .q-table {
-    background: $dark-surface !important;
-    color: $dark-text !important;
+    background: $exec-surface !important;
+    color: $exec-text !important;
 
     thead tr th {
-      background: $dark-surface-2 !important;
-      color: $dark-accent !important;
+      background: $exec-surface-2 !important;
+      color: $exec-accent !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.4px;
     }
     tbody tr td {
-      border-color: $dark-border !important;
+      border-color: $exec-border !important;
     }
     tbody tr:hover td {
-      background: $dark-surface-3 !important;
+      background: $exec-surface-3 !important;
     }
   }
 
-  // ── Markup tables (.slt-mu-table) ───────────────────────
+  // ── Markup tables ────────────────────────────────────────
+  .q-markup-table,
   .slt-mu-table {
-    background: $dark-surface !important;
+    background: $exec-surface !important;
+    color: $exec-text !important;
 
     thead tr th {
-      background: $dark-surface-2 !important;
-      color: $dark-accent !important;
+      background: $exec-surface-2 !important;
+      color: $exec-accent !important;
+      font-weight: 600;
     }
     tbody tr td {
-      border-color: $dark-border !important;
+      border-color: $exec-border !important;
     }
     tbody tr:hover td {
-      background: $dark-surface-3 !important;
+      background: $exec-surface-3 !important;
     }
   }
 
-  // ── Q-markup-table (Quasar) ─────────────────────────────
-  .q-markup-table {
-    background: $dark-surface !important;
-  }
-
-  // ── Financial summary boxes (ReportsPage) ───────────────
-  .slt-fin-box {
-    background: $dark-surface-2 !important;
-    border-color: $dark-border !important;
-  }
-
-  // ── Drill-down rows ────────────────────────────────────
-  .slt-drilldown-row:hover {
-    background: $dark-surface-3 !important;
-  }
-  .slt-drilldown-row:active {
-    background: rgba(144, 202, 249, 0.1) !important;
-  }
-
-  // ── Settings card ──────────────────────────────────────
-  .slt-settings-card {
-    background: $dark-surface !important;
-    border-color: $dark-border !important;
-  }
-
-  // ── KPI cards ──────────────────────────────────────────
-  .slt-kpi-card {
-    background: $dark-surface !important;
-    border-color: $dark-border !important;
-
-    &:hover {
-      box-shadow: 0 4px 16px rgba(144, 202, 249, 0.1) !important;
-    }
-  }
-
-  // ── Quasar lists & items ───────────────────────────────
+  // ── Lists & Items ────────────────────────────────────────
   .q-list {
-    background: $dark-surface !important;
+    background: transparent !important;
   }
   .q-item {
-    color: $dark-text !important;
+    color: $exec-text !important;
   }
   .q-item__label--caption {
-    color: $dark-text-dim !important;
+    color: $exec-text-dim !important;
   }
 
-  // ── Quasar tabs ────────────────────────────────────────
-  .q-tabs {
-    background: $dark-surface-2 !important;
-  }
-  .q-tab-panel {
-    background: $dark-surface !important;
-  }
-  .bg-grey-1 {
-    background: $dark-surface-2 !important;
-  }
-
-  // ── Quasar separators ──────────────────────────────────
+  // ── Separators ───────────────────────────────────────────
   .q-separator {
-    background: $dark-border !important;
+    background: $exec-border !important;
   }
 
-  // ── Quasar dialogs ─────────────────────────────────────
-  .q-dialog .q-card {
-    background: $dark-surface !important;
-  }
-
-  // ── Quasar inputs ──────────────────────────────────────
+  // ── Inputs ───────────────────────────────────────────────
   .q-field--outlined .q-field__control {
-    border-color: #444 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
     &:before {
-      border-color: #444 !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
     }
   }
   .q-field__label {
-    color: $dark-text-dim !important;
+    color: $exec-text-dim !important;
+  }
+  .q-field__native,
+  .q-field__input {
+    color: $exec-text !important;
   }
 
-  // ── Quasar select dropdown ─────────────────────────────
+  // ── Menus / Dropdowns ────────────────────────────────────
   .q-menu {
-    background: $dark-surface !important;
-    border-color: $dark-border !important;
+    background: $exec-surface !important;
+    border: 1px solid $exec-border !important;
   }
 
-  // ── Timeline ───────────────────────────────────────────
+  // ── Dialogs ──────────────────────────────────────────────
+  .q-dialog .q-card {
+    background: $exec-surface !important;
+  }
+
+  // ── Tabs ─────────────────────────────────────────────────
+  .q-tabs {
+    background: $exec-surface-2 !important;
+  }
+  .q-tab-panel {
+    background: $exec-surface !important;
+  }
+
+  // ── Timeline ─────────────────────────────────────────────
   .q-timeline {
-    color: $dark-text !important;
+    color: $exec-text !important;
   }
 
-  // ── Breadcrumb bar ─────────────────────────────────────
+  // ── Tooltips ─────────────────────────────────────────────
+  .q-tooltip {
+    background: $exec-surface-3 !important;
+    color: $exec-text !important;
+  }
+
+  // ── Breadcrumb bar ───────────────────────────────────────
   .slt-breadcrumb-bar {
-    background: rgba(0, 0, 0, 0.3) !important;
+    background: rgba(0, 0, 0, 0.25) !important;
   }
 
-  // ── Dialog bar ─────────────────────────────────────────
-  .slt-dialog-bar {
-    background: linear-gradient(135deg, #1a1a2e, #16213e) !important;
+  // ── Text color overrides ─────────────────────────────────
+  .text-grey-9 {
+    color: $exec-text !important;
+  }
+  .text-grey-8 {
+    color: #c0c6d2 !important;
+  }
+  .text-grey-7 {
+    color: #a0a8b8 !important;
+  }
+  .text-grey-6 {
+    color: $exec-text-dim !important;
+  }
+  .text-grey-5 {
+    color: #6b7588 !important;
   }
 
-  // ── Stepper wrap (AgreementsPage) ──────────────────────
-  .slt-stepper-wrap {
-    background: $dark-surface-2 !important;
-  }
-  .bg-blue-1 {
-    background: $dark-surface-2 !important;
-  }
-
-  // ── Form section labels ────────────────────────────────
-  .slt-form-section-label {
-    color: $dark-accent !important;
+  // ── KPI cards ────────────────────────────────────────────
+  .slt-kpi-card {
+    background: $exec-surface !important;
+    border-color: $exec-border !important;
+    &:hover {
+      box-shadow: 0 4px 20px $exec-glow !important;
+    }
   }
 
-  // ── Avatar inner (SettingsPage) ────────────────────────
+  // ── Settings card ────────────────────────────────────────
+  .slt-settings-card {
+    background: $exec-surface !important;
+    border-color: $exec-border !important;
+  }
+
+  // ── Financial summary boxes ──────────────────────────────
+  .slt-fin-box {
+    background: $exec-surface-2 !important;
+    border-color: $exec-border !important;
+  }
+
+  // ── Avatar inner ─────────────────────────────────────────
   .slt-avatar-inner {
     background: linear-gradient(135deg, #1a237e, #1565c0) !important;
   }
 
-  // ── Tooltip override ──────────────────────────────────
-  .q-tooltip {
-    background: $dark-surface-3 !important;
-    color: $dark-text !important;
+  // ── Dialog bar ───────────────────────────────────────────
+  .slt-dialog-bar {
+    background: linear-gradient(135deg, $exec-surface, $exec-surface-2) !important;
   }
 
-  // ── Text color overrides for common grey classes ───────
-  .text-grey-9 {
-    color: $dark-text !important;
-  }
-  .text-grey-8 {
-    color: #bdbdbd !important;
-  }
-  .text-grey-7 {
-    color: #9e9e9e !important;
-  }
-  .text-grey-6 {
-    color: #888 !important;
-  }
-  .text-grey-5 {
-    color: #777 !important;
+  // ── Stepper wrap ─────────────────────────────────────────
+  .slt-stepper-wrap {
+    background: $exec-surface-2 !important;
   }
 
-  // ── Doughnut center label (ReportsPage) ────────────────
+  // ── Form section label ───────────────────────────────────
+  .slt-form-section-label {
+    color: $exec-accent !important;
+  }
+
+  // ── Doughnut center ──────────────────────────────────────
   .slt-doughnut-center {
-    color: $dark-text !important;
+    color: $exec-text !important;
+  }
+
+  // ── Background utility overrides ─────────────────────────
+  .bg-grey-1,
+  .bg-grey-2 {
+    background: $exec-surface-2 !important;
+  }
+
+  // ── Drilldown rows ───────────────────────────────────────
+  .slt-drilldown-row:hover {
+    background: $exec-surface-3 !important;
+  }
+  .slt-drilldown-row:active {
+    background: rgba(144, 202, 249, 0.1) !important;
   }
 }

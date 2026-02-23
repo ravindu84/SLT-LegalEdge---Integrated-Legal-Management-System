@@ -1,20 +1,21 @@
 <template>
-  <q-page class="slt-dashboard q-pa-md">
+  <q-page class="slt-page-bg q-pa-lg">
     <!-- ─── Page Header ──────────────────────────────────────── -->
     <div class="row items-center q-mb-lg">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">{{ $t('dashboard.title') }}</div>
-        <div class="text-caption text-grey-6">
+        <div class="text-h4 text-weight-bold text-primary q-mb-xs">
+          {{ $t('dashboard.title') }}
+        </div>
+        <div class="text-subtitle2 text-grey-6">
           {{ $t('dashboard.welcome') }} · {{ currentDate }}
         </div>
       </div>
-      <div class="col-auto">
+      <div class="col-auto q-gutter-sm">
         <q-btn
           unelevated
           color="primary"
           icon="refresh"
           :label="$t('dashboard.refresh')"
-          class="q-mr-sm"
           size="sm"
           @click="refreshData"
         />
@@ -29,133 +30,133 @@
       </div>
     </div>
 
-    <!-- ─── Summary Widgets ──────────────────────────────────── -->
-    <div class="row q-col-gutter-md q-mb-lg">
-      <!-- Widget 1: Active Legal Cases -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <q-card class="slt-widget slt-widget--blue" flat bordered>
-          <q-card-section class="row items-center no-wrap">
-            <div class="slt-widget-icon-wrap bg-blue-1">
-              <q-icon name="gavel" size="32px" color="primary" />
-            </div>
-            <div class="q-ml-md col">
-              <div class="text-h4 text-weight-bold text-primary">{{ stats.activeCases }}</div>
-              <div class="text-subtitle2 text-grey-7">{{ $t('dashboard.activeCases') }}</div>
-              <div class="row items-center q-mt-xs">
-                <q-icon name="trending_up" color="positive" size="16px" />
-                <span class="text-caption text-positive q-ml-xs">{{
-                  $t('dashboard.thisMonth')
-                }}</span>
+    <!-- ═══ 5 EXECUTIVE SUMMARY CARDS (balanced single row) ═══ -->
+    <div class="row q-col-gutter-md q-mb-lg exec-row">
+      <div class="col-12 col-sm-6 col-md" v-for="card in summaryCards" :key="card.label">
+        <q-card flat class="exec-summary-card" :style="{ '--accent': card.accent }">
+          <q-card-section class="q-pa-lg">
+            <div class="row items-start justify-between no-wrap q-mb-md">
+              <div class="exec-summary-card__icon" :style="{ background: card.accent }">
+                <q-icon :name="card.icon" size="22px" color="white" />
+              </div>
+              <div class="exec-summary-card__badge" :style="{ color: card.trendColor }">
+                <q-icon :name="card.trendIcon" size="14px" class="q-mr-xs" />
+                {{ card.trendValue }}
               </div>
             </div>
-            <q-circular-progress
-              :value="72"
-              size="48px"
-              :thickness="0.22"
+            <div class="exec-summary-card__value">{{ card.value }}</div>
+            <div class="exec-summary-card__label">{{ card.label }}</div>
+            <!-- mini progress bar -->
+            <div class="exec-summary-card__bar q-mt-sm">
+              <div
+                class="exec-summary-card__bar-fill"
+                :style="{ width: card.progress + '%', background: card.accent }"
+              ></div>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
+    <!-- ═══ ROW 2: Approvals  +  Case Status Doughnut ═══════ -->
+    <div class="row q-col-gutter-md q-mb-lg">
+      <!-- Action Required -->
+      <div class="col-12 col-md-7">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
+            <q-icon name="warning_amber" color="warning" size="20px" class="q-mr-sm" />
+            <span>Action Required</span>
+            <q-space />
+            <q-badge color="negative" :label="approvalItems.length" rounded />
+          </q-card-section>
+          <q-separator />
+          <q-card-section class="q-pa-none">
+            <q-list separator>
+              <q-item v-for="item in approvalItems" :key="item.id" class="q-py-md q-px-md">
+                <q-item-section avatar>
+                  <q-avatar
+                    :color="item.avatarColor"
+                    text-color="white"
+                    size="42px"
+                    font-size="14px"
+                  >
+                    {{ item.initials }}
+                  </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold text-body2">{{ item.title }}</q-item-label>
+                  <q-item-label caption>{{ item.subtitle }}</q-item-label>
+                </q-item-section>
+                <q-item-section side class="q-gutter-xs">
+                  <q-badge
+                    :color="item.priorityColor"
+                    :label="item.priority"
+                    rounded
+                    class="q-mb-xs"
+                  />
+                  <div class="row q-gutter-xs">
+                    <q-btn
+                      dense
+                      unelevated
+                      color="positive"
+                      size="xs"
+                      no-caps
+                      icon="check"
+                      label="Approve"
+                    />
+                    <q-btn
+                      dense
+                      outline
+                      color="negative"
+                      size="xs"
+                      no-caps
+                      icon="close"
+                      label="Reject"
+                    />
+                  </div>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+          <q-separator />
+          <q-card-section class="q-py-sm text-center">
+            <q-btn
+              flat
+              no-caps
               color="primary"
-              track-color="blue-1"
-              class="q-ml-auto"
-            >
-              <span class="text-caption text-primary text-weight-bold">72%</span>
-            </q-circular-progress>
-          </q-card-section>
-          <q-separator />
-          <q-card-section class="q-py-sm">
-            <span class="text-caption text-grey-6">{{ $t('dashboard.activeCount') }}</span>
+              label="View All Approvals"
+              icon-right="chevron_right"
+              size="sm"
+              @click="router.push('/approvals')"
+            />
           </q-card-section>
         </q-card>
       </div>
 
-      <!-- Widget 2: Pending Initial Documents -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <q-card class="slt-widget slt-widget--orange" flat bordered>
-          <q-card-section class="row items-center no-wrap">
-            <div class="slt-widget-icon-wrap bg-orange-1">
-              <q-icon name="description" size="32px" color="orange-8" />
-            </div>
-            <div class="q-ml-md col">
-              <div class="text-h4 text-weight-bold text-orange-9">{{ stats.pendingDocs }}</div>
-              <div class="text-subtitle2 text-grey-7">{{ $t('dashboard.pendingDocs') }}</div>
-              <div class="row items-center q-mt-xs">
-                <q-icon name="schedule" color="warning" size="16px" />
-                <span class="text-caption text-warning q-ml-xs">{{
-                  $t('dashboard.requireAttention')
-                }}</span>
-              </div>
-            </div>
-            <q-circular-progress
-              :value="45"
-              size="48px"
-              :thickness="0.22"
-              color="orange-8"
-              track-color="orange-1"
-              class="q-ml-auto"
-            >
-              <span class="text-caption text-orange-9 text-weight-bold">45%</span>
-            </q-circular-progress>
+      <!-- Case Status Doughnut -->
+      <div class="col-12 col-md-5">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
+            <q-icon name="pie_chart" color="primary" size="20px" class="q-mr-sm" />
+            <span>Case Status Overview</span>
           </q-card-section>
           <q-separator />
-          <q-card-section class="q-py-sm">
-            <span class="text-caption text-grey-6">{{ $t('dashboard.pendingCount') }}</span>
-          </q-card-section>
-        </q-card>
-      </div>
-
-      <!-- Widget 3: Agreements Awaiting Approval -->
-      <div class="col-12 col-sm-6 col-md-4">
-        <q-card class="slt-widget slt-widget--green" flat bordered>
-          <q-card-section class="row items-center no-wrap">
-            <div class="slt-widget-icon-wrap bg-green-1">
-              <q-icon name="handshake" size="32px" color="green-8" />
-            </div>
-            <div class="q-ml-md col">
-              <div class="text-h4 text-weight-bold text-green-9">
-                {{ stats.agreementsAwaiting }}
-              </div>
-              <div class="text-subtitle2 text-grey-7">{{ $t('dashboard.agreementsAwaiting') }}</div>
-              <div class="row items-center q-mt-xs">
-                <q-icon name="hourglass_empty" color="teal-6" size="16px" />
-                <span class="text-caption text-teal-6 q-ml-xs">{{
-                  $t('dashboard.atFinalLevel')
-                }}</span>
+          <q-card-section class="column items-center q-pa-lg">
+            <div style="position: relative; max-width: 220px; width: 100%">
+              <Doughnut :data="caseStatusChartData" :options="doughnutOpts" />
+              <div class="exec-doughnut-center">
+                <div class="text-h4 text-weight-bold text-primary">{{ totalCases }}</div>
+                <div class="text-caption text-grey-6">Total Cases</div>
               </div>
             </div>
-            <q-circular-progress
-              :value="60"
-              size="48px"
-              :thickness="0.22"
-              color="green-8"
-              track-color="green-1"
-              class="q-ml-auto"
-            >
-              <span class="text-caption text-green-9 text-weight-bold">60%</span>
-            </q-circular-progress>
-          </q-card-section>
-          <q-separator />
-          <q-card-section class="q-py-sm">
-            <span class="text-caption text-grey-6">{{ $t('dashboard.agreementCount') }}</span>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
-
-    <!-- ─── Workflow Status Strip ────────────────────────────── -->
-    <div class="row q-col-gutter-md q-mb-lg">
-      <div class="col-12">
-        <q-card flat bordered>
-          <q-card-section class="q-pb-xs">
-            <div class="text-subtitle1 text-weight-bold text-primary">
-              {{ $t('dashboard.workflowOverview') }}
-            </div>
-          </q-card-section>
-          <q-card-section class="row q-col-gutter-sm q-pt-xs">
-            <div v-for="stage in workflowStages" :key="stage.label" class="col-6 col-sm-3">
-              <div class="slt-stage-card rounded-borders q-pa-sm text-center">
-                <q-icon :name="stage.icon" :color="stage.color" size="24px" />
-                <div class="text-h5 text-weight-bold q-mt-xs" :class="`text-${stage.color}`">
-                  {{ stage.count }}
+            <!-- Legend below -->
+            <div class="row q-gutter-md q-mt-lg justify-center full-width">
+              <div v-for="(item, i) in caseStatusItems" :key="item.label" class="exec-legend-item">
+                <div class="exec-legend-dot" :style="{ background: statusColors[i] }"></div>
+                <div>
+                  <div class="text-weight-bold" style="font-size: 0.9rem">{{ item.count }}</div>
+                  <div class="text-caption text-grey-6">{{ item.label }}</div>
                 </div>
-                <div class="text-caption text-grey-7">{{ stage.label }}</div>
               </div>
             </div>
           </q-card-section>
@@ -163,131 +164,62 @@
       </div>
     </div>
 
-    <!-- ─── Recent Case Activities Table ────────────────────── -->
+    <!-- ═══ ROW 3: Activity Feed  +  Case Type Bar Chart ═════ -->
     <div class="row q-col-gutter-md">
-      <div class="col-12 col-lg-8">
-        <q-card flat bordered>
-          <q-card-section class="row items-center q-pb-none">
-            <div class="text-subtitle1 text-weight-bold text-primary col">
-              {{ $t('dashboard.recentActivities') }}
-            </div>
-            <q-input
-              v-model="tableFilter"
-              dense
-              outlined
-              placeholder="Search..."
-              class="col-auto"
-              style="min-width: 200px"
-            >
-              <template #prepend><q-icon name="search" /></template>
-            </q-input>
+      <!-- Recent Activity -->
+      <div class="col-12 col-md-5">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
+            <q-icon name="history" color="primary" size="20px" class="q-mr-sm" />
+            <span>Recent Activity</span>
+            <q-space />
+            <q-btn flat dense round icon="more_vert" color="grey-6" size="sm" />
           </q-card-section>
-
-          <q-table
-            :rows="recentActivities"
-            :columns="columns"
-            :filter="tableFilter"
-            row-key="id"
-            flat
-            bordered
-            :pagination="{ rowsPerPage: 6 }"
-            class="slt-table q-mt-sm"
-          >
-            <!-- Case ID with icon -->
-            <template #body-cell-caseId="props">
-              <q-td :props="props">
-                <span class="text-weight-bold text-primary">#{{ props.value }}</span>
-              </q-td>
-            </template>
-
-            <!-- Status badge -->
-            <template #body-cell-status="props">
-              <q-td :props="props">
-                <q-badge :color="statusColor(props.value)" :label="props.value" rounded />
-              </q-td>
-            </template>
-
-            <!-- Type badge -->
-            <template #body-cell-type="props">
-              <q-td :props="props">
-                <q-chip
-                  :icon="props.value === 'Money Recovery' ? 'payments' : 'landscape'"
-                  :color="props.value === 'Money Recovery' ? 'blue-1' : 'green-1'"
-                  :text-color="props.value === 'Money Recovery' ? 'primary' : 'green-8'"
-                  dense
-                  size="sm"
-                >
-                  {{ props.value }}
-                </q-chip>
-              </q-td>
-            </template>
-          </q-table>
+          <q-separator />
+          <q-card-section class="q-pa-none">
+            <q-list>
+              <q-item
+                v-for="(act, idx) in recentActivity"
+                :key="act.id"
+                :class="{ 'exec-activity-alt': idx % 2 === 1 }"
+                class="q-py-sm q-px-md"
+              >
+                <q-item-section avatar>
+                  <q-avatar
+                    :color="act.color"
+                    text-color="white"
+                    size="34px"
+                    class="exec-activity-avatar"
+                  >
+                    <q-icon :name="act.icon" size="16px" />
+                  </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-medium" style="font-size: 0.82rem">{{
+                    act.title
+                  }}</q-item-label>
+                  <q-item-label caption style="font-size: 0.72rem">{{ act.time }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-icon name="circle" :color="act.color" size="8px" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
         </q-card>
       </div>
 
-      <!-- Right panel: quick action + upcoming -->
-      <div class="col-12 col-lg-4">
-        <!-- Quick Actions -->
-        <q-card flat bordered class="q-mb-md">
-          <q-card-section class="q-pb-sm">
-            <div class="text-subtitle1 text-weight-bold text-primary">
-              {{ $t('dashboard.quickActions') }}
-            </div>
+      <!-- Case Type Distribution -->
+      <div class="col-12 col-md-7">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
+            <q-icon name="equalizer" color="primary" size="20px" class="q-mr-sm" />
+            <span>Case Type Distribution</span>
           </q-card-section>
-          <q-list separator>
-            <q-item
-              v-for="action in quickActions"
-              :key="action.label"
-              clickable
-              v-ripple
-              class="q-py-sm"
-              @click="router.push(action.route)"
-            >
-              <q-item-section avatar>
-                <q-avatar :color="action.color" text-color="white" size="36px" icon-size="18px">
-                  <q-icon :name="action.icon" size="18px" />
-                </q-avatar>
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-weight-medium">{{ action.label }}</q-item-label>
-                <q-item-label caption>{{ action.caption }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-icon name="chevron_right" color="grey-5" />
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card>
-
-        <!-- Upcoming Hearings -->
-        <q-card flat bordered>
-          <q-card-section class="q-pb-sm">
-            <div class="text-subtitle1 text-weight-bold text-primary">
-              {{ $t('dashboard.upcomingHearings') }}
-            </div>
+          <q-separator />
+          <q-card-section class="q-pa-md">
+            <Bar :data="caseTypeChartData" :options="barOpts" style="max-height: 300px" />
           </q-card-section>
-          <q-list>
-            <q-item
-              v-for="hearing in upcomingHearings"
-              :key="hearing.caseRef"
-              class="q-py-xs"
-              clickable
-              @click="router.push('/cases')"
-            >
-              <q-item-section avatar>
-                <q-icon name="event" :color="hearing.urgent ? 'negative' : 'primary'" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label class="text-weight-medium text-body2">{{
-                  hearing.title
-                }}</q-item-label>
-                <q-item-label caption>{{ hearing.date }} · {{ hearing.court }}</q-item-label>
-              </q-item-section>
-              <q-item-section side>
-                <q-badge v-if="hearing.urgent" color="negative" label="Urgent" rounded />
-              </q-item-section>
-            </q-item>
-          </q-list>
         </q-card>
       </div>
     </div>
@@ -298,325 +230,362 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
+import { Doughnut, Bar } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend)
 
 const router = useRouter()
 const { t } = useI18n()
+const $q = useQuasar()
 
-// ── Computed current date display ─────────────────────────────
-const currentDate = computed(() => {
-  return new Date().toLocaleDateString('en-GB', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
+const now = new Date()
+const currentDate = now.toLocaleDateString('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
 })
 
-// ── Summary stats (replace with Pinia store later) ────────────
-const stats = ref({
-  activeCases: 14,
-  pendingDocs: 9,
-  agreementsAwaiting: 7,
-})
+function refreshData() {
+  /* placeholder */
+}
 
-// ── Workflow pipeline ─────────────────────────────────────────
-const workflowStages = computed(() => [
-  { label: t('dashboard.draft'), icon: 'edit_note', color: 'grey-7', count: 12 },
-  { label: t('dashboard.inReview'), icon: 'rate_review', color: 'warning', count: 8 },
-  { label: t('dashboard.approval'), icon: 'pending_actions', color: 'info', count: 5 },
-  { label: t('dashboard.active'), icon: 'check_circle', color: 'positive', count: 21 },
+// ── Summary Cards ─────────────────────────────────────────────
+const summaryCards = computed(() => [
+  {
+    label: t('dashboard.activeCases'),
+    value: '24',
+    icon: 'gavel',
+    accent: '#10b981',
+    trendIcon: 'trending_up',
+    trendValue: '+12%',
+    trendColor: '#10b981',
+    progress: 72,
+  },
+  {
+    label: t('dashboard.pendingDocs'),
+    value: '8',
+    icon: 'handshake',
+    accent: '#f59e0b',
+    trendIcon: 'trending_down',
+    trendValue: '-3',
+    trendColor: '#ef4444',
+    progress: 45,
+  },
+  {
+    label: 'My Tasks',
+    value: '15',
+    icon: 'task_alt',
+    accent: '#3b82f6',
+    trendIcon: 'schedule',
+    trendValue: '5 due',
+    trendColor: '#3b82f6',
+    progress: 60,
+  },
+  {
+    label: 'Financial Exposure',
+    value: 'LKR 287M',
+    icon: 'account_balance',
+    accent: '#ef4444',
+    trendIcon: 'trending_up',
+    trendValue: '+8%',
+    trendColor: '#ef4444',
+    progress: 82,
+  },
+  {
+    label: 'Total Expenses',
+    value: 'LKR 42M',
+    icon: 'payments',
+    accent: '#8b5cf6',
+    trendIcon: 'trending_down',
+    trendValue: '-5%',
+    trendColor: '#10b981',
+    progress: 38,
+  },
 ])
 
-// ── Table ─────────────────────────────────────────────────────
-const tableFilter = ref('')
-
-const columns = computed(() => [
-  { name: 'caseId', label: t('dashboard.caseId'), field: 'caseId', align: 'left', sortable: true },
-  { name: 'title', label: t('dashboard.caseTitle'), field: 'title', align: 'left', sortable: true },
-  { name: 'type', label: t('dashboard.type'), field: 'type', align: 'center', sortable: true },
-  {
-    name: 'status',
-    label: t('dashboard.status'),
-    field: 'status',
-    align: 'center',
-    sortable: true,
-  },
-  {
-    name: 'assignedTo',
-    label: t('dashboard.assignedTo'),
-    field: 'assignedTo',
-    align: 'left',
-    sortable: false,
-  },
-  {
-    name: 'lastUpdated',
-    label: t('dashboard.updated'),
-    field: 'lastUpdated',
-    align: 'right',
-    sortable: true,
-  },
-])
-
-const recentActivities = [
+// ── Approval Items ────────────────────────────────────────────
+const approvalItems = ref([
   {
     id: 1,
-    caseId: 'LC-2024-001',
-    title: 'SLT vs. Perera Construction',
-    type: 'Money Recovery',
-    status: 'Active',
-    assignedTo: 'K. Fernando',
-    lastUpdated: '2026-02-21',
+    title: 'Tower Lease Agreement — Colombo',
+    subtitle: 'J. Perera · 2 hours ago',
+    initials: 'JP',
+    avatarColor: 'primary',
+    priority: 'High',
+    priorityColor: 'negative',
   },
   {
     id: 2,
-    caseId: 'LC-2024-002',
-    title: 'Land Acquisition – Kandy Zone',
-    type: 'Land Case',
-    status: 'Pending Hearing',
-    assignedTo: 'N. Silva',
-    lastUpdated: '2026-02-20',
+    title: 'Vendor Contract — Fiber Optic Supply',
+    subtitle: 'A. De Silva · 5 hours ago',
+    initials: 'AS',
+    avatarColor: 'teal',
+    priority: 'Medium',
+    priorityColor: 'warning',
   },
   {
     id: 3,
-    caseId: 'LC-2024-003',
-    title: 'Network Dispute – Galle',
-    type: 'Money Recovery',
-    status: 'Active',
-    assignedTo: 'P. Jayawardena',
-    lastUpdated: '2026-02-19',
-  },
-  {
-    id: 4,
-    caseId: 'LC-2024-004',
-    title: 'Easement Right – Colombo 5',
-    type: 'Land Case',
-    status: 'Under Review',
-    assignedTo: 'A. Bandara',
-    lastUpdated: '2026-02-18',
-  },
-  {
-    id: 5,
-    caseId: 'LC-2024-005',
-    title: 'Contractor Liability Claim',
-    type: 'Money Recovery',
-    status: 'Closed',
-    assignedTo: 'S. Dissanayake',
-    lastUpdated: '2026-02-15',
-  },
-  {
-    id: 6,
-    caseId: 'LC-2024-006',
-    title: 'Tower Site Dispute – Kurunegala',
-    type: 'Land Case',
-    status: 'Pending Hearing',
-    assignedTo: 'T. Gunathilaka',
-    lastUpdated: '2026-02-14',
-  },
-  {
-    id: 7,
-    caseId: 'LC-2024-007',
-    title: 'Equipment Damage Recovery',
-    type: 'Money Recovery',
-    status: 'Active',
-    assignedTo: 'K. Fernando',
-    lastUpdated: '2026-02-12',
-  },
-]
-
-function statusColor(status) {
-  const map = {
-    Active: 'positive',
-    'Pending Hearing': 'warning',
-    'Under Review': 'info',
-    Closed: 'grey-6',
-    Draft: 'grey-5',
-  }
-  return map[status] || 'primary'
-}
-
-// ── Quick Actions ─────────────────────────────────────────────
-const quickActions = computed(() => [
-  {
-    label: t('dashboard.newInitialDoc'),
-    caption: t('dashboard.startIntake'),
-    icon: 'add_circle',
-    color: 'primary',
-    route: '/initial-docs',
-  },
-  {
-    label: t('dashboard.uploadAgreement'),
-    caption: t('dashboard.addContract'),
-    icon: 'upload_file',
-    color: 'teal',
-    route: '/agreements',
-  },
-  {
-    label: t('dashboard.pendingApprovals'),
-    caption: t('dashboard.itemsNeedApproval'),
-    icon: 'verified',
-    color: 'negative',
-    route: '/approvals',
-  },
-  {
-    label: t('dashboard.generateReport'),
-    caption: t('dashboard.monthlySummary'),
-    icon: 'summarize',
-    color: 'purple',
-    route: '/reports',
+    title: 'Land Acquisition MOU — Kandy',
+    subtitle: 'M. Bandara · 1 day ago',
+    initials: 'MB',
+    avatarColor: 'deep-purple',
+    priority: 'Normal',
+    priorityColor: 'info',
   },
 ])
 
-// ── Upcoming Hearings ─────────────────────────────────────────
-const upcomingHearings = [
-  {
-    caseRef: 'LC-2024-002',
-    title: 'Land Acquisition – Kandy Zone',
-    date: '24 Feb 2026',
-    court: 'District Court Kandy',
-    urgent: true,
-  },
-  {
-    caseRef: 'LC-2024-006',
-    title: 'Tower Site Dispute',
-    date: '28 Feb 2026',
-    court: 'High Court Kurunegala',
-    urgent: false,
-  },
-  {
-    caseRef: 'LC-2024-003',
-    title: 'Network Dispute – Galle',
-    date: '05 Mar 2026',
-    court: 'Magistrate Court Galle',
-    urgent: false,
-  },
-]
+// ── Case Status Doughnut ──────────────────────────────────────
+const statusColors = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444']
+const caseStatusItems = ref([
+  { label: 'Active', count: 14 },
+  { label: 'Pending', count: 7 },
+  { label: 'Review', count: 4 },
+  { label: 'Closed', count: 3 },
+])
+const totalCases = computed(() => caseStatusItems.value.reduce((s, i) => s + i.count, 0))
 
-// ── Refresh handler ───────────────────────────────────────────
-function refreshData() {
-  // Wire to Pinia store API calls in later iterations
-}
+const caseStatusChartData = computed(() => ({
+  labels: caseStatusItems.value.map((i) => i.label),
+  datasets: [
+    {
+      data: caseStatusItems.value.map((i) => i.count),
+      backgroundColor: statusColors,
+      borderWidth: 0,
+      hoverOffset: 8,
+    },
+  ],
+}))
+
+const doughnutOpts = computed(() => ({
+  responsive: true,
+  cutout: '72%',
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: $q.dark.isActive ? '#1a2035' : '#fff',
+      titleColor: $q.dark.isActive ? '#e8eaf0' : '#1a202c',
+      bodyColor: $q.dark.isActive ? '#8b95a8' : '#64748b',
+      borderColor: $q.dark.isActive ? 'rgba(255,255,255,0.1)' : '#e2e8f0',
+      borderWidth: 1,
+      padding: 10,
+      cornerRadius: 8,
+    },
+  },
+}))
+
+// ── Recent Activity ───────────────────────────────────────────
+const recentActivity = ref([
+  {
+    id: 1,
+    icon: 'gavel',
+    color: 'primary',
+    title: 'Case LC-2024-003 status updated',
+    time: '2 min ago',
+  },
+  {
+    id: 2,
+    icon: 'verified',
+    color: 'positive',
+    title: 'Agreement AGR-005 approved (L1)',
+    time: '15 min ago',
+  },
+  {
+    id: 3,
+    icon: 'upload_file',
+    color: 'info',
+    title: '3 documents uploaded to LC-001',
+    time: '1 hour ago',
+  },
+  {
+    id: 4,
+    icon: 'event',
+    color: 'warning',
+    title: 'Hearing scheduled — Commercial HC',
+    time: '2 hours ago',
+  },
+  {
+    id: 5,
+    icon: 'person_add',
+    color: 'deep-purple',
+    title: 'User S. Bandara registered',
+    time: '5 hours ago',
+  },
+  {
+    id: 6,
+    icon: 'cancel',
+    color: 'negative',
+    title: 'Agreement AGR-011 rejected',
+    time: 'Yesterday',
+  },
+])
+
+// ── Case Type Bar Chart ───────────────────────────────────────
+const caseTypeChartData = computed(() => ({
+  labels: ['Money Recovery', 'Land Cases', 'Damages', 'Appeals', 'Employee Disputes', 'Other'],
+  datasets: [
+    {
+      label: 'Cases',
+      data: [9, 7, 4, 3, 3, 2],
+      backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#94a3b8'],
+      borderRadius: 8,
+      borderSkipped: false,
+      barThickness: 24,
+    },
+  ],
+}))
+
+const barOpts = computed(() => ({
+  responsive: true,
+  indexAxis: 'y',
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: $q.dark.isActive ? '#1a2035' : '#fff',
+      titleColor: $q.dark.isActive ? '#e8eaf0' : '#1a202c',
+      bodyColor: $q.dark.isActive ? '#8b95a8' : '#64748b',
+      padding: 10,
+      cornerRadius: 8,
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        color: $q.dark.isActive ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.05)',
+        drawBorder: false,
+      },
+      ticks: { color: $q.dark.isActive ? '#8b95a8' : '#64748b', font: { size: 11 } },
+    },
+    y: {
+      grid: { display: false },
+      ticks: { color: $q.dark.isActive ? '#8b95a8' : '#64748b', font: { size: 12, weight: 500 } },
+    },
+  },
+}))
 </script>
 
 <style lang="scss" scoped>
-.slt-dashboard {
-  background: #f0f4f9;
-  min-height: 100vh;
-}
-
-// ── Summary Widgets ───────────────────────────────────────────
-.slt-widget {
-  border-radius: 12px !important;
+// ═══ EXECUTIVE SUMMARY CARDS ═════════════════════════════════
+.exec-summary-card {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 14px !important;
   transition:
-    box-shadow 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s,
+    box-shadow 0.25s;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px 0 0 4px;
+  }
 
   &:hover {
-    box-shadow: 0 6px 24px rgba(0, 63, 135, 0.12) !important;
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08);
   }
 
-  &--blue {
-    border-top: 4px solid #003f87 !important;
+  &__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
   }
-  &--orange {
-    border-top: 4px solid #f7941d !important;
+
+  &__badge {
+    display: flex;
+    align-items: center;
+    font-size: 0.78rem;
+    font-weight: 600;
   }
-  &--green {
-    border-top: 4px solid #2e7d32 !important;
+
+  &__value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 2px;
+    color: var(--accent);
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 0.65;
+  }
+
+  &__bar {
+    height: 4px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+  }
+  &__bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
   }
 }
 
-.slt-widget-icon-wrap {
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+// Dark mode overrides for summary cards
+:global(body.body--dark) .exec-summary-card {
+  border-color: rgba(255, 255, 255, 0.06);
+  &:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+  }
+  .exec-summary-card__bar {
+    background: rgba(255, 255, 255, 0.06);
+  }
+}
+
+// ═══ DOUGHNUT CENTER ═════════════════════════════════════════
+.exec-doughnut-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+// ═══ LEGEND ══════════════════════════════════════════════════
+.exec-legend-item {
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+}
+.exec-legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
   flex-shrink: 0;
 }
 
-// ── Workflow Stage Cards ──────────────────────────────────────
-.slt-stage-card {
-  background: #f8f9fb;
-  border: 1px solid #e0e7ef;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: #eaf0fb;
-  }
+// ═══ ACTIVITY ════════════════════════════════════════════════
+.exec-activity-alt {
+  background: rgba(0, 0, 0, 0.015);
+}
+:global(body.body--dark) .exec-activity-alt {
+  background: rgba(255, 255, 255, 0.02);
 }
 
-// ── Table ─────────────────────────────────────────────────────
-.slt-table {
-  :deep(.q-table__top),
-  :deep(.q-table__bottom) {
-    background: #f8f9fb;
-  }
-
-  :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
-    font-weight: 700;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  :deep(tbody tr:hover) {
-    background: #f0f5ff !important;
-  }
-}
-</style>
-
-<!-- ─── DARK MODE OVERRIDES (unscoped to override body.body--dark) ─── -->
-<style lang="scss">
-body.body--dark {
-  .slt-dashboard {
-    background: #121212 !important;
-  }
-
-  .slt-stage-card {
-    background: #252525 !important;
-    border-color: #333 !important;
-
-    &:hover {
-      background: #2c2c2c !important;
-    }
-  }
-
-  .slt-widget {
-    &:hover {
-      box-shadow: 0 6px 24px rgba(144, 202, 249, 0.1) !important;
-    }
-  }
-
-  .slt-widget-icon-wrap {
-    &.bg-blue-1 {
-      background: rgba(25, 118, 210, 0.15) !important;
-    }
-    &.bg-orange-1 {
-      background: rgba(245, 124, 0, 0.15) !important;
-    }
-    &.bg-green-1 {
-      background: rgba(46, 125, 50, 0.15) !important;
-    }
-  }
-
-  .slt-table {
-    .q-table__top,
-    .q-table__bottom {
-      background: #1e1e1e !important;
-    }
-
-    thead tr th {
-      background: #252525 !important;
-      color: #90caf9 !important;
-    }
-
-    tbody tr:hover {
-      background: #2c2c2c !important;
-    }
-  }
+.exec-activity-avatar {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

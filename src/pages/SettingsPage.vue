@@ -649,7 +649,6 @@ const systemInfo = [
 
 <style lang="scss" scoped>
 .slt-page-bg {
-  background: #f0f4f9;
   min-height: 100vh;
 }
 
