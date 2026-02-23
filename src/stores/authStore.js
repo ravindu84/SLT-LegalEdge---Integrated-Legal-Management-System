@@ -12,6 +12,8 @@ export const useAuthStore = defineStore('auth', () => {
     initials: 'NS',
     phone: '+94 11 2 021 001',
     joinedDate: '2022-03-15',
+    avatar:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&auto=format&fit=crop',
   })
 
   const isLoggedIn = ref(true)
