@@ -223,6 +223,46 @@
         </q-card>
       </div>
     </div>
+
+    <!-- ═══ ROW 4: Project Resources (Flyer Compliance) ══════ -->
+    <div class="row q-col-gutter-md q-mt-md">
+      <div class="col-12">
+        <q-card flat bordered class="slt-resource-card">
+          <q-card-section class="row items-center q-pa-md">
+            <div class="col">
+              <div class="text-h6 text-weight-bold text-primary">
+                Project Resources & Guidelines
+              </div>
+              <div class="text-caption text-grey-6">
+                Access official challenge documentation and submission forms.
+              </div>
+            </div>
+            <div class="col-auto q-gutter-md">
+              <q-btn
+                unelevated
+                no-caps
+                color="primary"
+                icon="description"
+                label="Download BRD Document"
+                @click="downloadResource('BRD_Challenge_Details.pdf')"
+              >
+                <q-tooltip>Official Business Requirements Document</q-tooltip>
+              </q-btn>
+              <q-btn
+                outline
+                no-caps
+                color="primary"
+                icon="assignment"
+                label="Submission Form"
+                @click="downloadResource('AI_Coding_Submission_Form.pdf')"
+              >
+                <q-tooltip>Register your prototype submission</q-tooltip>
+              </q-btn>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
   </q-page>
 </template>
 
@@ -471,6 +511,32 @@ const barOpts = computed(() => ({
     },
   },
 }))
+
+function downloadResource(fileName) {
+  $q.notify({
+    type: 'ongoing',
+    message: `Fetching ${fileName}...`,
+    caption: 'Accessing official project vault',
+    icon: 'security',
+    group: false,
+    timeout: 1200,
+  })
+
+  setTimeout(() => {
+    const link = document.createElement('a')
+    link.href =
+      'data:application/pdf;base64,JVBERi0xLjcK1f3pCjEgMCBvYmoKPDwvVHlwZS9DYXRhbG9nL1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvVHlwZS9QYWdlcy9Db3VudCAxL0tpZHNbMyAwIFJdPj4KZW5kb2JqCjMgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNTk1IDg0Ml0vQ29udGVudHMgNCAwIFI+PgplbmRvYmoKNCAwIG9iago8PC9MZW5ndGggNTY+PnN0cmVhbQpCVAovRjEgMjQgVGYKNTAgODAwIFRkCihTTEQgTGVnYWxFZGdlIC0gT2ZmaWNpYWwgQ2hhbGxlbmdlIERvY3VtZW50KSBWmoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8L0Jhc2VGb250L0hlbHZldGljYS9UeXBlL0ZvbnQvU3VidHlwZS9UcnVlVHlwZT4+CmVuZG9iago2IDAgb2JqCjw8L1Byb2R1Y2VyIChTTEQgTGVnYWxFZGdlKS9DcmVhdGlvbkRhdGUgKEQ6MjAyNjAyMjMxMzI1MzcpPj4KZW5kb2JqCnRyYWlsZXIKPDwvUm9vdCAxIDAgUi9JbmZvIDYgMCBSL1NpemUgNz4+CnN0YXJ0eHJlZgo0OTQKJSVFT0Y='
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    $q.notify({
+      type: 'positive',
+      message: `${fileName} downloaded successfully.`,
+      icon: 'verified',
+    })
+  }, 1400)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -587,5 +653,12 @@ const barOpts = computed(() => ({
 
 .exec-activity-avatar {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// ═══ RESOURCE CARD ═══════════════════════════════════════════
+.slt-resource-card {
+  border: 1px dashed var(--q-primary);
+  background: rgba(var(--q-primary), 0.02);
+  border-radius: 12px;
 }
 </style>

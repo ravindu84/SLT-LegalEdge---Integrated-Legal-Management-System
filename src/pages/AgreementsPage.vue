@@ -364,7 +364,17 @@
                   <template #prepend><span class="text-caption text-grey-6">LKR</span></template>
                 </q-input>
               </div>
-              <div class="col-12 col-sm-4">
+              <div class="col-12 col-sm-6">
+                <q-input
+                  v-model="form.linkedCaseNo"
+                  outlined
+                  dense
+                  label="Linked Case Number (Optional)"
+                  placeholder="LCH/2026/..."
+                  hint="AAM-FR-12: Link this agreement to a legal case"
+                />
+              </div>
+              <div class="col-12 col-sm-3">
                 <q-input
                   v-model="form.startDate"
                   outlined
@@ -452,7 +462,7 @@
         </q-bar>
 
         <!-- Workflow Stepper -->
-        <div class="slt-stepper-wrap q-pa-md bg-blue-1">
+        <div class="slt-stepper-wrap q-pa-md" :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-blue-1'">
           <div class="row justify-between items-start">
             <div
               v-for="(stage, idx) in mainStages"
@@ -514,12 +524,13 @@
           dense
           align="left"
           indicator-color="accent"
+          :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'"
           active-color="primary"
-          class="bg-grey-1"
         >
           <q-tab name="details" icon="info" label="Details" />
           <q-tab name="history" icon="history" label="Approval History" />
           <q-tab name="docs" icon="folder" label="Documents" />
+          <q-tab name="versions" icon="auto_awesome_motion" label="Versions" />
         </q-tabs>
         <q-separator />
 
@@ -528,20 +539,80 @@
           <q-tab-panel name="details" class="q-pa-md">
             <div class="row q-col-gutter-md">
               <div class="col-12 col-sm-6">
-                <VDetailRow icon="tag" label="Reference No." :value="selected.referenceNo" />
-                <VDetailRow icon="category" label="Type" :value="selected.agreementType" />
-                <VDetailRow icon="person" label="Party 1" :value="selected.party1" />
-                <VDetailRow icon="people" label="Party 2" :value="selected.party2" />
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="tag" size="13px" class="q-mr-xs" />Reference No.
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.referenceNo || '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="category" size="13px" class="q-mr-xs" />Type
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.agreementType || '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="person" size="13px" class="q-mr-xs" />Party 1
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.party1 || '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="people" size="13px" class="q-mr-xs" />Party 2
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.party2 || '—' }}
+                  </div>
+                </div>
               </div>
               <div class="col-12 col-sm-6">
-                <VDetailRow
-                  icon="payments"
-                  label="Value"
-                  :value="selected.value ? `LKR ${fmt(selected.value)}` : '—'"
-                />
-                <VDetailRow icon="event" label="Start Date" :value="selected.startDate" />
-                <VDetailRow icon="event_busy" label="Expiry Date" :value="selected.expiryDate" />
-                <VDetailRow icon="info" label="Status" :value="selected.status" />
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="payments" size="13px" class="q-mr-xs" />Value
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.value ? `LKR ${fmt(selected.value)}` : '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="event" size="13px" class="q-mr-xs" />Start Date
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.startDate || '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="event_busy" size="13px" class="q-mr-xs" />Expiry Date
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.expiryDate || '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="link" size="13px" class="q-mr-xs" />Linked Case
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.linkedCaseNo || '—' }}
+                  </div>
+                </div>
+                <div class="row items-start q-py-xs border-bottom">
+                  <div class="col-5 row items-center text-caption text-grey-5">
+                    <q-icon name="info" size="13px" class="q-mr-xs" />Status
+                  </div>
+                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    {{ selected.status || '—' }}
+                  </div>
+                </div>
               </div>
               <div class="col-12">
                 <div class="text-caption text-grey-5 q-mb-xs">Description / Scope</div>
@@ -590,19 +661,64 @@
             <q-list bordered separator rounded-borders>
               <q-item v-for="doc in selected.docs" :key="doc.name" clickable v-ripple>
                 <q-item-section avatar>
-                  <q-icon name="picture_as_pdf" color="negative" size="24px" />
+                  <q-icon :name="docIcon(doc.type)" :color="docColor(doc.type)" size="24px" />
                 </q-item-section>
                 <q-item-section>
                   <q-item-label>{{ doc.name }}</q-item-label>
-                  <q-item-label caption>PDF · {{ doc.size }} · {{ doc.date }}</q-item-label>
+                  <q-item-label caption
+                    >{{ (doc.type || 'PDF').toUpperCase() }} · {{ doc.size }} ·
+                    {{ doc.date }}</q-item-label
+                  >
                 </q-item-section>
                 <q-item-section side>
-                  <q-btn flat round dense icon="download" color="grey-7" size="sm" />
+                  <div class="row q-gutter-xs">
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="visibility"
+                      color="primary"
+                      size="sm"
+                      @click="viewDocument(doc)"
+                    />
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="download"
+                      color="grey-7"
+                      size="sm"
+                      @click="downloadDocument(doc)"
+                    />
+                  </div>
                 </q-item-section>
               </q-item>
               <q-item v-if="!selected.docs?.length">
                 <q-item-section class="text-grey-5 text-center q-py-md"
                   >No documents uploaded.</q-item-section
+                >
+              </q-item>
+            </q-list>
+          </q-tab-panel>
+
+          <!-- Versions tab (AAM-FR-03) -->
+          <q-tab-panel name="versions" class="q-pa-md">
+            <q-list bordered separator padding>
+              <q-item v-for="(v, i) in selected.versions || mockVersions" :key="i">
+                <q-item-section avatar>
+                  <q-avatar color="blue-1" text-color="blue-8" size="32px">v{{ v.ver }}</q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">Version {{ v.ver }}</q-item-label>
+                  <q-item-label caption>{{ v.date }} by {{ v.by }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn flat dense round icon="visibility" color="grey-7" size="sm" />
+                </q-item-section>
+              </q-item>
+              <q-item v-if="!(selected.versions || mockVersions)?.length">
+                <q-item-section class="text-grey-5 text-center"
+                  >No version history available.</q-item-section
                 >
               </q-item>
             </q-list>
@@ -619,10 +735,7 @@
             color="info"
             icon="send"
             label="Submit for Review"
-            @click="
-              advance(selected, 'submit')
-              showViewDialog = false
-            "
+            @click="handleAdvance(selected, 'submit')"
           />
           <q-btn
             v-if="
@@ -635,10 +748,7 @@
             color="positive"
             icon="check_circle"
             :label="approveLabel(selected.status)"
-            @click="
-              confirmWorkflow(selected, 'approve')
-              showViewDialog = false
-            "
+            @click="handleConfirmWorkflow(selected, 'approve')"
           />
           <q-btn
             v-if="
@@ -651,10 +761,18 @@
             color="negative"
             icon="cancel"
             label="Reject"
-            @click="
-              confirmWorkflow(selected, 'reject')
-              showViewDialog = false
+            @click="handleConfirmWorkflow(selected, 'reject')"
+          />
+          <q-btn
+            v-if="
+              ['Pending L1 Approval', 'Pending L2 Approval', 'Active'].includes(selected.status)
             "
+            unelevated
+            no-caps
+            color="accent"
+            icon="draw"
+            label="Sign Agreement"
+            @click="simulateSignature(selected)"
           />
           <q-btn flat no-caps label="Close" color="grey-7" @click="showViewDialog = false" />
         </q-card-actions>
@@ -739,6 +857,78 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         DOCUMENT PREVIEW DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog
+      v-model="showPreviewDialog"
+      maximized
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card class="column no-wrap bg-grey-3">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon :name="docIcon(previewDoc?.type)" />
+          <div class="text-weight-bold q-ml-sm">Preview: {{ previewDoc?.name }}</div>
+          <q-space />
+          <q-btn
+            dense
+            flat
+            icon="download"
+            label="Download"
+            @click="downloadDocument(previewDoc)"
+            no-caps
+            class="q-mr-md"
+          />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+        <q-card-section class="col flex flex-center q-pa-none overflow-hidden">
+          <div v-if="previewDoc?.type === 'pdf'" class="full-width full-height column flex-center">
+            <q-icon name="picture_as_pdf" size="120px" color="negative" />
+            <div class="text-h6 text-grey-8 q-mt-md">Secure PDF Viewer Simulation</div>
+            <div class="text-caption text-grey-6">
+              {{ previewDoc.name }} ({{ previewDoc.size }})
+            </div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Open in External Viewer"
+              icon="open_in_new"
+              no-caps
+              class="q-mt-lg"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+          <div v-else-if="['jpg', 'png'].includes(previewDoc?.type)" class="column flex-center">
+            <q-img
+              src="https://placehold.co/800x1200/e3f2fd/2196f3?text=SLT+Legal+Document+Sample"
+              style="
+                max-width: 800px;
+                border: 1px solid #ccc;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+              "
+            />
+            <div class="text-caption text-grey-6 q-mt-md">
+              Sample Document Image: {{ previewDoc.name }}
+            </div>
+          </div>
+          <div v-else class="column flex-center">
+            <q-icon name="insert_drive_file" size="120px" color="grey-6" />
+            <div class="text-h6 text-grey-8 q-mt-md">Preview not available for this file type</div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Download to View"
+              icon="download"
+              no-caps
+              class="q-mt-md"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -749,19 +939,8 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  INLINE DETAIL ROW COMPONENT
+//  WORKFLOW DEFINITION  (single source of truth)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const VDetailRow = {
-  props: { label: String, value: String, icon: String },
-  template: `
-    <div class="row items-start q-py-xs border-bottom">
-      <div class="col-5 row items-center text-caption text-grey-5">
-        <q-icon :name="icon" size="13px" class="q-mr-xs" />{{ label }}
-      </div>
-      <div class="col-7 text-body2 text-weight-medium text-grey-9">{{ value || '—' }}</div>
-    </div>
-  `,
-}
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  WORKFLOW DEFINITION  (single source of truth)
@@ -783,6 +962,7 @@ const workflowStages = [
   { key: 'Active', label: 'Active', icon: 'check_circle', color: 'positive' },
   { key: 'Rejected', label: 'Rejected', icon: 'cancel', color: 'negative' },
   { key: 'Terminated', label: 'Terminated', icon: 'do_not_disturb', color: 'grey-6' },
+  { key: 'Archived', label: 'Archived', icon: 'archive', color: 'blue-grey-6' },
 ]
 
 // Next state map for approve action
@@ -827,6 +1007,12 @@ const agreementTypes = [
   'Non-Disclosure Agreement',
   'Partnership Agreement',
   'Other',
+]
+
+const mockVersions = [
+  { ver: 3, date: '2026-02-15 10:30', by: 'N. Silva' },
+  { ver: 2, date: '2026-02-10 14:20', by: 'M. Perera' },
+  { ver: 1, date: '2026-02-05 09:00', by: 'M. Perera' },
 ]
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -874,8 +1060,9 @@ const agreements = ref([
       },
     ],
     docs: [
-      { name: 'SLA-TechServ-2026.pdf', size: '2.1 MB', date: '2025-11-10' },
-      { name: 'Annexure-A-Rates.pdf', size: '560 KB', date: '2025-11-10' },
+      { name: 'SLA-TechServ-2026.pdf', type: 'pdf', size: '2.1 MB', date: '2025-11-10' },
+      { name: 'Annexure-A-Rates.pdf', type: 'pdf', size: '560 KB', date: '2025-11-10' },
+      { name: 'Service_Schedule_Matrix.xlsx', type: 'xlsx', size: '156 KB', date: '2025-11-12' },
     ],
   },
   {
@@ -906,7 +1093,10 @@ const agreements = ref([
         remarks: 'Commercial terms acceptable',
       },
     ],
-    docs: [{ name: 'MOU-Virtusa-Draft.pdf', size: '1.4 MB', date: '2026-01-12' }],
+    docs: [
+      { name: 'MOU-Virtusa-Draft.pdf', type: 'pdf', size: '1.4 MB', date: '2026-01-12' },
+      { name: 'Pricing_Proposal_v1.xlsx', type: 'xlsx', size: '42 KB', date: '2026-01-14' },
+    ],
   },
   {
     id: 3,
@@ -930,7 +1120,10 @@ const agreements = ref([
         remarks: 'Licensing terms verified with IT',
       },
     ],
-    docs: [{ name: 'Oracle-License-Agreement.pdf', size: '4.2 MB', date: '2026-01-20' }],
+    docs: [
+      { name: 'Oracle-License-Agreement.pdf', type: 'pdf', size: '4.2 MB', date: '2026-01-20' },
+      { name: 'License_Count_Summary.xlsx', type: 'xlsx', size: '18 KB', date: '2026-01-22' },
+    ],
   },
   {
     id: 4,
@@ -1070,7 +1263,9 @@ const columns = [
 //  VIEW DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showViewDialog = ref(false)
+const showPreviewDialog = ref(false)
 const selected = ref(null)
+const previewDoc = ref(null)
 const viewTab = ref('details')
 
 function viewAgreement(row) {
@@ -1098,6 +1293,7 @@ const emptyForm = () => ({
   expiryDate: '',
   description: '',
   file: null,
+  linkedCaseNo: '',
 })
 const form = ref(emptyForm())
 
@@ -1150,6 +1346,36 @@ const pendingDoc = ref(null)
 const pendingAction = ref('') // 'approve' | 'reject' | 'terminate'
 const workflowRemark = ref('')
 
+function simulateSignature(doc) {
+  $q.dialog({
+    title: 'Digital Signature (AAM-FR-08)',
+    message: `You are about to digitally sign ${doc.referenceNo}. Please confirm your identity.`,
+    prompt: {
+      model: '',
+      type: 'password',
+      label: 'Enter Password to Sign',
+    },
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    $q.loading.show({ message: 'Applying cryptographic signature...' })
+    setTimeout(() => {
+      $q.loading.hide()
+      doc.history.push({
+        action: 'Digitally Signed',
+        date: today(),
+        by: 'Current User',
+        remarks: 'Digital signature applied via system PKI.',
+      })
+      $q.notify({
+        type: 'positive',
+        message: 'Agreement digitally signed successfully.',
+        icon: 'verified_user',
+      })
+    }, 1500)
+  })
+}
+
 // Direct advance actions (no confirmation needed)
 function advance(row, type) {
   const idx = agreements.value.findIndex((a) => a.id === row.id)
@@ -1178,6 +1404,16 @@ function advance(row, type) {
       icon: 'restart_alt',
     })
   }
+}
+
+function handleAdvance(row, action) {
+  advance(row, action)
+  showViewDialog.value = false
+}
+
+function handleConfirmWorkflow(row, action) {
+  confirmWorkflow(row, action)
+  showViewDialog.value = false
 }
 
 // Confirmation-required actions
@@ -1253,6 +1489,65 @@ function fmt(val) {
 function today() {
   return new Date().toISOString().slice(0, 10)
 }
+
+function docIcon(type) {
+  return (
+    {
+      pdf: 'picture_as_pdf',
+      doc: 'description',
+      docx: 'description',
+      jpg: 'image',
+      png: 'image',
+      xlsx: 'table_view',
+      xls: 'table_view',
+    }[type] || 'insert_drive_file'
+  )
+}
+
+function docColor(type) {
+  return (
+    {
+      pdf: 'negative',
+      doc: 'info',
+      docx: 'info',
+      jpg: 'positive',
+      png: 'positive',
+      xlsx: 'green-8',
+      xls: 'green-8',
+    }[type] || 'grey-6'
+  )
+}
+
+function downloadDocument(doc) {
+  if (!doc) return
+  $q.notify({
+    type: 'ongoing',
+    message: `Downloading ${doc.name}...`,
+    caption: 'Fetching from secure vault',
+    icon: 'download',
+    group: false,
+    timeout: 1000,
+  })
+  setTimeout(() => {
+    const link = document.createElement('a')
+    link.href =
+      'data:application/pdf;base64,JVBERi0xLjcK1f3pCjEgMCBvYmoKPDwvVHlwZS9DYXRhbG9nL1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvVHlwZS9QYWdlcy9Db3VudCAxL0tpZHNbMyAwIFJdPj4KZW5kb2JqCjMgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNTk1IDg0Ml0vQ29udGVudHMgNCAwIFI+PgplbmRvYmoKNCAwIG9iago8PC9MZW5ndGggNTY+PnN0cmVhbQpCVAovRjEgMjQgVGYKNTAgODAwIFRkCihTTEQgTGVnYWxFZGdlIC0gRG9jdW1lbnQgRG93bmxvYWQgU2ltdWxhdGlvbikgVmoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8L0Jhc2VGb250L0hlbHZldGljYS9UeXBlL0ZvbnQvU3VidHlwZS9UcnVlVHlwZT4+CmVuZG9iago2IDAgb2JqCjw8L1Byb2R1Y2VyIChTTEQgTGVnYWxFZGdlKS9DcmVhdGlvbkRhdGUgKEQ6MjAyNjAyMjMxMzI1MzcpPj4KZW5kb2JqCnRyYWlsZXIKPDwvUm9vdCAxIDAgUi9JbmZvIDYgMCBSL1NpemUgNz4+CnN0YXJ0eHJlZgo0OTQKJSVFT0Y='
+    link.download = doc.name
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    $q.notify({
+      type: 'positive',
+      message: `${doc.name} saved successfully.`,
+      icon: 'check_circle',
+    })
+  }, 1200)
+}
+
+function viewDocument(doc) {
+  previewDoc.value = doc
+  showPreviewDialog.value = true
+}
 </script>
 
 <style lang="scss" scoped>
@@ -1280,12 +1575,22 @@ function today() {
 
 // ── Pipeline strip ────────────────────────────────────────────
 .slt-pipeline-stage {
-  background: #f8f9fb;
-  border: 1px solid #e0e7ef;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 8px 10px;
   position: relative;
-  transition: box-shadow 0.15s;
+  transition: all 0.2s;
+
+  body.body--dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  body.body--light & {
+    background: #f8f9fb;
+    border-color: #e0e7ef;
+  }
   &--active {
     border-color: #003f87;
     box-shadow: 0 2px 10px rgba(0, 63, 135, 0.1);
@@ -1353,19 +1658,26 @@ function today() {
 // ── Table ─────────────────────────────────────────────────────
 .slt-table {
   :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
+    background: var(--q-dark-page);
+    color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  body.body--light & {
+    :deep(thead tr th) {
+      background: #eef2f8;
+      color: #003f87;
+    }
   }
   :deep(tbody tr:hover) {
-    background: #f0f5ff !important;
+    background: rgba(var(--q-primary), 0.05) !important;
   }
   :deep(.q-table__top),
   :deep(.q-table__bottom) {
-    background: #f8f9fb;
+    background: transparent;
   }
 }
 

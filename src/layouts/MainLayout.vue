@@ -7,7 +7,7 @@
         <q-btn flat dense round icon="menu" color="white" @click="toggleLeftDrawer" />
 
         <!-- Brand -->
-        <q-toolbar-title class="exec-brand">
+        <q-toolbar-title class="exec-brand cursor-pointer" @click="$router.push('/')">
           <q-icon name="gavel" size="24px" class="q-mr-sm" />
           SLT LegalEdge
         </q-toolbar-title>
@@ -131,12 +131,12 @@
       <q-separator class="opacity-10" />
 
       <!-- Navigation -->
-      <q-list class="q-mt-sm q-px-sm">
+      <q-list class="q-mt-sm q-px-sm q-pb-xl">
         <q-item-label header class="exec-nav-header">
           {{ $t('nav.mainMenu') }}
         </q-item-label>
 
-        <template v-for="item in navItems" :key="item.label">
+        <template v-for="(item, idx) in navItems" :key="item.label || item.separator || idx">
           <q-item-label v-if="item.separator" header class="exec-nav-header q-mt-md">
             {{ item.separator }}
           </q-item-label>
@@ -240,58 +240,72 @@ const breadcrumbs = computed(() => {
   return crumbs
 })
 
-// ── Navigation items ──────────────────────────────────────────
-const navItems = computed(() => [
-  {
-    label: t('nav.dashboard'),
-    caption: t('nav.dashboardCaption'),
-    icon: 'dashboard',
-    route: '/',
-  },
-  { separator: t('nav.legalCasesGroup') },
-  {
-    label: t('nav.initialDocs'),
-    caption: t('nav.initialDocsCaption'),
-    icon: 'description',
-    route: '/initial-docs',
-    badge: '5',
-    badgeColor: 'warning',
-  },
-  {
-    label: t('nav.legalCases'),
-    caption: t('nav.legalCasesCaption'),
-    icon: 'gavel',
-    route: '/cases',
-  },
-  { separator: t('nav.agreementsGroup') },
-  {
-    label: t('nav.agreements'),
-    caption: t('nav.agreementsCaption'),
-    icon: 'handshake',
-    route: '/agreements',
-  },
-  {
-    label: t('nav.approvals'),
-    caption: t('nav.approvalsCaption'),
-    icon: 'verified',
-    route: '/approvals',
-    badge: String(notifStore.unreadCount),
-    badgeColor: 'negative',
-  },
-  { separator: t('nav.systemGroup') },
-  {
-    label: t('nav.reports'),
-    caption: t('nav.reportsCaption'),
-    icon: 'bar_chart',
-    route: '/reports',
-  },
-  {
-    label: t('nav.settings'),
-    caption: t('nav.settingsCaption'),
-    icon: 'settings',
-    route: '/settings',
-  },
-])
+// ── Navigation items (Filtered by Department) ─────────────────
+const navItems = computed(() => {
+  const dept = authStore.user.department
+  const allItems = [
+    {
+      label: t('nav.dashboard'),
+      caption: t('nav.dashboardCaption'),
+      icon: 'dashboard',
+      route: '/',
+    },
+    {
+      group: 'Legal',
+      separator: t('nav.legalCasesGroup'),
+    },
+    {
+      group: 'Legal',
+      label: t('nav.initialDocs'),
+      caption: t('nav.initialDocsCaption'),
+      icon: 'description',
+      route: '/initial-docs',
+      badge: '5',
+      badgeColor: 'warning',
+    },
+    {
+      group: 'Legal',
+      label: t('nav.legalCases'),
+      caption: t('nav.legalCasesCaption'),
+      icon: 'gavel',
+      route: '/cases',
+    },
+    { separator: t('nav.agreementsGroup') },
+    {
+      label: t('nav.agreements'),
+      caption: t('nav.agreementsCaption'),
+      icon: 'handshake',
+      route: '/agreements',
+    },
+    {
+      label: t('nav.approvals'),
+      caption: t('nav.approvalsCaption'),
+      icon: 'verified',
+      route: '/approvals',
+      badge: String(notifStore.unreadCount),
+      badgeColor: 'negative',
+    },
+    { separator: t('nav.systemGroup') },
+    {
+      label: t('nav.reports'),
+      caption: t('nav.reportsCaption'),
+      icon: 'bar_chart',
+      route: '/reports',
+    },
+    {
+      label: t('nav.settings'),
+      caption: t('nav.settingsCaption'),
+      icon: 'settings',
+      route: '/settings',
+    },
+  ]
+
+  // Filter out Legal items if user is not in Legal department
+  if (dept !== 'Legal') {
+    return allItems.filter((item) => item.group !== 'Legal')
+  }
+  return allItems
+})
 </script>
 
 <style lang="scss" scoped>

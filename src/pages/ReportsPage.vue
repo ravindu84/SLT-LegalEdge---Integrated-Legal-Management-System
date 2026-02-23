@@ -126,7 +126,12 @@
                   <!-- Center label -->
                   <div class="slt-doughnut-center">
                     <div class="text-h4 text-weight-bold text-primary">{{ totalCases }}</div>
-                    <div class="text-caption text-grey-5">Total Cases</div>
+                    <div
+                      class="text-caption"
+                      :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-5'"
+                    >
+                      Total Cases
+                    </div>
                   </div>
                 </div>
               </div>
@@ -142,7 +147,11 @@
                       />
                     </q-item-section>
                     <q-item-section>
-                      <q-item-label class="text-body2 text-grey-9">{{ row.type }}</q-item-label>
+                      <q-item-label
+                        class="text-body2"
+                        :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                        >{{ row.type }}</q-item-label
+                      >
                     </q-item-section>
                     <q-item-section side>
                       <q-badge rounded :label="row.total" color="primary" />
@@ -395,7 +404,12 @@
                 <div class="text-caption text-grey-5">{{ a.party }}</div>
               </div>
               <div class="col-auto text-right">
-                <div class="text-weight-bold text-grey-9">LKR {{ fmt(a.value) }}</div>
+                <div
+                  class="text-weight-bold"
+                  :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                >
+                  LKR {{ fmt(a.value) }}
+                </div>
                 <q-badge rounded :color="a.statusColor" :label="a.status" class="q-mt-xs" />
               </div>
             </div>
@@ -1204,10 +1218,21 @@ function fmt(val) {
 
 // ── Financial summary boxes ───────────────────────────────────
 .slt-fin-box {
-  background: #f8f9fb;
-  border: 1px solid #e0e7ef;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   padding: 12px;
+
+  body.body--dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  body.body--light & {
+    background: #f8f9fb;
+    border-color: #e0e7ef;
+  }
+
   &--total {
     border-left: 4px solid #003f87;
   }
@@ -1246,28 +1271,35 @@ function fmt(val) {
 .slt-drilldown-row {
   transition: background 0.15s ease;
   &:hover {
-    background: #e8f0fe !important;
-  }
-  &:active {
-    background: #d2e3fc !important;
+    background: rgba(var(--q-primary), 0.1) !important;
   }
 }
 
 // ── Markup table ─────────────────────────────────────────────
 .slt-mu-table {
   :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
+    background: var(--q-dark-page);
+    color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;
     text-transform: uppercase;
     padding: 8px 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
+
+  body.body--light & {
+    :deep(thead tr th) {
+      background: #eef2f8;
+      color: #003f87;
+    }
+  }
+
   :deep(tbody tr td) {
     padding: 6px 12px;
   }
+
   :deep(tbody tr:hover td) {
-    background: #f5f8ff;
+    background: rgba(var(--q-primary), 0.05) !important;
   }
 }
 </style>

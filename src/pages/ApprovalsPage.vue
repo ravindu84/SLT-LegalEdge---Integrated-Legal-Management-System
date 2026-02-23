@@ -55,7 +55,8 @@
         align="left"
         indicator-color="accent"
         active-color="primary"
-        class="bg-grey-1 border-bottom"
+        class="border-bottom"
+        :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'"
         dense
       >
         <q-tab name="agreements" no-caps>
@@ -111,7 +112,12 @@
             <!-- Title cell -->
             <template #body-cell-title="props">
               <q-td :props="props">
-                <div class="text-weight-bold text-grey-9">{{ props.value }}</div>
+                <div
+                  class="text-weight-bold"
+                  :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                >
+                  {{ props.value }}
+                </div>
                 <div class="text-caption text-grey-5">{{ props.row.agreementType }}</div>
               </q-td>
             </template>
@@ -214,7 +220,12 @@
             <!-- Title cell -->
             <template #body-cell-title="props">
               <q-td :props="props">
-                <div class="text-weight-bold text-grey-9">{{ props.value }}</div>
+                <div
+                  class="text-weight-bold"
+                  :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                >
+                  {{ props.value }}
+                </div>
                 <div class="text-caption text-grey-5">{{ props.row.caseType }}</div>
               </q-td>
             </template>
@@ -339,7 +350,12 @@
 
         <q-card-section class="q-pt-md">
           <!-- Item summary card -->
-          <q-card flat bordered class="q-mb-md bg-grey-1">
+          <q-card
+            flat
+            bordered
+            class="q-mb-md"
+            :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-1'"
+          >
             <q-card-section class="q-pa-sm">
               <div class="row items-center q-gutter-sm">
                 <q-icon
@@ -348,7 +364,12 @@
                   size="20px"
                 />
                 <div class="col">
-                  <div class="text-weight-bold text-grey-9 ellipsis">{{ actionItem?.title }}</div>
+                  <div
+                    class="text-weight-bold ellipsis"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ actionItem?.title }}
+                  </div>
                   <div class="text-caption text-grey-5">
                     {{
                       activeItemType === 'agreement'
@@ -455,6 +476,55 @@
                 <p class="text-body2 text-grey-8 q-mb-none">{{ viewingItem.summaryOfFacts }}</p>
               </div>
             </template>
+
+            <!-- Shared Attachments Section -->
+            <div class="col-12 q-mt-md">
+              <div class="text-subtitle2 text-primary q-mb-sm">Relevant Attachments</div>
+              <q-list bordered separator padding class="rounded-borders bg-white">
+                <q-item
+                  v-for="(doc, idx) in viewingItem.docs || viewingItem.attachments"
+                  :key="idx"
+                  dense
+                >
+                  <q-item-section avatar>
+                    <q-icon :name="docIcon(doc.type)" :color="docColor(doc.type)" size="20px" />
+                  </q-item-section>
+                  <q-item-section>
+                    <q-item-label class="text-weight-bold text-body2">{{ doc.name }}</q-item-label>
+                    <q-item-label caption
+                      >{{ doc.type.toUpperCase() }} · {{ doc.size }}</q-item-label
+                    >
+                  </q-item-section>
+                  <q-item-section side>
+                    <div class="row q-gutter-xs">
+                      <q-btn
+                        flat
+                        round
+                        dense
+                        icon="visibility"
+                        color="primary"
+                        size="sm"
+                        @click="viewDocument(doc)"
+                      />
+                      <q-btn
+                        flat
+                        round
+                        dense
+                        icon="download"
+                        color="grey-7"
+                        size="sm"
+                        @click="downloadDocument(doc)"
+                      />
+                    </div>
+                  </q-item-section>
+                </q-item>
+                <q-item v-if="!(viewingItem.docs || viewingItem.attachments)?.length">
+                  <q-item-section class="text-grey-5 text-center text-caption q-py-sm">
+                    No attachments available for this item.
+                  </q-item-section>
+                </q-item>
+              </q-list>
+            </div>
           </div>
         </q-card-section>
 
@@ -466,10 +536,7 @@
             color="positive"
             icon="check_circle"
             :label="viewingItemType === 'agreement' ? approveLabel : 'Approve Document'"
-            @click="
-              showViewDialog = false
-              openAction(viewingItem, 'approve', viewingItemType)
-            "
+            @click="handleOpenAction(viewingItem, 'approve', viewingItemType)"
           />
           <q-btn
             unelevated
@@ -477,13 +544,82 @@
             color="negative"
             icon="cancel"
             label="Reject"
-            @click="
-              showViewDialog = false
-              openAction(viewingItem, 'reject', viewingItemType)
-            "
+            @click="handleOpenAction(viewingItem, 'reject', viewingItemType)"
           />
           <q-btn flat no-caps label="Close" color="grey-7" @click="showViewDialog = false" />
         </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         DOCUMENT PREVIEW DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog
+      v-model="showPreviewDialog"
+      maximized
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card class="column no-wrap bg-grey-3">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon :name="docIcon(previewDoc?.type)" />
+          <div class="text-weight-bold q-ml-sm">Preview: {{ previewDoc?.name }}</div>
+          <q-space />
+          <q-btn
+            dense
+            flat
+            icon="download"
+            label="Download"
+            @click="downloadDocument(previewDoc)"
+            no-caps
+            class="q-mr-md"
+          />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+        <q-card-section class="col flex flex-center q-pa-none overflow-hidden">
+          <div v-if="previewDoc?.type === 'pdf'" class="full-width full-height column flex-center">
+            <q-icon name="picture_as_pdf" size="120px" color="negative" />
+            <div class="text-h6 text-grey-8 q-mt-md">Secure PDF Viewer Simulation</div>
+            <div class="text-caption text-grey-6">
+              {{ previewDoc.name }} ({{ previewDoc.size }})
+            </div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Open in External Viewer"
+              icon="open_in_new"
+              no-caps
+              class="q-mt-lg"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+          <div v-else-if="['jpg', 'png'].includes(previewDoc?.type)" class="column flex-center">
+            <q-img
+              src="https://placehold.co/800x1200/e3f2fd/2196f3?text=SLT+Legal+Document+Sample"
+              style="
+                max-width: 800px;
+                border: 1px solid #ccc;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+              "
+            />
+            <div class="text-caption text-grey-6 q-mt-md">
+              Sample Document Image: {{ previewDoc.name }}
+            </div>
+          </div>
+          <div v-else class="column flex-center">
+            <q-icon name="insert_drive_file" size="120px" color="grey-6" />
+            <div class="text-h6 text-grey-8 q-mt-md">Preview not available for this file type</div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Download to View"
+              icon="download"
+              no-caps
+              class="q-mt-md"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+        </q-card-section>
       </q-card>
     </q-dialog>
   </q-page>
@@ -529,6 +665,10 @@ const pendingAgreements = ref([
     submittedBy: 'T. Gunathilaka',
     description:
       '3-year Oracle Database Enterprise Edition licensing and support for SLT core billing systems.',
+    docs: [
+      { name: 'Oracle-License-Agreement.pdf', type: 'pdf', size: '4.2 MB' },
+      { name: 'IT_Infrastructure_Certificate.pdf', type: 'pdf', size: '1.2 MB' },
+    ],
   },
   {
     id: 102,
@@ -545,6 +685,10 @@ const pendingAgreements = ref([
     submittedBy: 'A. Ranasinghe',
     description:
       'Co-location of Virtusa development servers at SLT Welikade data centre with managed connectivity.',
+    docs: [
+      { name: 'Virtusa_MOU_Draft_Final.pdf', type: 'pdf', size: '1.4 MB' },
+      { name: 'Commercial_Terms_Matrix.xlsx', type: 'xlsx', size: '42 KB' },
+    ],
   },
   {
     id: 103,
@@ -598,6 +742,10 @@ const pendingDocs = ref([
     daysPending: 8,
     summaryOfFacts:
       'SLT seeks recovery of LKR 2.75M in unpaid co-location charges from Netsync Solutions accumulated over 14 months.',
+    attachments: [
+      { name: 'Arrears_Notice_03.pdf', type: 'pdf', size: '240 KB' },
+      { name: 'Billing_Summary_2025.xlsx', type: 'xlsx', size: '120 KB' },
+    ],
   },
   {
     id: 202,
@@ -730,8 +878,10 @@ const activeTab = ref('agreements')
 //  VIEW DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showViewDialog = ref(false)
+const showPreviewDialog = ref(false)
 const viewingItem = ref(null)
 const viewingItemType = ref('')
+const previewDoc = ref(null)
 
 function viewItem(row, type) {
   viewingItem.value = row
@@ -848,7 +998,66 @@ async function refreshInbox() {
 //  HELPERS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 function fmt(val) {
-  return Number(val || 0).toLocaleString('en-LK')
+  return Number(val).toLocaleString('en-LK')
+}
+
+function docIcon(type) {
+  return (
+    {
+      pdf: 'picture_as_pdf',
+      doc: 'description',
+      docx: 'description',
+      jpg: 'image',
+      png: 'image',
+      xlsx: 'table_view',
+      xls: 'table_view',
+    }[type] || 'insert_drive_file'
+  )
+}
+
+function docColor(type) {
+  return (
+    {
+      pdf: 'negative',
+      doc: 'info',
+      docx: 'info',
+      jpg: 'positive',
+      png: 'positive',
+      xlsx: 'green-8',
+      xls: 'green-8',
+    }[type] || 'grey-6'
+  )
+}
+
+function downloadDocument(doc) {
+  if (!doc) return
+  $q.notify({
+    type: 'ongoing',
+    message: `Downloading ${doc.name}...`,
+    caption: 'Fetching from secure vault',
+    icon: 'download',
+    group: false,
+    timeout: 1000,
+  })
+  setTimeout(() => {
+    const link = document.createElement('a')
+    link.href =
+      'data:application/pdf;base64,JVBERi0xLjcK1f3pCjEgMCBvYmoKPDwvVHlwZS9DYXRhbG9nL1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvVHlwZS9QYWdlcy9Db3VudCAxL0tpZHNbMyAwIFJdPj4KZW5kb2JqCjMgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNTk1IDg0Ml0vQ29udGVudHMgNCAwIFI+PgplbmRvYmoKNCAwIG9iago8PC9MZW5ndGggNTY+PnN0cmVhbQpCVAovRjEgMjQgVGYKNTAgODAwIFRkCihTTEQgTGVnYWxFZGdlIC0gRG9jdW1lbnQgRG93bmxvYWQgU2ltdWxhdGlvbikgVmoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8L0Jhc2VGb250L0hlbHZldGljYS9UeXBlL0ZvbnQvU3VidHlwZS9UcnVlVHlwZT4+CmVuZG9iago2IDAgb2JqCjw8L1Byb2R1Y2VyIChTTEQgTGVnYWxFZGdlKS9DcmVhdGlvbkRhdGUgKEQ6MjAyNjAyMjMxMzI1MzcpPj4KZW5kb2JqCnRyYWlsZXIKPDwvUm9vdCAxIDAgUi9JbmZvIDYgMCBSL1NpemUgNz4+CnN0YXJ0eHJlZgo0OTQKJSVFT0Y='
+    link.download = doc.name
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    $q.notify({
+      type: 'positive',
+      message: `${doc.name} saved successfully.`,
+      icon: 'check_circle',
+    })
+  }, 1200)
+}
+
+function viewDocument(doc) {
+  previewDoc.value = doc
+  showPreviewDialog.value = true
 }
 </script>
 
@@ -874,25 +1083,33 @@ function fmt(val) {
 
 // ── Tab bottom border ─────────────────────────────────────────
 .border-bottom {
-  border-bottom: 1px solid #e0e7ef;
+  border-bottom: 1px solid var(--q-primary);
+  opacity: 0.2;
 }
 
 // ── Table ─────────────────────────────────────────────────────
 .slt-table {
   :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
+    background: var(--q-dark-page);
+    color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  body.body--light & {
+    :deep(thead tr th) {
+      background: #eef2f8;
+      color: #003f87;
+    }
   }
   :deep(tbody tr:hover) {
-    background: #f0f5ff !important;
+    background: rgba(var(--q-primary), 0.05) !important;
   }
   :deep(.q-table__top),
   :deep(.q-table__bottom) {
-    background: #f8f9fb;
+    background: transparent;
   }
 }
 </style>

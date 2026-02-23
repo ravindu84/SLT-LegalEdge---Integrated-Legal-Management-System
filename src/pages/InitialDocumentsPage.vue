@@ -144,7 +144,7 @@
                 icon="visibility"
                 color="primary"
                 size="sm"
-                @click="viewDocument(props.row)"
+                @click="viewRecordDetails(props.row)"
               >
                 <q-tooltip>View Details</q-tooltip>
               </q-btn>
@@ -401,37 +401,168 @@
           <q-btn dense flat icon="close" v-close-popup />
         </q-bar>
 
-        <q-card-section v-if="selectedDoc">
-          <div class="row q-col-gutter-sm">
-            <DetailRow label="Reference No." :value="`#${selectedDoc.refNo}`" icon="tag" />
-            <DetailRow label="Case Title" :value="selectedDoc.caseTitle" icon="title" />
-            <DetailRow label="Case Type" :value="selectedDoc.caseType" icon="category" />
-            <DetailRow label="Status" :value="selectedDoc.status" icon="info" />
-            <DetailRow label="Plaintiff" :value="selectedDoc.plaintiff" icon="person" />
-            <DetailRow label="Defendant" :value="selectedDoc.defendant" icon="person_off" />
-            <DetailRow
-              label="Date of Occurrence"
-              :value="selectedDoc.dateOfOccurrence"
-              icon="event"
-            />
-            <DetailRow
-              label="Financial Exposure"
-              :value="
-                selectedDoc.financialExposure
-                  ? `LKR ${formatCurrency(selectedDoc.financialExposure)}`
-                  : '—'
-              "
-              icon="payments"
-            />
-            <DetailRow label="Nature of Case" :value="selectedDoc.natureOfCase" icon="gavel" full />
-            <DetailRow
-              label="Summary of Facts"
-              :value="selectedDoc.summaryOfFacts"
-              icon="notes"
-              full
-            />
-          </div>
-        </q-card-section>
+        <q-tabs
+          v-model="docDetailTab"
+          dense
+          :class="$q.dark.isActive ? 'bg-dark' : 'bg-blue-1'"
+          active-color="primary"
+          indicator-color="primary"
+          align="justify"
+        >
+          <q-tab name="details" label="Details" icon="info" />
+          <q-tab name="attachments" label="Attachments" icon="attach_file" />
+          <q-tab name="versions" label="Versions" icon="auto_awesome_motion" />
+        </q-tabs>
+
+        <q-separator />
+
+        <q-tab-panels v-model="docDetailTab" animated>
+          <q-tab-panel name="details" class="q-pa-md">
+            <div v-if="selectedDoc" class="row q-col-gutter-sm">
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="tag" size="14px" class="q-mr-xs" />Reference No.
+                </div>
+                <div class="text-body2 text-weight-medium truncate">#{{ selectedDoc.refNo }}</div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="title" size="14px" class="q-mr-xs" />Case Title
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{ selectedDoc.caseTitle }}
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="category" size="14px" class="q-mr-xs" />Case Type
+                </div>
+                <div class="text-body2 text-weight-medium truncate">{{ selectedDoc.caseType }}</div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="info" size="14px" class="q-mr-xs" />Status
+                </div>
+                <div class="text-body2 text-weight-medium truncate">{{ selectedDoc.status }}</div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="person" size="14px" class="q-mr-xs" />Plaintiff
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{ selectedDoc.plaintiff }}
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="person_off" size="14px" class="q-mr-xs" />Defendant
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{ selectedDoc.defendant }}
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="event" size="14px" class="q-mr-xs" />Date of Occurrence
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{ selectedDoc.dateOfOccurrence || '—' }}
+                </div>
+              </div>
+              <div class="col-12 col-sm-6 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="payments" size="14px" class="q-mr-xs" />Financial Exposure
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{
+                    selectedDoc.financialExposure
+                      ? `LKR ${formatCurrency(selectedDoc.financialExposure)}`
+                      : '—'
+                  }}
+                </div>
+              </div>
+              <div class="col-12 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="gavel" size="14px" class="q-mr-xs" />Nature of Case
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{ selectedDoc.natureOfCase || '—' }}
+                </div>
+              </div>
+              <div class="col-12 q-py-xs">
+                <div class="text-caption text-grey-6 row items-center">
+                  <q-icon name="notes" size="14px" class="q-mr-xs" />Summary of Facts
+                </div>
+                <div class="text-body2 text-weight-medium truncate">
+                  {{ selectedDoc.summaryOfFacts || '—' }}
+                </div>
+              </div>
+            </div>
+          </q-tab-panel>
+
+          <q-tab-panel name="attachments" class="q-pa-md">
+            <div class="row items-center q-mb-md">
+              <div class="text-subtitle2 text-primary">Attached Evidence & Support Docs</div>
+            </div>
+            <q-list bordered separator padding class="rounded-borders">
+              <q-item v-for="(file, idx) in selectedDoc.attachments" :key="idx">
+                <q-item-section avatar>
+                  <q-icon :name="docIcon(file.type)" :color="docColor(file.type)" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">{{ file.name }}</q-item-label>
+                  <q-item-label caption
+                    >{{ file.type.toUpperCase() }} · {{ file.size }} · {{ file.date }}</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <div class="row q-gutter-xs">
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="visibility"
+                      color="primary"
+                      size="sm"
+                      @click="viewDocument(file)"
+                    />
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="download"
+                      color="grey-7"
+                      size="sm"
+                      @click="downloadDocument(file)"
+                    />
+                  </div>
+                </q-item-section>
+              </q-item>
+              <q-item v-if="!selectedDoc.attachments || !selectedDoc.attachments.length">
+                <q-item-section class="text-grey-5 text-center q-py-lg">
+                  No attachments provided.
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-tab-panel>
+
+          <q-tab-panel name="versions" class="q-pa-md">
+            <q-list bordered separator padding class="rounded-borders">
+              <q-item v-for="(v, i) in mockVersions" :key="i">
+                <q-item-section avatar>
+                  <q-avatar color="blue-1" text-color="blue-8" size="32px"> v{{ v.ver }} </q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">Version {{ v.ver }}</q-item-label>
+                  <q-item-label caption>{{ v.date }} by {{ v.by }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn flat dense round icon="visibility" color="grey-7" size="sm" />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-tab-panel>
+        </q-tab-panels>
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn
@@ -441,10 +572,7 @@
             color="positive"
             icon="check_circle"
             label="Approve"
-            @click="
-              confirmAction(selectedDoc, 'Approve')
-              showViewDialog = false
-            "
+            @click="handleApprove(selectedDoc)"
           />
           <q-btn
             v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status)"
@@ -453,10 +581,7 @@
             color="negative"
             icon="cancel"
             label="Reject"
-            @click="
-              confirmAction(selectedDoc, 'Reject')
-              showViewDialog = false
-            "
+            @click="handleReject(selectedDoc)"
           />
           <q-btn unelevated no-caps color="primary" label="Close" v-close-popup />
         </q-card-actions>
@@ -521,6 +646,78 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         DOCUMENT PREVIEW DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog
+      v-model="showPreviewDialog"
+      maximized
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card class="column no-wrap bg-grey-3">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon :name="docIcon(previewDoc?.type)" />
+          <div class="text-weight-bold q-ml-sm">Preview: {{ previewDoc?.name }}</div>
+          <q-space />
+          <q-btn
+            dense
+            flat
+            icon="download"
+            label="Download"
+            @click="downloadDocument(previewDoc)"
+            no-caps
+            class="q-mr-md"
+          />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+        <q-card-section class="col flex flex-center q-pa-none overflow-hidden">
+          <div v-if="previewDoc?.type === 'pdf'" class="full-width full-height column flex-center">
+            <q-icon name="picture_as_pdf" size="120px" color="negative" />
+            <div class="text-h6 text-grey-8 q-mt-md">Secure PDF Viewer Simulation</div>
+            <div class="text-caption text-grey-6">
+              {{ previewDoc.name }} ({{ previewDoc.size }})
+            </div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Open in External Viewer"
+              icon="open_in_new"
+              no-caps
+              class="q-mt-lg"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+          <div v-else-if="['jpg', 'png'].includes(previewDoc?.type)" class="column flex-center">
+            <q-img
+              src="https://placehold.co/800x1200/e3f2fd/2196f3?text=SLT+Legal+Document+Sample"
+              style="
+                max-width: 800px;
+                border: 1px solid #ccc;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+              "
+            />
+            <div class="text-caption text-grey-6 q-mt-md">
+              Sample Document Image: {{ previewDoc.name }}
+            </div>
+          </div>
+          <div v-else class="column flex-center">
+            <q-icon name="insert_drive_file" size="120px" color="grey-6" />
+            <div class="text-h6 text-grey-8 q-mt-md">Preview not available for this file type</div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Download to View"
+              icon="download"
+              no-caps
+              class="q-mt-md"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -531,19 +728,8 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  HELPER COMPONENT  (inline detail-row for the view dialog)
+//  CONSTANTS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const DetailRow = {
-  props: { label: String, value: String, icon: String, full: Boolean },
-  template: `
-    <div :class="full ? 'col-12' : 'col-12 col-sm-6'" class="q-mb-xs">
-      <div class="text-caption text-grey-5 row items-center">
-        <q-icon :name="icon" size="14px" class="q-mr-xs" />{{ label }}
-      </div>
-      <div class="text-body2 text-weight-medium q-pl-lg">{{ value || '—' }}</div>
-    </div>
-  `,
-}
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  CONSTANTS
@@ -593,7 +779,11 @@ const documents = ref([
       'SLT Mobitel initiated recovery proceedings against Netwin Pvt Ltd for outstanding leased-circuit charges amounting to LKR 4.5M.',
     submittedDate: '2026-01-15',
     status: 'Pending',
-    attachments: null,
+    attachments: [
+      { name: 'Unpaid_Invoices_Bundle.pdf', type: 'pdf', size: '2.4 MB', date: '2026-01-15' },
+      { name: 'Lease_Agreement_Scan.pdf', type: 'pdf', size: '1.1 MB', date: '2026-01-15' },
+      { name: 'Arrears_Calculation.xlsx', type: 'xlsx', size: '32 KB', date: '2026-01-15' },
+    ],
   },
   {
     id: 2,
@@ -610,7 +800,10 @@ const documents = ref([
       'Portion of the Kandy Exchange land was encroached upon during urban development activities without prior notice to SLT.',
     submittedDate: '2026-01-22',
     status: 'Under Review',
-    attachments: null,
+    attachments: [
+      { name: 'Survey_Plan_Kandy.jpg', type: 'jpg', size: '1.8 MB', date: '2026-01-22' },
+      { name: 'Land_Registry_Extract.pdf', type: 'pdf', size: '890 KB', date: '2026-01-22' },
+    ],
   },
   {
     id: 3,
@@ -627,7 +820,10 @@ const documents = ref([
       'During road widening, contractor cut 600m of SLT Fiber backbone cable resulting in service disruption for 4,200 customers.',
     submittedDate: '2026-02-01',
     status: 'Approved',
-    attachments: null,
+    attachments: [
+      { name: 'Incident_Report_Southern.pdf', type: 'pdf', size: '560 KB', date: '2026-02-01' },
+      { name: 'Repair_Estimate_v2.xlsx', type: 'xlsx', size: '24 KB', date: '2026-02-01' },
+    ],
   },
   {
     id: 4,
@@ -715,9 +911,13 @@ const statusStats = computed(() => [
 //  FORM DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showFormDialog = ref(false)
+const showViewDialog = ref(false)
+const showConfirmDialog = ref(false)
+const showPreviewDialog = ref(false)
 const isEditMode = ref(false)
 const submitting = ref(false)
 const docFormRef = ref(null)
+const previewDoc = ref(null)
 
 const emptyForm = () => ({
   id: null,
@@ -789,18 +989,27 @@ async function submitForm() {
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  VIEW DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const showViewDialog = ref(false)
 const selectedDoc = ref(null)
+const docDetailTab = ref('details')
 
-function viewDocument(doc) {
+function viewRecordDetails(doc) {
   selectedDoc.value = doc
   showViewDialog.value = true
+}
+
+function handleApprove(doc) {
+  confirmAction(doc, 'Approve')
+  showViewDialog.value = false
+}
+
+function handleReject(doc) {
+  confirmAction(doc, 'Reject')
+  showViewDialog.value = false
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  APPROVE / REJECT
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const showConfirmDialog = ref(false)
 const pendingDoc = ref(null)
 const pendingAction = ref('')
 const actionRemarks = ref('')
@@ -854,9 +1063,73 @@ function typeColor(type) {
   return map[type] || 'grey-7'
 }
 
+const mockVersions = [
+  { ver: 3, date: '2026-02-15 10:30', by: 'N. Silva' },
+  { ver: 2, date: '2026-02-10 14:20', by: 'M. Perera' },
+  { ver: 1, date: '2026-02-05 09:00', by: 'M. Perera' },
+]
+
 function formatCurrency(val) {
-  if (!val) return '0'
-  return Number(val).toLocaleString('en-LK')
+  return Number(val).toLocaleString('en-LK', { minimumFractionDigits: 0 })
+}
+
+function docIcon(type) {
+  return (
+    {
+      pdf: 'picture_as_pdf',
+      doc: 'description',
+      docx: 'description',
+      jpg: 'image',
+      png: 'image',
+      xlsx: 'table_view',
+      xls: 'table_view',
+    }[type] || 'insert_drive_file'
+  )
+}
+
+function docColor(type) {
+  return (
+    {
+      pdf: 'negative',
+      doc: 'info',
+      docx: 'info',
+      jpg: 'positive',
+      png: 'positive',
+      xlsx: 'green-8',
+      xls: 'green-8',
+    }[type] || 'grey-6'
+  )
+}
+
+function downloadDocument(doc) {
+  if (!doc) return
+  $q.notify({
+    type: 'ongoing',
+    message: `Downloading ${doc.name}...`,
+    caption: 'Fetching from secure vault',
+    icon: 'download',
+    group: false,
+    timeout: 1000,
+  })
+  setTimeout(() => {
+    const link = document.createElement('a')
+    link.href =
+      'data:application/pdf;base64,JVBERi0xLjcK1f3pCjEgMCBvYmoKPDwvVHlwZS9DYXRhbG9nL1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvVHlwZS9QYWdlcy9Db3VudCAxL0tpZHNbMyAwIFJdPj4KZW5kb2JqCjMgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNTk1IDg0Ml0vQ29udGVudHMgNCAwIFI+PgplbmRvYmoKNCAwIG9iago8PC9MZW5ndGggNTY+PnN0cmVhbQpCVAovRjEgMjQgVGYKNTAgODAwIFRkCihTTEQgTGVnYWxFZGdlIC0gRG9jdW1lbnQgRG93bmxvYWQgU2ltdWxhdGlvbikgVmoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8L0Jhc2VGb250L0hlbHZldGljYS9UeXBlL0ZvbnQvU3VidHlwZS9UcnVlVHlwZT4+CmVuZG9iago2IDAgb2JqCjw8L1Byb2R1Y2VyIChTTEQgTGVnYWxFZGdlKS9DcmVhdGlvbkRhdGUgKEQ6MjAyNjAyMjMxMzI1MzcpPj4KZW5kb2JqCnRyYWlsZXIKPDwvUm9vdCAxIDAgUi9JbmZvIDYgMCBSL1NpemUgNz4+CnN0YXJ0eHJlZgo0OTQKJSVFT0Y='
+    link.download = doc.name
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    $q.notify({
+      type: 'positive',
+      message: `${doc.name} saved successfully.`,
+      icon: 'check_circle',
+    })
+  }, 1200)
+}
+
+function viewDocument(doc) {
+  previewDoc.value = doc
+  showPreviewDialog.value = true
 }
 </script>
 
@@ -895,19 +1168,26 @@ function formatCurrency(val) {
 // ── Table styles ──────────────────────────────────────────────
 .slt-table {
   :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
+    background: var(--q-dark-page);
+    color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  body.body--light & {
+    :deep(thead tr th) {
+      background: #eef2f8;
+      color: #003f87;
+    }
   }
   :deep(tbody tr:hover) {
-    background: #f0f5ff !important;
+    background: rgba(var(--q-primary), 0.05) !important;
   }
   :deep(.q-table__top),
   :deep(.q-table__bottom) {
-    background: #f8f9fb;
+    background: transparent;
   }
 }
 </style>

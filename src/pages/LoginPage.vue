@@ -1,5 +1,8 @@
 <template>
-  <div class="slt-login-root row no-wrap full-height">
+  <div
+    class="slt-login-root row no-wrap full-height"
+    :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-2'"
+  >
     <!-- ─── LEFT PANEL — Branding ─────────────────────────────── -->
     <div class="slt-login-brand col-12 col-md-5 column items-center justify-center q-pa-xl">
       <!-- Logo -->
@@ -26,12 +29,24 @@
     </div>
 
     <!-- ─── RIGHT PANEL — Login Form ──────────────────────────── -->
-    <div class="col-12 col-md-7 column items-center justify-center q-pa-xl slt-login-form-panel">
-      <q-card flat class="slt-login-card q-pa-xl">
+    <div
+      class="col-12 col-md-7 column items-center justify-center q-pa-xl slt-login-form-panel"
+      :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-2'"
+    >
+      <q-card
+        flat
+        class="slt-login-card q-pa-xl"
+        :class="$q.dark.isActive ? 'bg-grey-10 text-white' : 'bg-white'"
+      >
         <!-- Header -->
         <div class="text-center q-mb-xl">
-          <div class="text-h5 text-weight-bold text-primary">Welcome back</div>
-          <div class="text-body2 text-grey-6 q-mt-xs">
+          <div
+            class="text-h5 text-weight-bold"
+            :class="$q.dark.isActive ? 'text-blue-2' : 'text-primary'"
+          >
+            Welcome back
+          </div>
+          <div class="text-body2 q-mt-xs" :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-6'">
             Sign in to access the Legal Management System
           </div>
         </div>
@@ -48,8 +63,12 @@
                 unelevated
                 no-caps
                 size="sm"
-                :color="selectedRole === role.key ? 'primary' : 'grey-2'"
-                :text-color="selectedRole === role.key ? 'white' : 'grey-8'"
+                :color="
+                  selectedRole === role.key ? 'primary' : $q.dark.isActive ? 'grey-9' : 'grey-3'
+                "
+                :text-color="
+                  selectedRole === role.key ? 'white' : $q.dark.isActive ? 'grey-3' : 'grey-8'
+                "
                 :icon="role.icon"
                 :label="role.label"
                 @click="applyRole(role)"
@@ -230,7 +249,6 @@ const features = [
 // ── Root ─────────────────────────────────────────────────────
 .slt-login-root {
   min-height: 100vh;
-  background: #f0f4f9;
 }
 
 // ── Brand panel (left) ───────────────────────────────────────
@@ -291,15 +309,19 @@ const features = [
 
 // ── Form panel (right) ───────────────────────────────────────
 .slt-login-form-panel {
-  background: #f0f4f9;
+  // background colors managed by :class
 }
 
 .slt-login-card {
   width: 100%;
   max-width: 460px;
-  background: #fff;
   border-radius: 16px;
   box-shadow: 0 8px 40px rgba(0, 63, 135, 0.12);
+}
+
+:global(body.body--dark) .slt-login-card {
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 // ── Login button ─────────────────────────────────────────────

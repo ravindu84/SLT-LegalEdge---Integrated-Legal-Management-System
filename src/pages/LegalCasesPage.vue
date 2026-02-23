@@ -267,13 +267,14 @@
           <q-tab name="overview" icon="info" label="Overview" />
           <q-tab
             name="type_fields"
-            :icon="typeIcon(activeCase.caseType)"
+            :icon="typeTabIcon(activeCase.caseType)"
             :label="typeTabLabel(activeCase.caseType)"
           />
           <q-tab name="proceedings" icon="event_note" label="Proceedings" />
           <q-tab name="documents" icon="folder_open" label="Documents" />
           <q-tab name="notes" icon="comment" label="Notes" />
           <q-tab name="audit" icon="history" label="Audit Trail" />
+          <q-tab name="versions" icon="auto_awesome_motion" label="Versions" />
         </q-tabs>
 
         <q-separator />
@@ -287,17 +288,62 @@
                 <div class="slt-field-group">
                   <div class="slt-section-label">Case Information</div>
 
-                  <InfoRow label="Case Number" :value="activeCase.caseNo" icon="tag" />
-                  <InfoRow label="Case Title" :value="activeCase.title" icon="title" />
-                  <InfoRow label="Case Type" :value="activeCase.caseType" icon="category" />
-                  <InfoRow label="Nature of Case" :value="activeCase.natureOfCase" icon="gavel" />
-                  <InfoRow
-                    label="Date of Occurrence"
-                    :value="activeCase.dateOfOccurrence"
-                    icon="event"
-                  />
-                  <InfoRow label="Filed Date" :value="activeCase.filedDate" icon="task_alt" />
-                  <InfoRow label="Status" :value="activeCase.status" icon="info" />
+                  <div class="row items-start q-py-xs slt-info-row border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="tag" size="14px" class="q-mr-xs" />Case Number
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.caseNo }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs slt-info-row border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="title" size="14px" class="q-mr-xs" />Case Title
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.title }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs slt-info-row border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="category" size="14px" class="q-mr-xs" />Case Type
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.caseType }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs slt-info-row border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="gavel" size="14px" class="q-mr-xs" />Nature of Case
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.natureOfCase }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs slt-info-row border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="event" size="14px" class="q-mr-xs" />Date of Occurrence
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.dateOfOccurrence }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs slt-info-row border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="task_alt" size="14px" class="q-mr-xs" />Filed Date
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.filedDate }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="info" size="14px" class="q-mr-xs" />Status
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.status }}
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -305,28 +351,58 @@
               <div class="col-12 col-md-6">
                 <div class="slt-field-group">
                   <div class="slt-section-label">Parties & Assignment</div>
-                  <InfoRow label="Plaintiff" :value="activeCase.plaintiff" icon="person" />
-                  <InfoRow label="Defendant" :value="activeCase.defendant" icon="person_off" />
-                  <InfoRow label="Court" :value="activeCase.court" icon="account_balance" />
-                  <InfoRow
-                    label="Assigned Lawyer"
-                    :value="activeCase.assignedLawyer"
-                    icon="badge"
-                  />
-                  <InfoRow
-                    label="Financial Exposure"
-                    :value="
-                      activeCase.financialExposure
-                        ? `LKR ${fmt(activeCase.financialExposure)}`
-                        : '—'
-                    "
-                    icon="payments"
-                  />
-                  <InfoRow
-                    label="Next Hearing"
-                    :value="activeCase.nextHearing || '—'"
-                    icon="calendar_today"
-                  />
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="person" size="14px" class="q-mr-xs" />Plaintiff
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.plaintiff }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="person_off" size="14px" class="q-mr-xs" />Defendant
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.defendant }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="account_balance" size="14px" class="q-mr-xs" />Court
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.court }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="badge" size="14px" class="q-mr-xs" />Assigned Lawyer
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.assignedLawyer }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="payments" size="14px" class="q-mr-xs" />Financial Exposure
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{
+                        activeCase.financialExposure
+                          ? `LKR ${fmt(activeCase.financialExposure)}`
+                          : '—'
+                      }}
+                    </div>
+                  </div>
+                  <div class="row items-start q-py-xs border-bottom">
+                    <div class="col-5 row items-center text-caption text-grey-5">
+                      <q-icon name="calendar_today" size="14px" class="q-mr-xs" />Next Hearing
+                    </div>
+                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                      {{ activeCase.nextHearing || '—' }}
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Summary of facts -->
@@ -1194,10 +1270,24 @@
                 </q-item-section>
                 <q-item-section side>
                   <div class="row q-gutter-xs">
-                    <q-btn flat round dense icon="visibility" color="primary" size="sm"
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="visibility"
+                      color="primary"
+                      size="sm"
+                      @click="viewDocument(doc)"
                       ><q-tooltip>Preview</q-tooltip></q-btn
                     >
-                    <q-btn flat round dense icon="download" color="grey-7" size="sm"
+                    <q-btn
+                      flat
+                      round
+                      dense
+                      icon="download"
+                      color="grey-7"
+                      size="sm"
+                      @click="downloadDocument(doc)"
                       ><q-tooltip>Download</q-tooltip></q-btn
                     >
                   </div>
@@ -1297,6 +1387,27 @@
                 </q-td>
               </template>
             </q-table>
+          </q-tab-panel>
+
+          <!-- Versions Tab (LCH-BR-02 Simulation) -->
+          <q-tab-panel name="versions" class="q-pa-md">
+            <div class="row items-center q-mb-md">
+              <div class="slt-section-label col q-mb-none">Document Version History</div>
+            </div>
+            <q-list bordered separator padding class="rounded-borders">
+              <q-item v-for="(v, i) in activeCase.versions || mockVersions" :key="i">
+                <q-item-section avatar>
+                  <q-avatar color="blue-1" text-color="blue-8" size="32px">v{{ v.ver }}</q-avatar>
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label class="text-weight-bold">Version {{ v.ver }}</q-item-label>
+                  <q-item-label caption>{{ v.date }} by {{ v.by }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn flat dense round icon="visibility" color="grey-7" size="sm" />
+                </q-item-section>
+              </q-item>
+            </q-list>
           </q-tab-panel>
         </q-tab-panels>
 
@@ -1415,6 +1526,143 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         CASE TYPE SHIFT DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog v-model="showTypeShiftDialog">
+      <q-card style="width: 440px; max-width: 95vw">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon name="swap_horiz" />
+          <div class="text-weight-bold q-ml-sm">Shift Case Type</div>
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+        <q-card-section>
+          <div class="text-subtitle2 q-mb-md">Reclassify Case #{{ activeCase?.caseNo }}</div>
+          <div class="row q-col-gutter-md">
+            <div class="col-12">
+              <q-select
+                v-model="proposedType"
+                outlined
+                dense
+                label="New Case Type *"
+                :options="[
+                  'Money Recovery',
+                  'Land Case',
+                  'Damages',
+                  'Appeals',
+                  'Criminal',
+                  'Inquiry',
+                  'Other',
+                ]"
+                emit-value
+                map-options
+              />
+            </div>
+            <div class="col-12">
+              <q-input
+                v-model="shiftReason"
+                outlined
+                dense
+                label="Reason for Shift / Supervisor Approval Ref *"
+                type="textarea"
+                rows="3"
+              />
+            </div>
+          </div>
+          <div class="q-mt-md text-caption text-negative">
+            <q-icon name="warning" class="q-mr-xs" /> Moving a case between types may hide some
+            type-specific data fields.
+          </div>
+        </q-card-section>
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn flat no-caps label="Cancel" color="grey-7" v-close-popup />
+          <q-btn
+            unelevated
+            no-caps
+            color="amber-9"
+            icon="check"
+            label="Confirm Shift"
+            :disabled="!proposedType || !shiftReason"
+            @click="executeTypeShift"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         DOCUMENT PREVIEW DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog
+      v-model="showPreviewDialog"
+      maximized
+      transition-show="slide-up"
+      transition-hide="slide-down"
+    >
+      <q-card class="column no-wrap bg-grey-3">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon :name="docIcon(previewDoc?.type)" />
+          <div class="text-weight-bold q-ml-sm">Preview: {{ previewDoc?.name }}</div>
+          <q-space />
+          <q-btn
+            dense
+            flat
+            icon="download"
+            label="Download"
+            @click="downloadDocument(previewDoc)"
+            no-caps
+            class="q-mr-md"
+          />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+
+        <q-card-section class="col flex flex-center q-pa-none overflow-hidden">
+          <div v-if="previewDoc?.type === 'pdf'" class="full-width full-height column flex-center">
+            <q-icon name="picture_as_pdf" size="120px" color="negative" />
+            <div class="text-h6 text-grey-8 q-mt-md">Secure PDF Viewer Simulation</div>
+            <div class="text-caption text-grey-6">
+              {{ previewDoc.name }} ({{ previewDoc.size }})
+            </div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Open in External Viewer"
+              icon="open_in_new"
+              no-caps
+              class="q-mt-lg"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+          <div v-else-if="['jpg', 'png'].includes(previewDoc?.type)" class="column flex-center">
+            <q-img
+              src="https://placehold.co/800x1200/e3f2fd/2196f3?text=SLT+Legal+Document+Sample"
+              style="
+                max-width: 800px;
+                border: 1px solid #ccc;
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+              "
+            />
+            <div class="text-caption text-grey-6 q-mt-md">
+              Sample Document Image: {{ previewDoc.name }}
+            </div>
+          </div>
+          <div v-else class="column flex-center">
+            <q-icon name="insert_drive_file" size="120px" color="grey-6" />
+            <div class="text-h6 text-grey-8 q-mt-md">Preview not available for this file type</div>
+            <q-btn
+              unelevated
+              color="primary"
+              label="Download to View"
+              icon="download"
+              no-caps
+              class="q-mt-md"
+              @click="downloadDocument(previewDoc)"
+            />
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -1425,23 +1673,18 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  INLINE HELPER COMPONENT
+//  MOCK DATA
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const InfoRow = {
-  props: { label: String, value: String, icon: String },
-  template: `
-    <div class="row items-start q-py-xs slt-info-row">
-      <div class="col-5 row items-center text-caption text-grey-5">
-        <q-icon :name="icon" size="14px" class="q-mr-xs" />{{ label }}
-      </div>
-      <div class="col-7 text-body2 text-weight-medium text-grey-9">{{ value || '—' }}</div>
-    </div>
-  `,
-}
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  MOCK DATA
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const mockVersions = [
+  { ver: 3, date: '2026-02-15 10:30', by: 'N. Silva' },
+  { ver: 2, date: '2026-02-10 14:20', by: 'M. Perera' },
+  { ver: 1, date: '2026-02-05 09:00', by: 'M. Perera' },
+]
+
 const cases = ref([
   {
     id: 1,
@@ -1468,6 +1711,24 @@ const cases = ref([
         { id: 2, date: '2026-02-01', amount: 500000, method: 'Cheque', ref: 'CHQ-44521' },
       ],
     },
+    notes: [
+      {
+        text: 'Initial case review completed. Evidence bundle looks solid.',
+        author: 'K. Fernando',
+        timestamp: '2026-01-22 10:00',
+        isPrivate: false,
+      },
+    ],
+    auditTrail: [
+      {
+        id: 1,
+        timestamp: '2026-01-20 09:30',
+        user: 'System',
+        action: 'Created',
+        remarks: 'Case record initialized from initial document #SLT/LEG/2026/001',
+      },
+    ],
+    versions: [{ ver: 1, date: '2026-01-20', by: 'System' }],
     proceedings: [
       {
         date: '2026-01-25',
@@ -1491,6 +1752,12 @@ const cases = ref([
     attachedDocs: [
       { name: 'Lease Agreement – Netwin.pdf', type: 'pdf', size: '1.2 MB', date: '2026-01-20' },
       { name: 'Invoice Bundle Jan-Dec 2025.pdf', type: 'pdf', size: '3.4 MB', date: '2026-01-20' },
+      {
+        name: 'Outstanding Balance Statement.xlsx',
+        type: 'xlsx',
+        size: '45 KB',
+        date: '2026-01-21',
+      },
     ],
   },
   {
@@ -1519,6 +1786,16 @@ const cases = ref([
       gramaNiladari: 'Kandy West 412',
       encumbrances: 'None on record',
     },
+    notes: [],
+    auditTrail: [
+      {
+        id: 2,
+        timestamp: '2026-01-28 11:15',
+        user: 'System',
+        action: 'Created',
+        remarks: 'Case record initialized.',
+      },
+    ],
     proceedings: [
       {
         date: '2026-02-05',
@@ -1532,6 +1809,8 @@ const cases = ref([
     attachedDocs: [
       { name: 'Deed of Title – KDY-442.pdf', type: 'pdf', size: '890 KB', date: '2026-01-28' },
       { name: 'Survey Plan SP-112.jpg', type: 'jpg', size: '2.1 MB', date: '2026-01-28' },
+      { name: 'UDA Approval Doc.pdf', type: 'pdf', size: '450 KB', date: '2026-01-30' },
+      { name: 'Land Survey Points.xlsx', type: 'xlsx', size: '12 KB', date: '2026-01-30' },
     ],
   },
   {
@@ -1558,6 +1837,8 @@ const cases = ref([
     proceedings: [],
     attachedDocs: [
       { name: 'Incident Report – Nov 2025.pdf', type: 'pdf', size: '560 KB', date: '2026-02-05' },
+      { name: 'Repair Cost Estimation.xlsx', type: 'xlsx', size: '28 KB', date: '2026-02-06' },
+      { name: 'Site Photos Bundle.pdf', type: 'pdf', size: '8.2 MB', date: '2026-02-06' },
     ],
   },
   {
@@ -1724,10 +2005,14 @@ function resetFilters() {
 //  DETAIL DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showDetailDialog = ref(false)
-const activeCase = ref(null)
-const originalCase = ref(null) // snapshot for cancel
-const detailTab = ref('overview')
+const showQuickHearingDialog = ref(false)
+const showTypeShiftDialog = ref(false)
+const showPreviewDialog = ref(false)
 const editMode = ref(false)
+const activeCase = ref(null)
+const previewDoc = ref(null)
+const originalCase = ref(null)
+const detailTab = ref('overview')
 const saving = ref(false)
 
 function openDetails(row, forEdit = false) {
@@ -1831,7 +2116,6 @@ function saveHearing() {
 }
 
 // Quick Add Hearing from table row
-const showQuickHearingDialog = ref(false)
 const quickHearingCase = ref(null)
 
 function quickAddHearing(row) {
@@ -1926,16 +2210,29 @@ function outcomeIcon(o) {
 
 function docIcon(type) {
   return (
-    { pdf: 'picture_as_pdf', doc: 'description', docx: 'description', jpg: 'image', png: 'image' }[
-      type
-    ] || 'insert_drive_file'
+    {
+      pdf: 'picture_as_pdf',
+      doc: 'description',
+      docx: 'description',
+      jpg: 'image',
+      png: 'image',
+      xlsx: 'table_view',
+      xls: 'table_view',
+    }[type] || 'insert_drive_file'
   )
 }
 
 function docColor(type) {
   return (
-    { pdf: 'negative', doc: 'info', docx: 'info', jpg: 'positive', png: 'positive' }[type] ||
-    'grey-6'
+    {
+      pdf: 'negative',
+      doc: 'info',
+      docx: 'info',
+      jpg: 'positive',
+      png: 'positive',
+      xlsx: 'green-8',
+      xls: 'green-8',
+    }[type] || 'grey-6'
   )
 }
 
@@ -1946,6 +2243,179 @@ function isUrgent(dateStr) {
 
 function fmt(val) {
   return Number(val || 0).toLocaleString('en-LK')
+}
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  ADDITIONAL HELPERS
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+function typeTabLabel(type) {
+  const map = {
+    'Money Recovery': 'Financial Recovery',
+    'Land Case': 'Land Title Details',
+    Damages: 'Damage Assessment',
+    Appeals: 'Appeal Details',
+    Criminal: 'Criminal Proceedings',
+    Other: 'Case Specifics',
+  }
+  return map[type] || 'Specific Details'
+}
+
+const originalCaseOptions = computed(() => {
+  return cases.value
+    .filter((c) => c.caseType !== 'Appeals')
+    .map((c) => ({ label: `${c.caseNo} — ${c.title}`, value: c.caseNo }))
+})
+
+const ownershipCols = [
+  { name: 'date', label: 'Date', field: 'date', align: 'left' },
+  { name: 'owner', label: 'Owner Name', field: 'owner', align: 'left' },
+  { name: 'type', label: 'Transfer Type', field: 'type', align: 'center' },
+  { name: 'ref', label: 'Deed/Doc Ref', field: 'ref', align: 'left' },
+]
+
+function addOwnershipRow() {
+  if (!activeCase.value.poly.ownershipHistory) activeCase.value.poly.ownershipHistory = []
+  activeCase.value.poly.ownershipHistory.push({
+    id: Date.now(),
+    date: '',
+    owner: '',
+    type: '',
+    ref: '',
+  })
+}
+
+function typeTabIcon(type) {
+  return typeIcon(type)
+}
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  TYPE-SPECIFIC HELPERS (Charges, Panel, Audit, etc.)
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+
+// Criminal Case Charges
+const chargeCols = [
+  { name: 'charge', label: 'Charge / Offence', field: 'charge', align: 'left' },
+  { name: 'status', label: 'Charge Status', field: 'status', align: 'center' },
+]
+function addChargeRow() {
+  if (!activeCase.value.poly.charges) activeCase.value.poly.charges = []
+  activeCase.value.poly.charges.push({ id: Date.now(), charge: '', status: 'Pending' })
+}
+
+// Hearing History (Criminal)
+const hearingHistoryCols = [
+  { name: 'date', label: 'Date', field: 'date', align: 'left' },
+  { name: 'bench', label: 'Magistrate/Judge', field: 'bench', align: 'left' },
+  { name: 'order', label: 'Court Order', field: 'order', align: 'left' },
+]
+function addHearingHistoryRow() {
+  if (!activeCase.value.poly.hearingHistory) activeCase.value.poly.hearingHistory = []
+  activeCase.value.poly.hearingHistory.push({ id: Date.now(), date: '', bench: '', order: '' })
+}
+
+function downloadDocument(doc) {
+  if (!doc) return
+  $q.notify({
+    type: 'ongoing',
+    message: `Downloading ${doc.name}...`,
+    caption: 'Fetching from secure vault',
+    icon: 'download',
+    group: false,
+    timeout: 1000,
+  })
+
+  // Simulated download trigger
+  setTimeout(() => {
+    const link = document.createElement('a')
+    // Dummy PDF content
+    link.href =
+      'data:application/pdf;base64,JVBERi0xLjcK1f3pCjEgMCBvYmoKPDwvVHlwZS9DYXRhbG9nL1BhZ2VzIDIgMCBSPj4KZW5kb2JqCjIgMCBvYmoKPDwvVHlwZS9QYWdlcy9Db3VudCAxL0tpZHNbMyAwIFJdPj4KZW5kb2JqCjMgMCBvYmoKPDwvVHlwZS9QYWdlL1BhcmVudCAyIDAgUi9NZWRpYUJveFswIDAgNTk1IDg0Ml0vQ29udGVudHMgNCAwIFI+PgplbmRvYmoKNCAwIG9iago8PC9MZW5ndGggNTY+PnN0cmVhbQpCVAovRjEgMjQgVGYKNTAgODAwIFRkCihTTEQgTGVnYWxFZGdlIC0gRG9jdW1lbnQgRG93bmxvYWQgU2ltdWxhdGlvbikgVmoKRVQKZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8L0Jhc2VGb250L0hlbHZldGljYS9UeXBlL0ZvbnQvU3VidHlwZS9UcnVlVHlwZT4+CmVuZG9iago2IDAgb2JqCjw8L1Byb2R1Y2VyIChTTEQgTGVnYWxFZGdlKS9DcmVhdGlvbkRhdGUgKEQ6MjAyNjAyMjMxMzI1MzcpPj4KZW5kb2JqCnRyYWlsZXIKPDwvUm9vdCAxIDAgUi9JbmZvIDYgMCBSL1NpemUgNz4+CnN0YXJ0eHJlZgo0OTQKJSVFT0Y='
+    link.download = doc.name
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    $q.notify({
+      type: 'positive',
+      message: `${doc.name} saved successfully.`,
+      icon: 'check_circle',
+      timeout: 2000,
+    })
+  }, 1200)
+}
+
+function viewDocument(doc) {
+  previewDoc.value = doc
+  showPreviewDialog.value = true
+}
+
+// Inquiry Panel Members
+const panelCols = [
+  { name: 'name', label: 'Panel Member Name', field: 'name', align: 'left' },
+  { name: 'role', label: 'Role', field: 'role', align: 'center' },
+]
+function addPanelMember() {
+  if (!activeCase.value.poly.panelMembers) activeCase.value.poly.panelMembers = []
+  activeCase.value.poly.panelMembers.push({ id: Date.now(), name: '', role: 'Inquiry Officer' })
+}
+
+// Notes & Audit
+const newNote = ref('')
+function addNote() {
+  if (!newNote.value) return
+  if (!activeCase.value.notes) activeCase.value.notes = []
+  activeCase.value.notes.push({
+    text: newNote.value,
+    author: 'Current User',
+    timestamp: new Date().toLocaleString(),
+    isPrivate: false,
+  })
+  newNote.value = ''
+  $q.notify({ type: 'info', message: 'Note added to case.' })
+}
+
+const auditCols = [
+  { name: 'timestamp', label: 'Timestamp', field: 'timestamp', align: 'left' },
+  { name: 'user', label: 'User', field: 'user', align: 'left' },
+  { name: 'action', label: 'Action', field: 'action', align: 'center' },
+  { name: 'remarks', label: 'Remarks', field: 'remarks', align: 'left' },
+]
+function auditActionColor(a) {
+  const map = {
+    Created: 'info',
+    Updated: 'primary',
+    'Status Change': 'warning',
+    Closed: 'negative',
+  }
+  return map[a] || 'grey-7'
+}
+
+// Case Type Shift Logic
+const proposedType = ref(null)
+const shiftReason = ref('')
+
+function executeTypeShift() {
+  if (!proposedType.value || !shiftReason.value) return
+  const oldType = activeCase.value.caseType
+  activeCase.value.caseType = proposedType.value
+
+  // Ensure arrays exist for audit
+  if (!activeCase.value.auditTrail) activeCase.value.auditTrail = []
+
+  activeCase.value.auditTrail.push({
+    id: Date.now(),
+    timestamp: new Date().toLocaleString(),
+    user: 'Supervisor',
+    action: 'Status Change',
+    remarks: `Type shifted from ${oldType} to ${proposedType.value}. Reason: ${shiftReason.value}`,
+  })
+
+  showTypeShiftDialog.value = false
+  $q.notify({
+    type: 'positive',
+    message: `Case type shifted to ${proposedType.value}`,
+    icon: 'swap_horiz',
+  })
 }
 </script>
 
@@ -2014,47 +2484,62 @@ function fmt(val) {
 
 // Balance input colours
 .slt-balance-positive :deep(.q-field__control) {
-  background: #fff4f4;
+  background: rgba(255, 0, 0, 0.05);
 }
 .slt-balance-clear :deep(.q-field__control) {
-  background: #f4fff6;
+  background: rgba(0, 255, 0, 0.05);
 }
 
 // Map placeholder
 .slt-map-placeholder {
   height: 160px;
-  background: #f0f5f0;
-  border: 2px dashed #a5c8a8;
+  background: rgba(var(--q-primary), 0.05);
+  border: 2px dashed var(--q-primary);
+  opacity: 0.6;
   border-radius: 8px;
 }
 
 // Inner tables (payments)
 .slt-inner-table {
   :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
+    background: var(--q-dark-page);
+    color: var(--q-primary);
     font-weight: 700;
     font-size: 0.7rem;
     text-transform: uppercase;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  body.body--light & {
+    :deep(thead tr th) {
+      background: #eef2f8;
+      color: #003f87;
+    }
   }
 }
 
 // Main table
 .slt-table {
   :deep(thead tr th) {
-    background: #eef2f8;
-    color: #003f87;
+    background: var(--q-dark-page);
+    color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.4px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  body.body--light & {
+    :deep(thead tr th) {
+      background: #eef2f8;
+      color: #003f87;
+    }
   }
   :deep(tbody tr:hover) {
-    background: #f0f5ff !important;
+    background: rgba(var(--q-primary), 0.05) !important;
   }
   :deep(.q-table__top),
   :deep(.q-table__bottom) {
-    background: #f8f9fb;
+    background: transparent;
   }
 }
 

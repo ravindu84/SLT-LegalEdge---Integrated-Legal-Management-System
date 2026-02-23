@@ -595,7 +595,7 @@ const timezone = ref('Asia/Colombo (UTC+5:30)')
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 4 — NOTIFICATION PREFERENCES
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const notificationSettings = computed(() => [
+const notificationSettings = ref([
   {
     key: 'email',
     label: t('settings.emailNotif'),
