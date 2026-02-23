@@ -403,10 +403,9 @@
 
         <q-tabs
           v-model="docDetailTab"
+          class="slt-tabs"
           dense
-          :class="$q.dark.isActive ? 'bg-dark' : 'bg-blue-1'"
           active-color="primary"
-          indicator-color="primary"
           align="justify"
         >
           <q-tab name="details" label="Details" icon="info" />
@@ -1156,7 +1155,6 @@ function viewDocument(doc) {
   min-height: 44px;
 }
 
-// ── Form section label ────────────────────────────────────────
 .slt-form-section-label {
   font-size: 0.7rem;
   font-weight: 700;

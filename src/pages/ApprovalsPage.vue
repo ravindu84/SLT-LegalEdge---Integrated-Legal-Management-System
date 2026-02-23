@@ -52,12 +52,11 @@
       <!-- Tab Headers -->
       <q-tabs
         v-model="activeTab"
-        align="left"
-        indicator-color="accent"
-        active-color="primary"
-        class="border-bottom"
-        :class="$q.dark.isActive ? 'bg-dark' : 'bg-grey-1'"
         dense
+        class="slt-tabs"
+        active-color="primary"
+        indicator-color="primary"
+        align="left"
       >
         <q-tab name="agreements" no-caps>
           <div class="row items-center q-gutter-xs">
@@ -350,12 +349,7 @@
 
         <q-card-section class="q-pt-md">
           <!-- Item summary card -->
-          <q-card
-            flat
-            bordered
-            class="q-mb-md"
-            :class="$q.dark.isActive ? 'bg-grey-9' : 'bg-grey-1'"
-          >
+          <q-card flat bordered class="q-mb-md">
             <q-card-section class="q-pa-sm">
               <div class="row items-center q-gutter-sm">
                 <q-icon
@@ -1082,9 +1076,24 @@ function viewDocument(doc) {
 }
 
 // ── Tab bottom border ─────────────────────────────────────────
-.border-bottom {
+.slt-tabs {
   border-bottom: 1px solid var(--q-primary);
   opacity: 0.2;
+  background: var(--q-dark-page); // Default for dark mode
+  body.body--light & {
+    background: #f8f9fb; // Light mode background
+  }
+}
+
+.slt-section-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #003f87;
+  border-bottom: 2px solid #003f87;
+  padding-bottom: 4px;
+  margin-bottom: 12px;
 }
 
 // ── Table ─────────────────────────────────────────────────────

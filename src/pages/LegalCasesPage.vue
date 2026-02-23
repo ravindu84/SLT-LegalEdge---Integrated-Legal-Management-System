@@ -262,7 +262,7 @@
           dense
           indicator-color="accent"
           active-color="primary"
-          class="slt-tabs bg-blue-1"
+          class="slt-tabs"
         >
           <q-tab name="overview" icon="info" label="Overview" />
           <q-tab
@@ -1141,7 +1141,7 @@
 
             <!-- Add Hearing inline form -->
             <q-slide-transition>
-              <q-card v-if="showHearingForm" flat bordered class="q-mb-md bg-blue-1">
+              <q-card v-if="showHearingForm" flat bordered class="q-mb-md">
                 <q-card-section>
                   <div class="text-subtitle2 text-primary q-mb-sm">New Hearing Entry</div>
                   <div class="row q-col-gutter-sm">
@@ -1308,7 +1308,7 @@
             </div>
 
             <!-- Add Note Form -->
-            <q-card flat bordered class="q-mb-md bg-blue-1">
+            <q-card flat bordered class="q-mb-md">
               <q-card-section>
                 <div class="row q-col-gutter-sm">
                   <div class="col-12">
@@ -2458,7 +2458,6 @@ function executeTypeShift() {
   overflow-y: auto;
 }
 
-// Field group + section label
 .slt-field-group {
   background: #f8f9fb;
   border: 1px solid #e0e7ef;

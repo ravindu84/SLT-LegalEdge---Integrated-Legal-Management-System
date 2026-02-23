@@ -457,8 +457,35 @@ body.body--dark {
   }
 
   // ── Background utility overrides ─────────────────────────
+  .bg-blue-1,
+  .bg-blue-2,
   .bg-grey-1,
-  .bg-grey-2 {
+  .bg-grey-2,
+  .bg-indigo-1 {
+    background: $exec-surface-2 !important;
+  }
+
+  // ── Management UI Components ─────────────────────────────
+  .slt-field-group,
+  .slt-pipeline-stage {
+    background: $exec-surface-2 !important;
+    border-color: $exec-border !important;
+  }
+
+  .slt-section-label,
+  .slt-form-section-label {
+    color: $exec-accent !important;
+    border-bottom-color: $exec-accent !important;
+  }
+
+  .slt-info-row,
+  .border-bottom {
+    border-color: $exec-border !important;
+  }
+
+  // ── Tabs enhancement ─────────────────────────────────────
+  .slt-tabs {
+    border-bottom-color: $exec-border !important;
     background: $exec-surface-2 !important;
   }
 

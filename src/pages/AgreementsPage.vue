@@ -1561,7 +1561,6 @@ function viewDocument(doc) {
   min-height: 44px;
 }
 
-// ── Form section label ────────────────────────────────────────
 .slt-form-section-label {
   font-size: 0.68rem;
   font-weight: 800;
@@ -1575,22 +1574,12 @@ function viewDocument(doc) {
 
 // ── Pipeline strip ────────────────────────────────────────────
 .slt-pipeline-stage {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: #f8f9fb;
+  border: 1px solid #e0e7ef;
   border-radius: 8px;
   padding: 8px 10px;
   position: relative;
   transition: all 0.2s;
-
-  body.body--dark & {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-  }
-
-  body.body--light & {
-    background: #f8f9fb;
-    border-color: #e0e7ef;
-  }
   &--active {
     border-color: #003f87;
     box-shadow: 0 2px 10px rgba(0, 63, 135, 0.1);
@@ -1688,7 +1677,6 @@ function viewDocument(doc) {
   }
 }
 
-// Detail row separator
 .border-bottom {
   border-bottom: 1px solid #eef2f8;
   &:last-child {
