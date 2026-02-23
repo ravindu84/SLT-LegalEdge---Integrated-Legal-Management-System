@@ -1277,8 +1277,9 @@ function fmt(val) {
 
 // ── Markup table ─────────────────────────────────────────────
 .slt-mu-table {
+  background: transparent;
   :deep(thead tr th) {
-    background: var(--q-dark-page);
+    background: rgba(255, 255, 255, 0.03);
     color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;

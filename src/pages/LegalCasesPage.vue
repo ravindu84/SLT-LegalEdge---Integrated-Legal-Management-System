@@ -2520,7 +2520,7 @@ function executeTypeShift() {
 // Main table
 .slt-table {
   :deep(thead tr th) {
-    background: var(--q-dark-page);
+    background: rgba(255, 255, 255, 0.03);
     color: var(--q-primary);
     font-weight: 700;
     font-size: 0.72rem;
@@ -2540,6 +2540,13 @@ function executeTypeShift() {
   :deep(.q-table__top),
   :deep(.q-table__bottom) {
     background: transparent;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  body.body--light & {
+    :deep(.q-table__top),
+    :deep(.q-table__bottom) {
+      background: #f8f9fb;
+    }
   }
 }
 
