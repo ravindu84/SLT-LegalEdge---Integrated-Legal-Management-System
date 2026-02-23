@@ -8,8 +8,8 @@
           {{ $t('approvals.title') }}
         </div>
         <div class="text-caption text-grey-6">
-          Logged in as: <strong>K. Fernando, AGM – Legal</strong> &nbsp;·&nbsp; Items requiring your
-          action are listed below
+          {{ $t('approvals.loggedInAs') }}: <strong>K. Fernando, AGM – Legal</strong> &nbsp;·&nbsp;
+          {{ $t('approvals.subtitle') }}
         </div>
       </div>
       <div class="col-auto">
@@ -17,7 +17,7 @@
           outline
           color="primary"
           icon="refresh"
-          label="Refresh"
+          :label="$t('approvals.refresh')"
           size="sm"
           no-caps
           @click="refreshInbox"
@@ -61,7 +61,7 @@
         <q-tab name="agreements" no-caps>
           <div class="row items-center q-gutter-xs">
             <q-icon name="handshake" size="18px" />
-            <span>Pending Agreements</span>
+            <span>{{ $t('approvals.pendingAgreements') }}</span>
             <q-badge v-if="pendingAgreements.length" color="warning" rounded floating>
               {{ pendingAgreements.length }}
             </q-badge>
@@ -71,7 +71,7 @@
         <q-tab name="initial_docs" no-caps>
           <div class="row items-center q-gutter-xs">
             <q-icon name="description" size="18px" />
-            <span>Pending Initial Docs</span>
+            <span>{{ $t('approvals.pendingInitialDocs') }}</span>
             <q-badge v-if="pendingDocs.length" color="orange" rounded floating>
               {{ pendingDocs.length }}
             </q-badge>
@@ -81,7 +81,7 @@
         <q-tab name="history" no-caps>
           <div class="row items-center q-gutter-xs">
             <q-icon name="history" size="18px" />
-            <span>My Actions History</span>
+            <span>{{ $t('approvals.myActionsHistory') }}</span>
           </div>
         </q-tab>
       </q-tabs>
@@ -96,7 +96,7 @@
           <!-- Empty state -->
           <div v-if="!pendingAgreements.length" class="column flex-center text-grey-5 q-py-xl">
             <q-icon name="inbox" size="56px" />
-            <div class="q-mt-sm text-body2">No agreements pending your approval.</div>
+            <div class="q-mt-sm text-body2">{{ $t('approvals.noAgreementsPending') }}</div>
           </div>
 
           <q-table
@@ -204,7 +204,7 @@
         <q-tab-panel name="initial_docs" class="q-pa-none">
           <div v-if="!pendingDocs.length" class="column flex-center text-grey-5 q-py-xl">
             <q-icon name="inbox" size="56px" />
-            <div class="q-mt-sm text-body2">No initial documents pending your approval.</div>
+            <div class="q-mt-sm text-body2">{{ $t('approvals.noDocsPending') }}</div>
           </div>
 
           <q-table
@@ -302,7 +302,7 @@
         <q-tab-panel name="history" class="q-pa-md">
           <div v-if="!actionHistory.length" class="column flex-center text-grey-5 q-py-xl">
             <q-icon name="history" size="48px" />
-            <div class="q-mt-sm">No actions taken yet this session.</div>
+            <div class="q-mt-sm">{{ $t('approvals.noActionsYet') }}</div>
           </div>
 
           <q-timeline color="primary" layout="comfortable" v-else>
@@ -314,17 +314,23 @@
               :subtitle="h.at"
             >
               <template #title>
-                <span class="text-weight-bold">{{ h.action }}</span>
+                <span class="text-weight-bold">{{
+                  h.action === 'Approved' ? $t('statuses.approved') : $t('statuses.rejected')
+                }}</span>
                 <q-badge
                   class="q-ml-sm"
                   :color="h.itemType === 'agreement' ? 'primary' : 'orange'"
-                  :label="h.itemType === 'agreement' ? 'Agreement' : 'Initial Doc'"
+                  :label="
+                    h.itemType === 'agreement'
+                      ? $t('approvals.historyAgreement')
+                      : $t('approvals.historyInitialDoc')
+                  "
                   rounded
                 />
               </template>
               <div class="text-body2 text-grey-8">{{ h.title }}</div>
               <div class="text-caption text-grey-5 q-mt-xs" v-if="h.remarks">
-                Remarks: "{{ h.remarks }}"
+                {{ $t('approvals.remarks') }}: "{{ h.remarks }}"
               </div>
             </q-timeline-entry>
           </q-timeline>
@@ -341,7 +347,7 @@
         <q-bar :class="actionType === 'approve' ? 'bg-positive' : 'bg-negative'" class="text-white">
           <q-icon :name="actionType === 'approve' ? 'check_circle' : 'cancel'" />
           <div class="text-weight-bold q-ml-sm">
-            {{ actionType === 'approve' ? approveLabel : 'Reject' }}
+            {{ actionType === 'approve' ? approveLabel : $t('approvals.reject') }}
           </div>
           <q-space />
           <q-btn dense flat icon="close" @click="showActionDialog = false" />
@@ -387,8 +393,8 @@
             v-model="actionRemarks"
             outlined
             autogrow
-            label="Remarks / Comments *"
-            hint="Mandatory — will be recorded in approval history and visible to submitter"
+            :label="$t('approvals.remarksMandatory')"
+            :hint="$t('approvals.remarksHint')"
             :color="actionType === 'approve' ? 'positive' : 'negative'"
             :rules="[(v) => !!v?.trim() || 'Remarks are required before proceeding']"
             ref="remarksRef"
@@ -397,13 +403,23 @@
 
         <q-separator />
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn flat no-caps label="Cancel" color="grey-7" @click="showActionDialog = false" />
+          <q-btn
+            flat
+            no-caps
+            :label="$t('common.cancel')"
+            color="grey-7"
+            @click="showActionDialog = false"
+          />
           <q-btn
             unelevated
             no-caps
             :color="actionType === 'approve' ? 'positive' : 'negative'"
             :icon="actionType === 'approve' ? 'check_circle' : 'cancel'"
-            :label="actionType === 'approve' ? 'Confirm Approval' : 'Confirm Rejection'"
+            :label="
+              actionType === 'approve'
+                ? $t('approvals.confirmApproval')
+                : $t('approvals.confirmRejection')
+            "
             :loading="processing"
             @click="confirmAction"
           />

@@ -389,8 +389,10 @@
                 </q-avatar>
               </q-item-section>
               <q-item-section>
-                <q-item-label class="text-weight-bold text-grey-9">{{ notif.label }}</q-item-label>
-                <q-item-label caption>{{ notif.description }}</q-item-label>
+                <q-item-label class="text-weight-bold text-grey-9">{{
+                  $t(notif.labelKey)
+                }}</q-item-label>
+                <q-item-label caption>{{ $t(notif.descKey) }}</q-item-label>
               </q-item-section>
               <q-item-section side>
                 <q-toggle v-model="notif.enabled" color="positive" />
@@ -598,8 +600,8 @@ const timezone = ref('Asia/Colombo (UTC+5:30)')
 const notificationSettings = ref([
   {
     key: 'email',
-    label: t('settings.emailNotif'),
-    description: t('settings.emailNotifDesc'),
+    labelKey: 'settings.emailNotif',
+    descKey: 'settings.emailNotifDesc',
     icon: 'email',
     iconColor: 'primary',
     bg: 'blue-1',
@@ -607,8 +609,8 @@ const notificationSettings = ref([
   },
   {
     key: 'push',
-    label: t('settings.pushNotif'),
-    description: t('settings.pushNotifDesc'),
+    labelKey: 'settings.pushNotif',
+    descKey: 'settings.pushNotifDesc',
     icon: 'campaign',
     iconColor: 'orange-8',
     bg: 'orange-1',
@@ -616,8 +618,8 @@ const notificationSettings = ref([
   },
   {
     key: 'hearing',
-    label: t('settings.hearingReminder'),
-    description: t('settings.hearingReminderDesc'),
+    labelKey: 'settings.hearingReminder',
+    descKey: 'settings.hearingReminderDesc',
     icon: 'event',
     iconColor: 'negative',
     bg: 'red-1',
@@ -625,8 +627,8 @@ const notificationSettings = ref([
   },
   {
     key: 'expiry',
-    label: t('settings.expiryAlert'),
-    description: t('settings.expiryAlertDesc'),
+    labelKey: 'settings.expiryAlert',
+    descKey: 'settings.expiryAlertDesc',
     icon: 'event_busy',
     iconColor: 'purple-7',
     bg: 'purple-1',
@@ -637,14 +639,14 @@ const notificationSettings = ref([
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 5 — SYSTEM INFO
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const systemInfo = [
-  { label: 'Application', value: 'SLT LegalEdge v1.0.0' },
-  { label: 'Framework', value: 'Vue 3 + Quasar 2.18' },
-  { label: 'Build', value: '2026.02.22-stable' },
-  { label: 'Environment', value: 'Production' },
-  { label: 'Last Login', value: '22 Feb 2026, 09:14 AM' },
-  { label: 'Session Expires', value: '23 Feb 2026, 09:14 AM' },
-]
+const systemInfo = computed(() => [
+  { label: t('settings.sysApp'), value: 'SLT LegalEdge v1.0.0' },
+  { label: t('settings.sysFramework'), value: 'Vue 3 + Quasar 2.18' },
+  { label: t('settings.sysBuild'), value: '2026.02.22-stable' },
+  { label: t('settings.sysEnv'), value: 'Production' },
+  { label: t('settings.sysLastLogin'), value: '22 Feb 2026, 09:14 AM' },
+  { label: t('settings.sysSession'), value: '23 Feb 2026, 09:14 AM' },
+])
 </script>
 
 <style lang="scss" scoped>

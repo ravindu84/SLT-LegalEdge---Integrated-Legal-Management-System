@@ -7,7 +7,7 @@
           {{ $t('dashboard.title') }}
         </div>
         <div class="text-subtitle2 text-grey-6">
-          {{ $t('dashboard.welcome') }} · {{ currentDate }}
+          {{ $t('dashboard.welcome') }} · {{ formattedCurrentDate }}
         </div>
       </div>
       <div class="col-auto q-gutter-sm">
@@ -65,7 +65,7 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
             <q-icon name="warning_amber" color="warning" size="20px" class="q-mr-sm" />
-            <span>Action Required</span>
+            <span>{{ $t('dashboard.actionRequired') }}</span>
             <q-space />
             <q-badge color="negative" :label="approvalItems.length" rounded />
           </q-card-section>
@@ -102,7 +102,7 @@
                       size="xs"
                       no-caps
                       icon="check"
-                      label="Approve"
+                      :label="$t('statuses.approve')"
                     />
                     <q-btn
                       dense
@@ -111,7 +111,7 @@
                       size="xs"
                       no-caps
                       icon="close"
-                      label="Reject"
+                      :label="$t('statuses.reject')"
                     />
                   </div>
                 </q-item-section>
@@ -124,7 +124,7 @@
               flat
               no-caps
               color="primary"
-              label="View All Approvals"
+              :label="$t('dashboard.viewAllApprovals')"
               icon-right="chevron_right"
               size="sm"
               @click="router.push('/approvals')"
@@ -138,7 +138,7 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
             <q-icon name="pie_chart" color="primary" size="20px" class="q-mr-sm" />
-            <span>Case Status Overview</span>
+            <span>{{ $t('dashboard.caseStatusOverview') }}</span>
           </q-card-section>
           <q-separator />
           <q-card-section class="column items-center q-pa-lg">
@@ -146,7 +146,7 @@
               <Doughnut :data="caseStatusChartData" :options="doughnutOpts" />
               <div class="exec-doughnut-center">
                 <div class="text-h4 text-weight-bold text-primary">{{ totalCases }}</div>
-                <div class="text-caption text-grey-6">Total Cases</div>
+                <div class="text-caption text-grey-6">{{ $t('reports.totalCases') }}</div>
               </div>
             </div>
             <!-- Legend below -->
@@ -171,7 +171,7 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
             <q-icon name="history" color="primary" size="20px" class="q-mr-sm" />
-            <span>Recent Activity</span>
+            <span>{{ $t('dashboard.recentActivity') }}</span>
             <q-space />
             <q-btn flat dense round icon="more_vert" color="grey-6" size="sm" />
           </q-card-section>
@@ -214,7 +214,7 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="row items-center slt-section-header q-py-sm q-px-md">
             <q-icon name="equalizer" color="primary" size="20px" class="q-mr-sm" />
-            <span>Case Type Distribution</span>
+            <span>{{ $t('reports.activeCasesByType') }}</span>
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
@@ -231,7 +231,7 @@
           <q-card-section class="row items-center q-pa-md">
             <div class="col">
               <div class="text-h6 text-weight-bold text-primary">
-                Project Resources & Guidelines
+                {{ $t('dashboard.projectResources') }}
               </div>
               <div class="text-caption text-grey-6">
                 Access official challenge documentation and submission forms.
@@ -243,7 +243,7 @@
                 no-caps
                 color="primary"
                 icon="description"
-                label="Download BRD Document"
+                :label="$t('dashboard.downloadBRD')"
                 @click="downloadResource('BRD_Challenge_Details.pdf')"
               >
                 <q-tooltip>Official Business Requirements Document</q-tooltip>
@@ -253,7 +253,7 @@
                 no-caps
                 color="primary"
                 icon="assignment"
-                label="Submission Form"
+                :label="$t('dashboard.submissionForm')"
                 @click="downloadResource('AI_Coding_Submission_Form.pdf')"
               >
                 <q-tooltip>Register your prototype submission</q-tooltip>
@@ -288,11 +288,14 @@ const router = useRouter()
 const { t } = useI18n()
 const $q = useQuasar()
 
-const now = new Date()
-const currentDate = now.toLocaleDateString('en-GB', {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
+const now = ref(new Date())
+const formattedCurrentDate = computed(() => {
+  const locale = $q.lang.isoName === 'si' ? 'si-LK' : $q.lang.isoName === 'ta' ? 'ta-LK' : 'en-GB'
+  return now.value.toLocaleDateString(locale, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 })
 
 function refreshData() {
@@ -322,7 +325,7 @@ const summaryCards = computed(() => [
     progress: 45,
   },
   {
-    label: 'My Tasks',
+    label: t('dashboard.myTasks'),
     value: '15',
     icon: 'task_alt',
     accent: '#3b82f6',
@@ -332,7 +335,7 @@ const summaryCards = computed(() => [
     progress: 60,
   },
   {
-    label: 'Financial Exposure',
+    label: t('reports.kpiExposure'),
     value: 'LKR 287M',
     icon: 'account_balance',
     accent: '#ef4444',
@@ -342,7 +345,7 @@ const summaryCards = computed(() => [
     progress: 82,
   },
   {
-    label: 'Total Expenses',
+    label: t('reports.totalExpenses'),
     value: 'LKR 42M',
     icon: 'payments',
     accent: '#8b5cf6',
@@ -386,11 +389,11 @@ const approvalItems = ref([
 
 // ── Case Status Doughnut ──────────────────────────────────────
 const statusColors = ['#10b981', '#f59e0b', '#3b82f6', '#ef4444']
-const caseStatusItems = ref([
-  { label: 'Active', count: 14 },
-  { label: 'Pending', count: 7 },
-  { label: 'Review', count: 4 },
-  { label: 'Closed', count: 3 },
+const caseStatusItems = computed(() => [
+  { label: t('statuses.active'), count: 14 },
+  { label: t('statuses.pending'), count: 7 },
+  { label: t('statuses.underReview'), count: 4 },
+  { label: t('statuses.closed'), count: 3 },
 ])
 const totalCases = computed(() => caseStatusItems.value.reduce((s, i) => s + i.count, 0))
 
@@ -471,10 +474,17 @@ const recentActivity = ref([
 
 // ── Case Type Bar Chart ───────────────────────────────────────
 const caseTypeChartData = computed(() => ({
-  labels: ['Money Recovery', 'Land Cases', 'Damages', 'Appeals', 'Employee Disputes', 'Other'],
+  labels: [
+    t('cases.types.recovery'),
+    t('cases.types.land'),
+    t('cases.types.damages'),
+    t('cases.types.appeals'),
+    t('cases.types.disputes'),
+    t('cases.types.other'),
+  ],
   datasets: [
     {
-      label: 'Cases',
+      label: t('reports.totalCases'),
       data: [9, 7, 4, 3, 3, 2],
       backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#94a3b8'],
       borderRadius: 8,

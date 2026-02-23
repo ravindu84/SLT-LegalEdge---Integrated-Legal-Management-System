@@ -15,17 +15,17 @@
       <div class="col-auto row q-gutter-sm">
         <q-select
           v-model="period"
-          :options="['This Month', 'Last 3 Months', 'This Year', 'All Time']"
+          :options="periodOptions"
           dense
           outlined
           style="min-width: 150px"
-          label="Period"
+          :label="$t('reports.period')"
         />
         <q-btn-dropdown
           outline
           color="primary"
           icon="file_download"
-          label="Export"
+          :label="$t('reports.export')"
           size="sm"
           no-caps
         >
@@ -35,14 +35,14 @@
                 ><q-icon name="picture_as_pdf" color="negative"
               /></q-item-section>
               <q-item-section>
-                <q-item-label>Export to PDF</q-item-label>
+                <q-item-label>{{ $t('reports.exportPDF') }}</q-item-label>
                 <q-item-label caption>Full report with charts</q-item-label>
               </q-item-section>
             </q-item>
             <q-item clickable v-close-popup @click="exportExcel">
               <q-item-section avatar><q-icon name="table_chart" color="positive" /></q-item-section>
               <q-item-section>
-                <q-item-label>Export to Excel</q-item-label>
+                <q-item-label>{{ $t('reports.exportExcel') }}</q-item-label>
                 <q-item-label caption>Data tables & financials</q-item-label>
               </q-item-section>
             </q-item>
@@ -99,7 +99,7 @@
                       : 'text-positive'
                 "
               >
-                {{ Math.abs(kpi.trend) }}% vs last period
+                {{ Math.abs(kpi.trend) }}% {{ $t('dashboard.vsLastPeriod') }}
               </span>
             </div>
           </q-card-section>
@@ -114,7 +114,7 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="slt-section-header">
             <q-icon name="gavel" color="primary" size="20px" class="q-mr-sm" />
-            Active Cases by Type
+            {{ $t('reports.activeCasesByType') }}
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
@@ -130,7 +130,7 @@
                       class="text-caption"
                       :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-5'"
                     >
-                      Total Cases
+                      {{ $t('reports.totalCases') }}
                     </div>
                   </div>
                 </div>
@@ -169,16 +169,16 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="slt-section-header">
             <q-icon name="pie_chart" color="primary" size="20px" class="q-mr-sm" />
-            Case Status Distribution
+            {{ $t('reports.caseStatusDist') }}
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
             <q-markup-table flat dense separator="none" class="slt-mu-table q-mb-md">
               <thead>
                 <tr>
-                  <th class="text-left">Status</th>
-                  <th class="text-right">Count</th>
-                  <th class="text-right">% Share</th>
+                  <th class="text-left">{{ $t('reports.status') }}</th>
+                  <th class="text-right">{{ $t('reports.count') }}</th>
+                  <th class="text-right">% {{ $t('reports.share') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -190,7 +190,7 @@
                   <td class="text-right text-grey-6">{{ pct(s.count, totalCases) }}%</td>
                 </tr>
                 <tr class="text-weight-bold">
-                  <td>Total</td>
+                  <td>{{ $t('reports.total') }}</td>
                   <td class="text-right">{{ totalCases }}</td>
                   <td class="text-right">100%</td>
                 </tr>
@@ -229,7 +229,7 @@
         <q-card flat bordered>
           <q-card-section class="slt-section-header">
             <q-icon name="account_balance_wallet" color="primary" size="20px" class="q-mr-sm" />
-            Financial Exposure Overview — Active Legal Cases
+            {{ $t('reports.financialExposureTitle') }}
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
@@ -237,24 +237,31 @@
             <div class="row q-col-gutter-md q-mb-md">
               <div class="col-12 col-sm-4">
                 <div class="slt-fin-box slt-fin-box--total">
-                  <div class="text-caption text-grey-6 q-mb-xs">Total Claim Value</div>
+                  <div class="text-caption text-grey-6 q-mb-xs">
+                    {{ $t('reports.totalClaimValue') }}
+                  </div>
                   <div class="text-h5 text-weight-bold text-primary">
                     LKR {{ fmt(financialSummary.totalClaim) }}
                   </div>
                   <div class="text-caption text-grey-5">
-                    Across {{ financialRows.length }} cases
+                    {{ $t('reports.acrossCases', { count: financialRows.length }) }}
                   </div>
                 </div>
               </div>
               <div class="col-12 col-sm-4">
                 <div class="slt-fin-box slt-fin-box--paid">
-                  <div class="text-caption text-grey-6 q-mb-xs">Total Recovered / Paid</div>
+                  <div class="text-caption text-grey-6 q-mb-xs">
+                    {{ $t('reports.totalRecoveredPaid') }}
+                  </div>
                   <div class="text-h5 text-weight-bold text-positive">
                     LKR {{ fmt(financialSummary.totalPaid) }}
                   </div>
                   <div class="text-caption text-grey-5">
-                    {{ pct(financialSummary.totalPaid, financialSummary.totalClaim) }}% of total
-                    claims
+                    {{
+                      $t('reports.ofTotalClaims', {
+                        percent: pct(financialSummary.totalPaid, financialSummary.totalClaim),
+                      })
+                    }}
                   </div>
                 </div>
               </div>
@@ -273,14 +280,14 @@
             <q-markup-table flat dense bordered separator="horizontal" class="slt-mu-table">
               <thead>
                 <tr>
-                  <th class="text-left">Case No.</th>
-                  <th class="text-left">Title</th>
-                  <th class="text-left">Type</th>
+                  <th class="text-left">{{ $t('reports.caseNo') }}</th>
+                  <th class="text-left">{{ $t('approvals.itemTitle') }}</th>
+                  <th class="text-left">{{ $t('reports.status') }}</th>
                   <th class="text-right">Claim (LKR)</th>
                   <th class="text-right">Paid (LKR)</th>
                   <th class="text-right">Balance (LKR)</th>
                   <th class="text-center" style="min-width: 130px">Recovery</th>
-                  <th class="text-center">Status</th>
+                  <th class="text-center">{{ $t('reports.status') }}</th>
                 </tr>
               </thead>
               <tbody>
@@ -347,7 +354,7 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="slt-section-header">
             <q-icon name="handshake" color="primary" size="20px" class="q-mr-sm" />
-            Agreement Approval Status Summary
+            {{ $t('reports.agreementStatusSummary') }}
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
@@ -355,7 +362,9 @@
             <div class="row q-col-gutter-sm q-mb-md">
               <div class="col-6">
                 <div class="slt-fin-box q-pa-sm">
-                  <div class="text-caption text-grey-5">Total Agreement Value</div>
+                  <div class="text-caption text-grey-5">
+                    {{ $t('reports.totalAgreementValue') }}
+                  </div>
                   <div class="text-h6 text-weight-bold text-primary">
                     LKR {{ fmt(totalAgrmValue) }}
                   </div>
@@ -363,9 +372,9 @@
               </div>
               <div class="col-6">
                 <div class="slt-fin-box q-pa-sm">
-                  <div class="text-caption text-grey-5">Active Agreements</div>
+                  <div class="text-caption text-grey-5">{{ $t('reports.kpiAgreements') }}</div>
                   <div class="text-h6 text-weight-bold text-positive">
-                    {{ agrmStageRows.find((r) => r.stage === 'Active')?.count || 0 }}
+                    {{ agrmStageRows.find((r) => r.stage === $t('statuses.active'))?.count || 0 }}
                   </div>
                 </div>
               </div>
@@ -396,7 +405,7 @@
 
             <!-- Top agreements by value -->
             <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
-              TOP AGREEMENTS BY VALUE
+              {{ $t('reports.topAgreementsByValue') }}
             </div>
             <div v-for="a in topAgreements" :key="a.title" class="row items-center q-mb-sm">
               <div class="col">
@@ -422,13 +431,13 @@
         <q-card flat bordered class="full-height">
           <q-card-section class="slt-section-header">
             <q-icon name="timer" color="primary" size="20px" class="q-mr-sm" />
-            Case Aging &amp; Workload Report
+            {{ $t('reports.caseAgingWorkload') }}
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
             <!-- Aging buckets -->
             <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
-              CASE AGE DISTRIBUTION
+              {{ $t('reports.caseAgeDist') }}
             </div>
             <div v-for="bucket in agingBuckets" :key="bucket.label" class="q-mb-sm">
               <div class="row items-center q-mb-xs">
@@ -456,13 +465,15 @@
             <q-separator class="q-my-md" />
 
             <!-- Lawyer workload table — DRILL-DOWN clickable -->
-            <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">LAWYER WORKLOAD</div>
+            <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
+              {{ $t('reports.lawyerWorkloadTitle') }}
+            </div>
             <q-markup-table flat dense separator="horizontal" class="slt-mu-table">
               <thead>
                 <tr>
-                  <th class="text-left">Attorney</th>
-                  <th class="text-center">Active</th>
-                  <th class="text-center">Pending Hrg.</th>
+                  <th class="text-left">{{ $t('reports.attorney') }}</th>
+                  <th class="text-center">{{ $t('statuses.active') }}</th>
+                  <th class="text-center">{{ $t('statuses.pendingHearing') }}</th>
                   <th class="text-right">Exposure (LKR)</th>
                   <th class="text-center">Load</th>
                 </tr>
@@ -497,7 +508,7 @@
 
             <!-- Upcoming hearings in next 30 days -->
             <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
-              UPCOMING HEARINGS (30 DAYS)
+              {{ $t('reports.upcomingHearingsTitle') }}
             </div>
             <q-list dense>
               <q-item
@@ -542,7 +553,7 @@
         <q-card flat bordered>
           <q-card-section class="slt-section-header">
             <q-icon name="show_chart" color="primary" size="20px" class="q-mr-sm" />
-            Monthly Case Filing Trend — 2025/2026
+            {{ $t('reports.monthlyTrendTitle') }}
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
@@ -598,9 +609,9 @@
           />
           <div class="q-ml-md">
             <div class="text-subtitle1 text-weight-bold">
-              Exporting to {{ exportType === 'pdf' ? 'PDF' : 'Excel' }}…
+              {{ $t('reports.exportingTo', { type: exportType === 'pdf' ? 'PDF' : 'Excel' }) }}
             </div>
-            <div class="text-caption text-grey-6">Generating report file</div>
+            <div class="text-caption text-grey-6">{{ $t('reports.generatingReport') }}</div>
           </div>
         </q-card-section>
         <q-card-section>
@@ -624,6 +635,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { useI18n } from 'vue-i18n'
 import { Doughnut, Bar } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -641,11 +653,18 @@ ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Le
 
 const router = useRouter()
 const $q = useQuasar()
+const { t } = useI18n()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  PERIOD SELECTOR (UI only — data stubbed)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const period = ref('This Year')
+const periodOptions = computed(() => [
+  t('reports.thisMonth'),
+  t('reports.last3Months'),
+  t('reports.thisYear'),
+  t('reports.allTime'),
+])
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  EXPORT FUNCTIONALITY
@@ -735,9 +754,9 @@ function drillDownLawyer(name) {
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  TOP KPI STRIP
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const topKpis = [
+const topKpis = computed(() => [
   {
-    label: 'Total Active Cases',
+    label: t('reports.totalCases'),
     value: '24',
     icon: 'gavel',
     color: 'primary',
@@ -746,7 +765,7 @@ const topKpis = [
     trendGood: false,
   },
   {
-    label: 'Total Financial Exposure',
+    label: t('reports.kpiExposure'),
     value: 'LKR 287M',
     icon: 'account_balance_wallet',
     color: 'negative',
@@ -755,7 +774,7 @@ const topKpis = [
     trendGood: false,
   },
   {
-    label: 'Agreements Active',
+    label: t('reports.kpiAgreements'),
     value: '11',
     icon: 'handshake',
     color: 'positive',
@@ -764,7 +783,7 @@ const topKpis = [
     trendGood: true,
   },
   {
-    label: 'Hearings This Month',
+    label: t('dashboard.hearings'),
     value: '7',
     icon: 'event',
     color: 'warning',
@@ -772,19 +791,19 @@ const topKpis = [
     trend: -15,
     trendGood: true,
   },
-]
+])
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 1 — ACTIVE CASES BY TYPE (CHART.JS DOUGHNUT)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const casesByType = [
-  { type: 'Money Recovery', total: 9 },
-  { type: 'Land Case', total: 7 },
-  { type: 'Damages', total: 4 },
-  { type: 'Appeals', total: 3 },
-  { type: 'Employee Disputes', total: 3 },
-  { type: 'Other / Regulatory', total: 2 },
-]
+const casesByType = computed(() => [
+  { type: t('cases.types.recovery'), total: 9 },
+  { type: t('cases.types.land'), total: 7 },
+  { type: t('cases.types.damages'), total: 4 },
+  { type: t('cases.types.appeals'), total: 3 },
+  { type: t('cases.types.disputes'), total: 3 },
+  { type: t('cases.types.regulatory'), total: 2 },
+])
 
 const caseTypeColors = [
   '#003F87', // Money Recovery — primary blue
@@ -796,10 +815,10 @@ const caseTypeColors = [
 ]
 
 const casesByTypeChartData = computed(() => ({
-  labels: casesByType.map((c) => c.type),
+  labels: casesByType.value.map((c) => c.type),
   datasets: [
     {
-      data: casesByType.map((c) => c.total),
+      data: casesByType.value.map((c) => c.total),
       backgroundColor: caseTypeColors,
       borderColor: '#fff',
       borderWidth: 3,
@@ -835,14 +854,14 @@ const doughnutOptions = {
   },
 }
 
-const caseStatusRows = [
-  { status: 'Active', count: 14, color: 'positive' },
-  { status: 'Pending Hearing', count: 7, color: 'warning' },
-  { status: 'Under Review', count: 4, color: 'info' },
-  { status: 'Closed', count: 3, color: 'grey-6' },
-]
+const caseStatusRows = computed(() => [
+  { status: t('statuses.active'), count: 14, color: 'positive' },
+  { status: t('statuses.pendingHearing'), count: 7, color: 'warning' },
+  { status: t('statuses.underReview'), count: 4, color: 'info' },
+  { status: t('statuses.closed'), count: 3, color: 'grey-6' },
+])
 
-const totalCases = computed(() => caseStatusRows.reduce((s, r) => s + r.count, 0))
+const totalCases = computed(() => caseStatusRows.value.reduce((s, r) => s + r.count, 0))
 
 const statusColorHexMap = {
   positive: '#21ba45',
@@ -946,17 +965,17 @@ function caseTypeColor(type) {
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 3 — AGREEMENTS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const agrmStageRows = [
-  { stage: 'Active', count: 3, color: 'positive' },
-  { stage: 'Pending L2 Approval', count: 2, color: 'orange-8' },
-  { stage: 'Pending L1 Approval', count: 2, color: 'warning' },
-  { stage: 'Under Review', count: 1, color: 'info' },
-  { stage: 'Draft', count: 1, color: 'grey-6' },
-  { stage: 'Rejected', count: 1, color: 'negative' },
-  { stage: 'Terminated', count: 1, color: 'grey-7' },
-]
+const agrmStageRows = computed(() => [
+  { stage: t('statuses.active'), count: 3, color: 'positive' },
+  { stage: t('statuses.pendingL2'), count: 2, color: 'orange-8' },
+  { stage: t('statuses.pendingL1'), count: 2, color: 'warning' },
+  { stage: t('statuses.underReview'), count: 1, color: 'info' },
+  { stage: t('statuses.draft'), count: 1, color: 'grey-6' },
+  { stage: t('statuses.rejected'), count: 1, color: 'negative' },
+  { stage: t('statuses.terminated'), count: 1, color: 'grey-7' },
+])
 
-const totalAgreements = computed(() => agrmStageRows.reduce((s, r) => s + r.count, 0))
+const totalAgreements = computed(() => agrmStageRows.value.reduce((s, r) => s + r.count, 0))
 
 const topAgreements = [
   {
@@ -1001,13 +1020,13 @@ const totalAgrmValue = computed(() => topAgreements.reduce((s, a) => s + a.value
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 4 — CASE AGING & WORKLOAD
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const agingBuckets = [
+const agingBuckets = computed(() => [
   { label: '< 30 days', count: 5, color: 'positive' },
   { label: '30 – 90 days', count: 8, color: 'info' },
   { label: '90 – 180 days', count: 6, color: 'warning' },
   { label: '180 – 365 days', count: 4, color: 'orange-8' },
   { label: '> 1 year', count: 5, color: 'negative' },
-]
+])
 
 const lawyerWorkload = [
   { name: 'K. Fernando', active: 5, pending: 3, exposure: 42000000 },

@@ -46,11 +46,11 @@
           <q-badge v-if="notifStore.unreadCount" color="negative" floating>
             {{ notifStore.unreadCount }}
           </q-badge>
-          <q-tooltip>Notifications</q-tooltip>
+          <q-tooltip>{{ $t('common.notifications') }}</q-tooltip>
         </q-btn>
 
         <q-btn flat round dense icon="help_outline" color="white" class="q-mr-sm">
-          <q-tooltip>Help</q-tooltip>
+          <q-tooltip>{{ $t('common.help') }}</q-tooltip>
         </q-btn>
 
         <q-separator vertical inset color="white" class="q-mx-sm opacity-30" />
@@ -123,7 +123,7 @@
           <span
             class="text-caption text-grey-5 q-ml-xs"
             style="color: rgba(255, 255, 255, 0.5) !important"
-            >Online</span
+            >{{ $t('common.online') }}</span
           >
         </div>
       </div>
