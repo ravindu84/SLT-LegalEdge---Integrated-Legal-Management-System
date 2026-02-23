@@ -33,6 +33,8 @@ export const useAuthStore = defineStore('auth', () => {
         initials: 'NS',
         phone: '+94 11 2 021 001',
         joinedDate: '2022-03-15',
+        avatar:
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&h=256&auto=format&fit=crop',
       },
       manager: {
         id: 1,
@@ -43,6 +45,8 @@ export const useAuthStore = defineStore('auth', () => {
         initials: 'KF',
         phone: '+94 11 2 021 010',
         joinedDate: '2019-06-01',
+        avatar:
+          'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&h=256&auto=format&fit=crop',
       },
       executive: {
         id: 5,
@@ -53,6 +57,8 @@ export const useAuthStore = defineStore('auth', () => {
         initials: 'SK',
         phone: '+94 11 2 021 100',
         joinedDate: '2017-01-10',
+        avatar:
+          'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=256&h=256&auto=format&fit=crop',
       },
       admin: {
         id: 8,
@@ -63,6 +69,8 @@ export const useAuthStore = defineStore('auth', () => {
         initials: 'AD',
         phone: '+94 11 2 021 999',
         joinedDate: '2020-01-01',
+        avatar:
+          'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=256&h=256&auto=format&fit=crop',
       },
     }
     user.value = presets[rolePreset] || presets.officer

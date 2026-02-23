@@ -65,7 +65,8 @@
               class="q-mr-sm"
               font-size="13px"
             >
-              {{ authStore.userInitials }}
+              <img v-if="authStore.user.avatar" :src="authStore.user.avatar" />
+              <template v-else>{{ authStore.userInitials }}</template>
             </q-avatar>
             <span class="text-body2">{{ authStore.displayName }}</span>
           </template>
@@ -112,7 +113,8 @@
           font-size="24px"
           class="exec-avatar-ring"
         >
-          {{ authStore.userInitials }}
+          <img v-if="authStore.user.avatar" :src="authStore.user.avatar" />
+          <template v-else>{{ authStore.userInitials }}</template>
         </q-avatar>
         <div class="text-white text-weight-bold text-subtitle1 q-mt-sm">
           {{ authStore.displayName }}
