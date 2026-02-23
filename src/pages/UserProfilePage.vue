@@ -18,7 +18,8 @@
         <q-card flat bordered class="q-mb-md">
           <q-card-section class="slt-profile-header column items-center q-py-lg">
             <q-avatar size="90px" color="primary" text-color="white" font-size="36px">
-              {{ auth.userInitials }}
+              <img v-if="auth.user.avatar" :src="auth.user.avatar" />
+              <template v-else>{{ auth.userInitials }}</template>
             </q-avatar>
             <div class="text-h6 text-white text-weight-bold q-mt-md">{{ auth.displayName }}</div>
             <q-badge rounded :color="roleColor" :label="auth.userRole" class="q-mt-xs" />
