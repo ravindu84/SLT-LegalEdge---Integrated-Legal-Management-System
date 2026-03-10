@@ -225,6 +225,12 @@
           <img src="~assets/logo-main.png" style="width: 130px; filter: brightness(1.1)" />
         </div>
         <div class="text-caption opacity-30 text-white">SLT LegalEdge v1.0.0</div>
+        <div
+          class="text-caption opacity-20 text-white text-weight-bold"
+          style="font-size: 0.65rem; letter-spacing: 1px"
+        >
+          BY NEXGEN CREATORS
+        </div>
       </div>
     </q-drawer>
 

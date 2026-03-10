@@ -22,8 +22,9 @@
         </div>
       </div>
 
-      <div class="text-white text-caption opacity-40 q-mt-auto q-pt-xl">
-        SLT Mobitel PLC · Legal Department · v1.0.0
+      <div class="text-white text-caption opacity-40 q-mt-auto q-pt-xl text-center">
+        SLT Mobitel PLC · Legal Department · v1.0.0<br />
+        <span class="text-weight-bold" style="letter-spacing: 1px">NEXGEN CREATORS</span>
       </div>
     </div>
 
