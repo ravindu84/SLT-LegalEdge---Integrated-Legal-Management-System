@@ -1,80 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { supabase } from 'src/boot/supabase'
 
 export const useNotificationStore = defineStore('notifications', () => {
   // ── State ───────────────────────────────────────────────────────
-  const notifications = ref([
-    {
-      id: 1,
-      type: 'hearing',
-      icon: 'event',
-      color: 'negative',
-      title: 'Urgent: Hearing Tomorrow',
-      message: 'Land Acquisition – Kandy Zone (LC-2024-002) at District Court Kandy',
-      timestamp: '2026-02-22T08:00:00',
-      read: false,
-    },
-    {
-      id: 2,
-      type: 'approval',
-      icon: 'verified',
-      color: 'warning',
-      title: 'Agreement Awaiting Your Approval',
-      message: 'Network Maintenance Agreement (AGR-2024-008) – Pending L1 Approval',
-      timestamp: '2026-02-22T07:30:00',
-      read: false,
-    },
-    {
-      id: 3,
-      type: 'expiry',
-      icon: 'event_busy',
-      color: 'info',
-      title: 'Agreement Expiring Soon',
-      message: 'Data Center Lease (AGR-2023-015) expires in 30 days',
-      timestamp: '2026-02-21T16:00:00',
-      read: false,
-    },
-    {
-      id: 4,
-      type: 'case',
-      icon: 'gavel',
-      color: 'primary',
-      title: 'Case Status Updated',
-      message: 'Network Dispute – Galle (LC-2024-003) moved to "Active"',
-      timestamp: '2026-02-21T14:20:00',
-      read: true,
-    },
-    {
-      id: 5,
-      type: 'approval',
-      icon: 'task_alt',
-      color: 'positive',
-      title: 'Document Approved',
-      message: 'Initial Document ID-2024-012 approved by K. Fernando, AGM',
-      timestamp: '2026-02-21T11:00:00',
-      read: true,
-    },
-    {
-      id: 6,
-      type: 'system',
-      icon: 'info',
-      color: 'grey-7',
-      title: 'System Maintenance',
-      message: 'Scheduled maintenance window: 23 Feb 2026, 02:00 – 04:00 AM',
-      timestamp: '2026-02-20T09:00:00',
-      read: true,
-    },
-    {
-      id: 7,
-      type: 'hearing',
-      icon: 'event',
-      color: 'warning',
-      title: 'Hearing in 5 Days',
-      message: 'Tower Site Dispute – Kurunegala (LC-2024-006) at High Court, 28 Feb',
-      timestamp: '2026-02-20T08:00:00',
-      read: true,
-    },
-  ])
+  const notifications = ref([])
+  const loading = ref(false)
 
   // ── Getters ─────────────────────────────────────────────────────
   const unreadCount = computed(() => notifications.value.filter((n) => !n.read).length)
@@ -84,6 +15,84 @@ export const useNotificationStore = defineStore('notifications', () => {
   )
 
   // ── Actions ─────────────────────────────────────────────────────
+  async function syncNotifications() {
+    loading.value = true
+    try {
+      const newAlerts = []
+
+      // 1. Upcoming Hearings (Next 7 days)
+      const { data: hearings } = await supabase
+        .from('case_proceedings')
+        .select('id, hearing_date, legal_cases(case_no, title)')
+        .gte('hearing_date', new Date().toISOString().split('T')[0])
+        .lte('hearing_date', new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0])
+
+      if (hearings) {
+        hearings.forEach((h) => {
+          newAlerts.push({
+            id: `hearing-${h.id}`,
+            type: 'hearing',
+            icon: 'event',
+            color: 'negative',
+            title: 'Upcoming Hearing',
+            message: `${h.legal_cases?.title} (${h.legal_cases?.case_no}) is scheduled for ${h.hearing_date}`,
+            timestamp: new Date().toISOString(),
+            read: false,
+          })
+        })
+      }
+
+      // 2. Agreement Expiries (Next 30 days)
+      const { data: expiries } = await supabase
+        .from('agreements')
+        .select('id, title, expiry_date')
+        .lte('expiry_date', new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0])
+        .gte('expiry_date', new Date().toISOString().split('T')[0])
+
+      if (expiries) {
+        expiries.forEach((e) => {
+          newAlerts.push({
+            id: `expiry-${e.id}`,
+            type: 'expiry',
+            icon: 'event_busy',
+            color: 'warning',
+            title: 'Agreement Expiring',
+            message: `${e.title} will expire on ${e.expiry_date}`,
+            timestamp: new Date().toISOString(),
+            read: false,
+          })
+        })
+      }
+
+      // 3. Pending Initial Documents
+      const { data: pendingDocs } = await supabase
+        .from('initial_documents')
+        .select('id, case_title')
+        .eq('status', 'Pending')
+
+      if (pendingDocs) {
+        pendingDocs.forEach((d) => {
+          newAlerts.push({
+            id: `doc-${d.id}`,
+            type: 'approval',
+            icon: 'verified',
+            color: 'info',
+            title: 'Pending Review',
+            message: `New case document "${d.case_title}" is awaiting your review.`,
+            timestamp: new Date().toISOString(),
+            read: false,
+          })
+        })
+      }
+
+      notifications.value = newAlerts
+    } catch (err) {
+      console.error('Error syncing notifications:', err)
+    } finally {
+      loading.value = false
+    }
+  }
+
   function markAsRead(id) {
     const n = notifications.value.find((n) => n.id === id)
     if (n) n.read = true
@@ -111,6 +120,7 @@ export const useNotificationStore = defineStore('notifications', () => {
     notifications,
     unreadCount,
     sortedNotifications,
+    syncNotifications,
     markAsRead,
     markAllRead,
     dismiss,

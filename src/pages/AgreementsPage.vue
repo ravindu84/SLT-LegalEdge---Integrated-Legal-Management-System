@@ -32,15 +32,23 @@
           <div v-for="(stage, idx) in workflowStages" :key="stage.key" class="col">
             <div
               class="slt-pipeline-stage"
-              :class="{ 'slt-pipeline-stage--active': stageCounts[stage.key] > 0 }"
+              :class="{
+                'slt-pipeline-stage--active': stageCounts[stage.key] > 0,
+                'slt-pipeline-stage--zero': stageCounts[stage.key] === 0,
+              }"
             >
-              <div class="row items-center justify-between q-mb-xs">
+              <div class="row items-center justify-between q-mb-xs no-wrap">
                 <q-icon :name="stage.icon" :color="stage.color" size="18px" />
-                <span class="text-h6 text-weight-bold" :class="`text-${stage.color}`">
+                <span class="text-h6 text-weight-bold q-ml-xs" :class="`text-${stage.color}`">
                   {{ stageCounts[stage.key] }}
                 </span>
               </div>
-              <div class="text-caption text-grey-7 ellipsis">{{ stage.label }}</div>
+              <div
+                class="text-caption text-grey-7 ellipsis"
+                style="font-size: 0.65rem; line-height: 1"
+              >
+                {{ $t(stage.label) }}
+              </div>
             </div>
             <!-- Arrow between stages -->
             <q-icon
@@ -72,6 +80,7 @@
             label="Status"
             emit-value
             map-options
+            behavior="menu"
           />
         </div>
         <div class="col-6 col-sm-3">
@@ -83,6 +92,7 @@
             label="Type"
             emit-value
             map-options
+            behavior="menu"
           />
         </div>
         <div class="col-auto">
@@ -540,83 +550,147 @@
             <div class="row q-col-gutter-md">
               <div class="col-12 col-sm-6">
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="tag" size="13px" class="q-mr-xs" />Reference No.
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.referenceNo || '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="category" size="13px" class="q-mr-xs" />Type
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.agreementType || '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="person" size="13px" class="q-mr-xs" />Party 1
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.party1 || '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="people" size="13px" class="q-mr-xs" />Party 2
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.party2 || '—' }}
                   </div>
                 </div>
               </div>
               <div class="col-12 col-sm-6">
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="payments" size="13px" class="q-mr-xs" />Value
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.value ? `LKR ${fmt(selected.value)}` : '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="event" size="13px" class="q-mr-xs" />Start Date
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.startDate || '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="event_busy" size="13px" class="q-mr-xs" />Expiry Date
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.expiryDate || '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="link" size="13px" class="q-mr-xs" />Linked Case
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.linkedCaseNo || '—' }}
                   </div>
                 </div>
                 <div class="row items-start q-py-xs border-bottom">
-                  <div class="col-5 row items-center text-caption text-grey-5">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
                     <q-icon name="info" size="13px" class="q-mr-xs" />Status
                   </div>
-                  <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
                     {{ selected.status || '—' }}
                   </div>
                 </div>
               </div>
               <div class="col-12">
-                <div class="text-caption text-grey-5 q-mb-xs">Description / Scope</div>
-                <p class="text-body2 text-grey-8 q-mb-none">{{ selected.description }}</p>
+                <div
+                  class="text-caption text-weight-bold q-mb-xs"
+                  :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                >
+                  Description / Scope
+                </div>
+                <p
+                  class="text-body2 text-weight-medium q-mb-none"
+                  :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-8'"
+                >
+                  {{ selected.description }}
+                </p>
               </div>
             </div>
           </q-tab-panel>
@@ -933,39 +1007,38 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { supabase } from 'src/boot/supabase'
 
 const $q = useQuasar()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  WORKFLOW DEFINITION  (single source of truth)
+//  WORKFLOW DEFINITION
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  WORKFLOW DEFINITION  (single source of truth)
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-/**
- * Stage progression:
- *  Draft → Under Review → Pending L1 Approval → Pending L2 Approval → Active
- *  Any pending stage → Rejected
- *  Rejected → Draft  (revert)
- *  Active   → Terminated
- */
 const mainStages = ['Draft', 'Under Review', 'Pending L1 Approval', 'Pending L2 Approval', 'Active']
 
 const workflowStages = [
-  { key: 'Draft', label: 'Draft', icon: 'edit_note', color: 'grey-7' },
-  { key: 'Under Review', label: 'Under Review', icon: 'rate_review', color: 'info' },
-  { key: 'Pending L1 Approval', label: 'L1 Approval', icon: 'approval', color: 'warning' },
-  { key: 'Pending L2 Approval', label: 'L2 Approval', icon: 'verified', color: 'orange-8' },
-  { key: 'Active', label: 'Active', icon: 'check_circle', color: 'positive' },
-  { key: 'Rejected', label: 'Rejected', icon: 'cancel', color: 'negative' },
-  { key: 'Terminated', label: 'Terminated', icon: 'do_not_disturb', color: 'grey-6' },
-  { key: 'Archived', label: 'Archived', icon: 'archive', color: 'blue-grey-6' },
+  { key: 'Draft', label: 'agreements.stages.draft', icon: 'edit_note', color: 'grey-7' },
+  { key: 'Under Review', label: 'agreements.stages.review', icon: 'rate_review', color: 'info' },
+  {
+    key: 'Pending L1 Approval',
+    label: 'agreements.stages.l1',
+    icon: 'fact_check',
+    color: 'warning',
+  },
+  {
+    key: 'Pending L2 Approval',
+    label: 'agreements.stages.l2',
+    icon: 'assignment_turned_in',
+    color: 'orange-8',
+  },
+  { key: 'Active', label: 'agreements.stages.active', icon: 'verified_user', color: 'positive' },
+  { key: 'Rejected', label: 'agreements.stages.rejected', icon: 'cancel', color: 'negative' },
+  { key: 'Terminated', label: 'agreements.stages.terminated', icon: 'block', color: 'grey-9' },
+  { key: 'Archived', label: 'agreements.stages.archived', icon: 'archive', color: 'brown-6' },
 ]
 
-// Next state map for approve action
 const nextStateMap = {
   'Under Review': 'Pending L1 Approval',
   'Pending L1 Approval': 'Pending L2 Approval',
@@ -996,7 +1069,49 @@ function stepCircleColor(idx, status) {
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  AGREEMENT TYPES
+//  DATABASE STATE
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const agreements = ref([])
+const loading = ref(false)
+
+async function fetchAgreements() {
+  loading.value = true
+  try {
+    const { data, error } = await supabase
+      .from('agreements')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    agreements.value = data.map((a) => ({
+      ...a,
+      agreementType: a.agreement_type,
+      referenceNo: a.reference_no,
+      party1: a.party1,
+      party2: a.party2,
+      value: a.value,
+      startDate: a.start_date,
+      expiryDate: a.expiry_date,
+      description: a.description,
+      status: a.status,
+      history: [],
+      docs: [],
+      versions: [],
+    }))
+  } catch (err) {
+    console.error('Fetch error:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchAgreements()
+})
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  AGREEMENT TYPES & VERSIONS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const agreementTypes = [
   'Service Level Agreement',
@@ -1014,205 +1129,6 @@ const mockVersions = [
   { ver: 2, date: '2026-02-10 14:20', by: 'M. Perera' },
   { ver: 1, date: '2026-02-05 09:00', by: 'M. Perera' },
 ]
-
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  MOCK DATA  (rich — all statuses represented)
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const agreements = ref([
-  {
-    id: 1,
-    title: 'Network Maintenance SLA – TechServ Solutions',
-    agreementType: 'Service Level Agreement',
-    referenceNo: 'AGR/SLT/2026/001',
-    party1: 'SLT Mobitel PLC – Network Division',
-    party2: 'TechServ Solutions (Pvt) Ltd',
-    value: 18500000,
-    startDate: '2026-01-01',
-    expiryDate: '2026-12-31',
-    status: 'Active',
-    description:
-      'Annual network maintenance and 24x7 NOC support services for SLT backbone infrastructure.',
-    history: [
-      { action: 'Created', date: '2025-11-10', by: 'M. Perera', remarks: '' },
-      {
-        action: 'Submitted',
-        date: '2025-11-15',
-        by: 'M. Perera',
-        remarks: 'Ready for legal review',
-      },
-      {
-        action: 'Approved (Review)',
-        date: '2025-11-22',
-        by: 'Legal Team',
-        remarks: 'Documents verified',
-      },
-      {
-        action: 'L1 Approved',
-        date: '2025-11-28',
-        by: 'K. Fernando, AGM',
-        remarks: 'Agreed terms acceptable',
-      },
-      {
-        action: 'L2 Approved',
-        date: '2025-12-05',
-        by: 'GM – Legal, SLT',
-        remarks: 'Final approval granted',
-      },
-    ],
-    docs: [
-      { name: 'SLA-TechServ-2026.pdf', type: 'pdf', size: '2.1 MB', date: '2025-11-10' },
-      { name: 'Annexure-A-Rates.pdf', type: 'pdf', size: '560 KB', date: '2025-11-10' },
-      { name: 'Service_Schedule_Matrix.xlsx', type: 'xlsx', size: '156 KB', date: '2025-11-12' },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Data Centre Co-location MOU – Virtusa',
-    agreementType: 'MOU',
-    referenceNo: 'AGR/SLT/2026/002',
-    party1: 'SLT Mobitel PLC – ICT Division',
-    party2: 'Virtusa Corporation',
-    value: 6200000,
-    startDate: '2026-03-01',
-    expiryDate: '2027-02-28',
-    status: 'Pending L2 Approval',
-    description:
-      'Co-location of Virtusa development servers at SLT Welikade data centre with managed connectivity.',
-    history: [
-      { action: 'Submitted', date: '2026-01-12', by: 'A. Ranasinghe', remarks: '' },
-      {
-        action: 'Approved (Review)',
-        date: '2026-01-18',
-        by: 'Legal Team',
-        remarks: 'SLA terms reviewed and cleared',
-      },
-      {
-        action: 'L1 Approved',
-        date: '2026-01-25',
-        by: 'N. Silva, AGM',
-        remarks: 'Commercial terms acceptable',
-      },
-    ],
-    docs: [
-      { name: 'MOU-Virtusa-Draft.pdf', type: 'pdf', size: '1.4 MB', date: '2026-01-12' },
-      { name: 'Pricing_Proposal_v1.xlsx', type: 'xlsx', size: '42 KB', date: '2026-01-14' },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Software Licensing Agreement – Oracle',
-    agreementType: 'Vendor Agreement',
-    referenceNo: 'AGR/SLT/2026/003',
-    party1: 'SLT Mobitel PLC – IT Department',
-    party2: 'Oracle Corporation Lanka (Pvt) Ltd',
-    value: 34000000,
-    startDate: '2026-02-01',
-    expiryDate: '2029-01-31',
-    status: 'Pending L1 Approval',
-    description:
-      '3-year Oracle Database Enterprise Edition licensing and support for SLT core billing systems.',
-    history: [
-      { action: 'Submitted', date: '2026-01-20', by: 'T. Gunathilaka', remarks: '' },
-      {
-        action: 'Approved (Review)',
-        date: '2026-02-01',
-        by: 'Legal Team',
-        remarks: 'Licensing terms verified with IT',
-      },
-    ],
-    docs: [
-      { name: 'Oracle-License-Agreement.pdf', type: 'pdf', size: '4.2 MB', date: '2026-01-20' },
-      { name: 'License_Count_Summary.xlsx', type: 'xlsx', size: '18 KB', date: '2026-01-22' },
-    ],
-  },
-  {
-    id: 4,
-    title: 'Office Space Lease – Colombo 3 Branch',
-    agreementType: 'Lease Agreement',
-    referenceNo: 'AGR/SLT/2026/004',
-    party1: 'SLT Mobitel PLC',
-    party2: 'Urban Properties (Pvt) Ltd',
-    value: 2400000,
-    startDate: '2026-04-01',
-    expiryDate: '2028-03-31',
-    status: 'Under Review',
-    description:
-      'Lease of 4,500 sq ft commercial space at 45 Galle Road, Colombo 3 for SLT regional office.',
-    history: [
-      {
-        action: 'Submitted',
-        date: '2026-02-10',
-        by: 'P. Jayawardena',
-        remarks: 'Draft submitted for legal review',
-      },
-    ],
-    docs: [{ name: 'Lease-Draft-Col3.pdf', size: '890 KB', date: '2026-02-10' }],
-  },
-  {
-    id: 5,
-    title: 'NDA – Huawei Technologies Partnership',
-    agreementType: 'Non-Disclosure Agreement',
-    referenceNo: 'AGR/SLT/2026/005',
-    party1: 'SLT Mobitel PLC',
-    party2: 'Huawei Technologies Lanka Co. Ltd',
-    value: null,
-    startDate: '2026-02-15',
-    expiryDate: '2028-02-14',
-    status: 'Draft',
-    description:
-      'Mutual NDA covering confidential technical specifications shared during 5G feasibility discussions.',
-    history: [],
-    docs: [],
-  },
-  {
-    id: 6,
-    title: 'Tower Site Maintenance Contract – Techno Build',
-    agreementType: 'Maintenance Contract',
-    referenceNo: 'AGR/SLT/2025/044',
-    party1: 'SLT Mobitel PLC – Infrastructure',
-    party2: 'Techno Build Engineering (Pvt) Ltd',
-    value: 7800000,
-    startDate: '2025-07-01',
-    expiryDate: '2026-06-30',
-    status: 'Rejected',
-    description: 'Annual civil maintenance of 120 SLT tower sites across Southern Province.',
-    history: [
-      { action: 'Submitted', date: '2025-06-01', by: 'S. Dissanayake', remarks: '' },
-      { action: 'Approved (Review)', date: '2025-06-10', by: 'Legal Team', remarks: '' },
-      {
-        action: 'Rejected',
-        date: '2025-06-18',
-        by: 'K. Fernando, AGM',
-        remarks: 'Pricing not competitive. Vendor must resubmit with revised rates.',
-      },
-    ],
-    docs: [{ name: 'Maintenance-Contract-Draft.pdf', size: '1.1 MB', date: '2025-06-01' }],
-  },
-  {
-    id: 7,
-    title: 'Cloud Services Partnership – Dialog Axiata',
-    agreementType: 'Partnership Agreement',
-    referenceNo: 'AGR/SLT/2025/051',
-    party1: 'SLT Mobitel PLC',
-    party2: 'Dialog Axiata PLC',
-    value: 12000000,
-    startDate: '2025-01-01',
-    expiryDate: '2025-12-31',
-    status: 'Terminated',
-    description: 'Joint cloud services reselling partnership — terminated by mutual agreement.',
-    history: [
-      { action: 'Submitted', date: '2024-11-20', by: 'Admin', remarks: '' },
-      { action: 'L2 Approved', date: '2024-12-10', by: 'GM Legal', remarks: '' },
-      {
-        action: 'Terminated',
-        date: '2025-09-01',
-        by: 'Admin',
-        remarks: 'Mutual termination by both parties.',
-      },
-    ],
-    docs: [{ name: 'Cloud-Partnership-Signed.pdf', size: '3.3 MB', date: '2024-12-10' }],
-  },
-])
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  COMPUTED & FILTERS
@@ -1268,15 +1184,42 @@ const selected = ref(null)
 const previewDoc = ref(null)
 const viewTab = ref('details')
 
-function viewAgreement(row) {
-  selected.value = row
+async function viewAgreement(row) {
+  selected.value = JSON.parse(JSON.stringify(row))
   viewTab.value = 'details'
   showViewDialog.value = true
+
+  // Fetch History & Docs
+  try {
+    const { data: hist } = await supabase
+      .from('agreement_approvals')
+      .select('*')
+      .eq('agreement_id', row.id)
+      .order('performed_at', { ascending: true })
+
+    selected.value.history = (hist || []).map((h) => ({
+      action: h.action,
+      date: h.performed_at,
+      by: h.performer_name || 'User',
+      remarks: h.remarks,
+    }))
+
+    const { data: docs } = await supabase
+      .from('agreement_documents')
+      .select('*')
+      .eq('agreement_id', row.id)
+
+    selected.value.docs = (docs || []).map((d) => ({
+      name: d.file_name,
+      type: d.file_type,
+      size: d.file_size,
+      date: d.created_at?.slice(0, 10),
+    }))
+  } catch (err) {
+    console.error('View detail error:', err)
+  }
 }
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  CREATE / EDIT DIALOG
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showFormDialog = ref(false)
 const isEditMode = ref(false)
 const submitting = ref(false)
@@ -1318,35 +1261,49 @@ async function submitForm() {
   const valid = await formRef.value?.validate()
   if (!valid) return
   submitting.value = true
-  await new Promise((r) => setTimeout(r, 700))
 
-  if (isEditMode.value) {
-    const idx = agreements.value.findIndex((a) => a.id === form.value.id)
-    if (idx !== -1) agreements.value[idx] = { ...agreements.value[idx], ...form.value }
-    $q.notify({ type: 'positive', message: 'Agreement updated.', icon: 'edit' })
-  } else {
-    agreements.value.unshift({
-      ...form.value,
-      id: Date.now(),
-      status: 'Draft',
-      history: [],
-      docs: [],
-    })
-    $q.notify({ type: 'positive', message: 'Agreement saved as Draft.', icon: 'save' })
+  try {
+    const payload = {
+      title: form.value.title,
+      agreement_type: form.value.agreementType,
+      reference_no: form.value.referenceNo,
+      party1: form.value.party1,
+      party2: form.value.party2,
+      value: form.value.value,
+      start_date: form.value.startDate,
+      expiry_date: form.value.expiryDate,
+      description: form.value.description,
+      linked_case_no: form.value.linkedCaseNo,
+      status: isEditMode.value ? form.value.status : 'Draft',
+      updated_at: new Date().toISOString(),
+    }
+
+    if (isEditMode.value) {
+      const { error } = await supabase.from('agreements').update(payload).eq('id', form.value.id)
+      if (error) throw error
+      $q.notify({ type: 'positive', message: 'Agreement updated.', icon: 'edit' })
+    } else {
+      const { error } = await supabase.from('agreements').insert([payload])
+      if (error) throw error
+      $q.notify({ type: 'positive', message: 'Agreement saved as Draft.', icon: 'save' })
+    }
+
+    await fetchAgreements()
+    closeDialog()
+  } catch (err) {
+    console.error('Submit error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to save agreement' })
+  } finally {
+    submitting.value = false
   }
-  submitting.value = false
-  closeDialog()
 }
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  WORKFLOW ACTIONS
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showWorkflowDialog = ref(false)
 const pendingDoc = ref(null)
 const pendingAction = ref('') // 'approve' | 'reject' | 'terminate'
 const workflowRemark = ref('')
 
-function simulateSignature(doc) {
+async function simulateSignature(doc) {
   $q.dialog({
     title: 'Digital Signature (AAM-FR-08)',
     message: `You are about to digitally sign ${doc.referenceNo}. Please confirm your identity.`,
@@ -1357,52 +1314,66 @@ function simulateSignature(doc) {
     },
     cancel: true,
     persistent: true,
-  }).onOk(() => {
+  }).onOk(async () => {
     $q.loading.show({ message: 'Applying cryptographic signature...' })
-    setTimeout(() => {
-      $q.loading.hide()
-      doc.history.push({
-        action: 'Digitally Signed',
-        date: today(),
-        by: 'Current User',
-        remarks: 'Digital signature applied via system PKI.',
-      })
+    try {
+      await supabase.from('agreement_history').insert([
+        {
+          agreement_id: doc.id,
+          action: 'Digitally Signed',
+          remarks: 'Digital signature applied via system PKI.',
+        },
+      ])
+
       $q.notify({
         type: 'positive',
         message: 'Agreement digitally signed successfully.',
         icon: 'verified_user',
       })
-    }, 1500)
+      await fetchAgreements()
+      if (selected.value?.id === doc.id) viewAgreement(doc)
+    } finally {
+      $q.loading.hide()
+    }
   })
 }
 
-// Direct advance actions (no confirmation needed)
-function advance(row, type) {
-  const idx = agreements.value.findIndex((a) => a.id === row.id)
-  if (idx === -1) return
+async function advance(row, type) {
+  let newStatus = ''
+  let remark = ''
 
   if (type === 'submit') {
-    agreements.value[idx].status = 'Under Review'
-    agreements.value[idx].history.push({
-      action: 'Submitted',
-      date: today(),
-      by: 'Current User',
-      remarks: 'Submitted for legal review',
-    })
-    $q.notify({ type: 'info', message: `"${row.title}" submitted for review.`, icon: 'send' })
+    newStatus = 'Under Review'
+    remark = 'Submitted for legal review'
   } else if (type === 'revert') {
-    agreements.value[idx].status = 'Draft'
-    agreements.value[idx].history.push({
-      action: 'Reverted to Draft',
-      date: today(),
-      by: 'Current User',
-      remarks: 'Reverted for revision',
-    })
+    newStatus = 'Draft'
+    remark = 'Reverted for revision'
+  }
+
+  if (!newStatus) return
+
+  try {
+    const { error } = await supabase
+      .from('agreements')
+      .update({ status: newStatus })
+      .eq('id', row.id)
+    if (error) throw error
+
+    await supabase.from('agreement_history').insert([
+      {
+        agreement_id: row.id,
+        action: type === 'submit' ? 'Submitted' : 'Reverted',
+        remarks: remark,
+      },
+    ])
+
+    await fetchAgreements()
     $q.notify({
-      type: 'warning',
-      message: `"${row.title}" reverted to Draft.`,
-      icon: 'restart_alt',
+      type: type === 'submit' ? 'info' : 'warning',
+      message: `"${row.title}" ${newStatus === 'Draft' ? 'reverted' : 'submitted'}.`,
     })
+  } catch (err) {
+    console.error('Advance error:', err)
   }
 }
 
@@ -1416,7 +1387,6 @@ function handleConfirmWorkflow(row, action) {
   showViewDialog.value = false
 }
 
-// Confirmation-required actions
 function confirmWorkflow(row, action) {
   pendingDoc.value = row
   pendingAction.value = action
@@ -1424,49 +1394,51 @@ function confirmWorkflow(row, action) {
   showWorkflowDialog.value = true
 }
 
-function executeWorkflow() {
+async function executeWorkflow() {
   if (pendingAction.value !== 'approve' && !workflowRemark.value.trim()) {
     $q.notify({ type: 'warning', message: 'Please provide a reason.' })
     return
   }
-  const idx = agreements.value.findIndex((a) => a.id === pendingDoc.value.id)
-  if (idx === -1) return
 
-  const doc = agreements.value[idx]
+  try {
+    const doc = pendingDoc.value
+    let newStatus = doc.status
 
-  if (pendingAction.value === 'approve') {
-    const next = nextStateMap[doc.status]
-    if (next) {
-      doc.history.push({
-        action: `Approved (${doc.status})`,
-        date: today(),
-        by: 'Current User',
-        remarks: workflowRemark.value,
-      })
-      doc.status = next
-      $q.notify({ type: 'positive', message: `Approved! Status → ${next}`, icon: 'check_circle' })
+    if (pendingAction.value === 'approve') {
+      newStatus = nextStateMap[doc.status] || doc.status
+    } else if (pendingAction.value === 'reject') {
+      newStatus = 'Rejected'
+    } else if (pendingAction.value === 'terminate') {
+      newStatus = 'Terminated'
     }
-  } else if (pendingAction.value === 'reject') {
-    doc.history.push({
-      action: 'Rejected',
-      date: today(),
-      by: 'Current User',
-      remarks: workflowRemark.value,
-    })
-    doc.status = 'Rejected'
-    $q.notify({ type: 'negative', message: `"${doc.title}" rejected.`, icon: 'cancel' })
-  } else if (pendingAction.value === 'terminate') {
-    doc.history.push({
-      action: 'Terminated',
-      date: today(),
-      by: 'Current User',
-      remarks: workflowRemark.value,
-    })
-    doc.status = 'Terminated'
-    $q.notify({ type: 'info', message: `"${doc.title}" terminated.`, icon: 'do_not_disturb_on' })
-  }
 
-  showWorkflowDialog.value = false
+    const { error } = await supabase
+      .from('agreements')
+      .update({ status: newStatus })
+      .eq('id', doc.id)
+    if (error) throw error
+
+    await supabase.from('agreement_history').insert([
+      {
+        agreement_id: doc.id,
+        action:
+          pendingAction.value === 'approve'
+            ? `Approved (${doc.status})`
+            : pendingAction.value.charAt(0).toUpperCase() + pendingAction.value.slice(1),
+        remarks: workflowRemark.value,
+      },
+    ])
+
+    await fetchAgreements()
+    $q.notify({
+      type: pendingAction.value === 'approve' ? 'positive' : 'info',
+      message: `Action complete. Status → ${newStatus}`,
+    })
+  } catch (err) {
+    console.error('Workflow error:', err)
+  } finally {
+    showWorkflowDialog.value = false
+  }
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -1484,10 +1456,6 @@ function isNearExpiry(dateStr) {
 
 function fmt(val) {
   return Number(val || 0).toLocaleString('en-LK')
-}
-
-function today() {
-  return new Date().toISOString().slice(0, 10)
 }
 
 function docIcon(type) {
@@ -1574,21 +1542,36 @@ function viewDocument(doc) {
 
 // ── Pipeline strip ────────────────────────────────────────────
 .slt-pipeline-stage {
-  background: #f8f9fb;
-  border: 1px solid #e0e7ef;
+  background: rgba(0, 63, 135, 0.02);
+  border: 1px solid rgba(0, 63, 135, 0.1);
   border-radius: 8px;
   padding: 8px 10px;
   position: relative;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  min-height: 54px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
   &--active {
     border-color: #003f87;
-    box-shadow: 0 2px 10px rgba(0, 63, 135, 0.1);
+    border-width: 1.5px;
+    background: rgba(0, 63, 135, 0.05);
+    box-shadow: 0 3px 10px rgba(0, 63, 135, 0.1);
+  }
+
+  &--zero {
+    opacity: 1;
+    background: rgba(0, 63, 135, 0.02);
+    border-style: solid;
   }
 }
 .slt-pipeline-arrow {
   position: absolute;
-  right: -10px;
-  top: 12px;
+  right: -9px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
 }
 
 // ── Workflow stepper ──────────────────────────────────────────

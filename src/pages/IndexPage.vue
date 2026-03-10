@@ -666,6 +666,7 @@ function downloadResource(fileName) {
 }
 
 // ═══ RESOURCE CARD ═══════════════════════════════════════════
+// ═══ RESOURCE CARD ═══════════════════════════════════════
 .slt-resource-card {
   border: 1px dashed var(--q-primary);
   background: rgba(var(--q-primary), 0.02);

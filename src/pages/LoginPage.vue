@@ -6,11 +6,10 @@
     <!-- ─── LEFT PANEL — Branding ─────────────────────────────── -->
     <div class="slt-login-brand col-12 col-md-5 column items-center justify-center q-pa-xl">
       <!-- Logo -->
-      <div class="slt-logo-ring column items-center justify-center q-mb-xl">
-        <q-icon name="gavel" size="56px" color="white" />
+      <div class="q-mb-lg">
+        <img src="~assets/logo-3d.png" style="width: 280px" />
       </div>
 
-      <div class="text-white text-h4 text-weight-bold q-mb-xs">SLT LegalEdge</div>
       <div class="text-white text-body1 opacity-70 q-mb-xl text-center">
         Integrated Legal Management System
       </div>
@@ -51,31 +50,16 @@
           </div>
         </div>
 
+        <!-- Error Banner -->
+        <q-banner v-if="errorMsg" rounded dense class="bg-negative text-white q-mb-md">
+          <template #avatar>
+            <q-icon name="error" color="white" />
+          </template>
+          {{ errorMsg }}
+        </q-banner>
+
         <!-- Form -->
         <q-form ref="formRef" greedy @submit.prevent="handleLogin">
-          <!-- Login As (role simulation) -->
-          <div class="q-mb-md">
-            <div class="text-caption text-weight-bold text-grey-6 q-mb-xs">LOGIN AS</div>
-            <div class="row q-gutter-sm">
-              <q-btn
-                v-for="role in roles"
-                :key="role.key"
-                unelevated
-                no-caps
-                size="sm"
-                :color="
-                  selectedRole === role.key ? 'primary' : $q.dark.isActive ? 'grey-9' : 'grey-3'
-                "
-                :text-color="
-                  selectedRole === role.key ? 'white' : $q.dark.isActive ? 'grey-3' : 'grey-8'
-                "
-                :icon="role.icon"
-                :label="role.label"
-                @click="applyRole(role)"
-              />
-            </div>
-          </div>
-
           <!-- Email -->
           <q-input
             v-model="form.email"
@@ -139,6 +123,23 @@
           />
         </q-form>
 
+        <!-- Register Link -->
+        <div class="text-center q-mt-lg">
+          <span :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-6'">
+            Don't have an account?
+          </span>
+          <q-btn
+            flat
+            no-caps
+            dense
+            label="Create Account"
+            color="primary"
+            size="sm"
+            class="q-ml-xs text-weight-bold"
+            @click="$router.push('/register')"
+          />
+        </div>
+
         <!-- Footer note -->
         <div class="text-center text-caption text-grey-5 q-mt-xl">
           For access issues, contact the IT Helpdesk at<br />
@@ -159,82 +160,49 @@ const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  ROLE PRESETS
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const roles = [
-  {
-    key: 'officer',
-    label: 'Legal Officer',
-    icon: 'gavel',
-    email: 'n.silva@slt.com.lk',
-    name: 'N. Silva',
-  },
-  {
-    key: 'manager',
-    label: 'Manager (L1)',
-    icon: 'approval',
-    email: 'k.fernando@slt.com.lk',
-    name: 'K. Fernando, AGM',
-  },
-  {
-    key: 'executive',
-    label: 'Executive (L2)',
-    icon: 'verified',
-    email: 's.karunaratne@slt.com.lk',
-    name: 'S. Karunaratne, DGM',
-  },
-  {
-    key: 'admin',
-    label: 'Admin',
-    icon: 'admin_panel_settings',
-    email: 'admin@slt.com.lk',
-    name: 'System Admin',
-  },
-]
-
-const selectedRole = ref('officer')
 const form = ref({
-  email: 'n.silva@slt.com.lk',
-  password: 'password123',
+  email: '',
+  password: '',
 })
 const showPwd = ref(false)
 const rememberMe = ref(true)
 const loading = ref(false)
 const formRef = ref(null)
+const errorMsg = ref('')
 
-function applyRole(role) {
-  selectedRole.value = role.key
-  form.value.email = role.email
-}
-
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  LOGIN HANDLER
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+// ── LOGIN HANDLER ──────────────────────────────────────────────
 async function handleLogin() {
+  errorMsg.value = ''
   const valid = await formRef.value?.validate()
   if (!valid) return
 
   loading.value = true
-  await new Promise((r) => setTimeout(r, 900))
-  loading.value = false
+  try {
+    await authStore.login(form.value.email, form.value.password)
 
-  authStore.login(selectedRole.value)
+    $q.notify({
+      type: 'positive',
+      icon: 'check_circle',
+      message: `Welcome back, ${authStore.displayName}!`,
+      timeout: 2500,
+    })
 
-  const role = roles.find((r) => r.key === selectedRole.value)
-  $q.notify({
-    type: 'positive',
-    icon: 'check_circle',
-    message: `Welcome, ${role?.name}! Signed in as ${role?.label}.`,
-    timeout: 2500,
-  })
-
-  router.push('/')
+    router.push('/')
+  } catch (err) {
+    console.error('Login failed:', err)
+    if (err.message?.includes('Invalid login credentials')) {
+      errorMsg.value = 'Invalid email or password. Please try again.'
+    } else if (err.message?.includes('Email not confirmed')) {
+      errorMsg.value = 'Please verify your email address before signing in.'
+    } else {
+      errorMsg.value = err.message || 'Login failed. Please try again.'
+    }
+  } finally {
+    loading.value = false
+  }
 }
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  FEATURE LIST
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+// ── FEATURE LIST ───────────────────────────────────────────────
 const features = [
   { icon: 'gavel', text: 'End-to-end Legal Case Management' },
   { icon: 'handshake', text: 'Agreement Approval Workflows' },
@@ -308,9 +276,6 @@ const features = [
 }
 
 // ── Form panel (right) ───────────────────────────────────────
-.slt-login-form-panel {
-  // background colors managed by :class
-}
 
 .slt-login-card {
   width: 100%;

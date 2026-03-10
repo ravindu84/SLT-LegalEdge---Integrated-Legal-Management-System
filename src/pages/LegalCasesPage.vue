@@ -12,6 +12,14 @@
         </div>
       </div>
       <div class="col-auto row q-gutter-sm">
+        <q-btn
+          color="primary"
+          icon="add"
+          label="New Case"
+          unelevated
+          no-caps
+          @click="openCreateDialog"
+        />
         <q-btn outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
       </div>
     </div>
@@ -52,6 +60,7 @@
             label="Status"
             emit-value
             map-options
+            behavior="menu"
           />
         </div>
         <div class="col-6 col-sm-3">
@@ -71,6 +80,7 @@
             label="Case Type"
             emit-value
             map-options
+            behavior="menu"
           />
         </div>
         <div class="col-auto">
@@ -289,58 +299,100 @@
                   <div class="slt-section-label">Case Information</div>
 
                   <div class="row items-start q-py-xs slt-info-row border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="tag" size="14px" class="q-mr-xs" />Case Number
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.caseNo }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs slt-info-row border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="title" size="14px" class="q-mr-xs" />Case Title
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.title }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs slt-info-row border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="category" size="14px" class="q-mr-xs" />Case Type
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.caseType }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs slt-info-row border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="gavel" size="14px" class="q-mr-xs" />Nature of Case
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.natureOfCase }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs slt-info-row border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="event" size="14px" class="q-mr-xs" />Date of Occurrence
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.dateOfOccurrence }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs slt-info-row border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="task_alt" size="14px" class="q-mr-xs" />Filed Date
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.filedDate }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="info" size="14px" class="q-mr-xs" />Status
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.status }}
                     </div>
                   </div>
@@ -352,42 +404,72 @@
                 <div class="slt-field-group">
                   <div class="slt-section-label">Parties & Assignment</div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="person" size="14px" class="q-mr-xs" />Plaintiff
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.plaintiff }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="person_off" size="14px" class="q-mr-xs" />Defendant
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.defendant }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="account_balance" size="14px" class="q-mr-xs" />Court
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.court }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="badge" size="14px" class="q-mr-xs" />Assigned Lawyer
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.assignedLawyer }}
                     </div>
                   </div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="payments" size="14px" class="q-mr-xs" />Financial Exposure
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{
                         activeCase.financialExposure
                           ? `LKR ${fmt(activeCase.financialExposure)}`
@@ -396,10 +478,16 @@
                     </div>
                   </div>
                   <div class="row items-start q-py-xs border-bottom">
-                    <div class="col-5 row items-center text-caption text-grey-5">
+                    <div
+                      class="col-5 row items-center text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                    >
                       <q-icon name="calendar_today" size="14px" class="q-mr-xs" />Next Hearing
                     </div>
-                    <div class="col-7 text-body2 text-weight-medium text-grey-9">
+                    <div
+                      class="col-7 text-body2 text-weight-bold"
+                      :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                    >
                       {{ activeCase.nextHearing || '—' }}
                     </div>
                   </div>
@@ -408,7 +496,10 @@
                 <!-- Summary of facts -->
                 <div class="slt-field-group q-mt-md">
                   <div class="slt-section-label">Summary of Facts</div>
-                  <p class="text-body2 text-grey-8 q-mb-none q-pt-xs">
+                  <p
+                    class="text-body2 text-weight-medium q-mb-none q-pt-xs"
+                    :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-8'"
+                  >
                     {{ activeCase.summaryOfFacts }}
                   </p>
                 </div>
@@ -1592,6 +1683,87 @@
     </q-dialog>
 
     <!-- ═══════════════════════════════════════════════════════════
+         CREATE NEW CASE DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog v-model="showCreateDialog" persistent>
+      <q-card style="width: 700px; max-width: 90vw">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon name="add_circle" />
+          <div class="text-weight-bold q-ml-sm">Register New Legal Case</div>
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+
+        <q-card-section class="q-pa-md">
+          <div class="row q-col-gutter-md">
+            <div class="col-12 col-sm-6">
+              <q-input v-model="newCaseForm.caseNo" label="Case No." outlined dense readonly />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-select
+                v-model="newCaseForm.caseType"
+                :options="[
+                  'Money Recovery',
+                  'Land Case',
+                  'Damages',
+                  'Appeals',
+                  'Criminal',
+                  'Other',
+                ]"
+                label="Case Type"
+                outlined
+                dense
+              />
+            </div>
+            <div class="col-12">
+              <q-input v-model="newCaseForm.title" label="Case Title" outlined dense />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="newCaseForm.court" label="Court Name" outlined dense />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input
+                v-model="newCaseForm.assignedLawyer"
+                label="Assigned Lawyer"
+                outlined
+                dense
+              />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="newCaseForm.plaintiff" label="Plaintiff" outlined dense />
+            </div>
+            <div class="col-12 col-sm-6">
+              <q-input v-model="newCaseForm.defendant" label="Defendant" outlined dense />
+            </div>
+            <div class="col-12">
+              <q-input
+                v-model="newCaseForm.natureOfCase"
+                label="Nature of Case"
+                type="textarea"
+                outlined
+                dense
+                rows="2"
+              />
+            </div>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-pb-md q-px-md">
+          <q-btn flat label="Cancel" color="grey-7" v-close-popup no-caps />
+          <q-btn
+            unelevated
+            label="Create Case"
+            color="primary"
+            icon="check"
+            :loading="loading"
+            @click="submitCreateCase"
+            no-caps
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- ═══════════════════════════════════════════════════════════
          DOCUMENT PREVIEW DIALOG
     ════════════════════════════════════════════════════════════ -->
     <q-dialog
@@ -1667,253 +1839,55 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { supabase } from 'src/boot/supabase'
 
 const $q = useQuasar()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  MOCK DATA
+//  DATABASE STATE
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const cases = ref([])
+const loading = ref(false)
 
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  MOCK DATA
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const mockVersions = [
-  { ver: 3, date: '2026-02-15 10:30', by: 'N. Silva' },
-  { ver: 2, date: '2026-02-10 14:20', by: 'M. Perera' },
-  { ver: 1, date: '2026-02-05 09:00', by: 'M. Perera' },
-]
+async function fetchCases() {
+  loading.value = true
+  try {
+    const { data, error } = await supabase
+      .from('legal_cases')
+      .select('*')
+      .order('created_at', { ascending: false })
 
-const cases = ref([
-  {
-    id: 1,
-    caseNo: 'LC-2026-001',
-    title: 'Recovery of Outstanding Payments – Netwin Pvt Ltd',
-    caseType: 'Money Recovery',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Netwin Pvt Ltd',
-    natureOfCase: 'Unpaid dues for leased circuit charges spanning 18 months.',
-    dateOfOccurrence: '2025-06-01',
-    filedDate: '2026-01-20',
-    financialExposure: 4500000,
-    court: 'Colombo District Court',
-    assignedLawyer: 'K. Fernando, Attorney-at-Law',
-    status: 'Active',
-    nextHearing: '2026-03-10',
-    summaryOfFacts:
-      'SLT Mobitel initiated recovery proceedings against Netwin Pvt Ltd for outstanding leased-circuit charges amounting to LKR 4.5M over 18 months of non-payment.',
-    poly: {
-      claimAmount: 4500000,
-      paidAmount: 1200000,
-      payments: [
-        { id: 1, date: '2026-01-05', amount: 700000, method: 'Bank Transfer', ref: 'BTR-00112' },
-        { id: 2, date: '2026-02-01', amount: 500000, method: 'Cheque', ref: 'CHQ-44521' },
-      ],
-    },
-    notes: [
-      {
-        text: 'Initial case review completed. Evidence bundle looks solid.',
-        author: 'K. Fernando',
-        timestamp: '2026-01-22 10:00',
-        isPrivate: false,
-      },
-    ],
-    auditTrail: [
-      {
-        id: 1,
-        timestamp: '2026-01-20 09:30',
-        user: 'System',
-        action: 'Created',
-        remarks: 'Case record initialized from initial document #SLT/LEG/2026/001',
-      },
-    ],
-    versions: [{ ver: 1, date: '2026-01-20', by: 'System' }],
-    proceedings: [
-      {
-        date: '2026-01-25',
-        outcome: 'Evidence Submitted',
-        nextDate: '2026-03-10',
-        notes:
-          'SLT submitted invoices, payment history, and lease agreements as documentary evidence.',
-        recordedBy: 'K. Fernando',
-        recordedAt: '2026-01-25',
-      },
-      {
-        date: '2025-12-12',
-        outcome: 'Adjourned',
-        nextDate: '2026-01-25',
-        notes:
-          'Case adjourned due to defendant requesting additional time to file statement of defence.',
-        recordedBy: 'K. Fernando',
-        recordedAt: '2025-12-12',
-      },
-    ],
-    attachedDocs: [
-      { name: 'Lease Agreement – Netwin.pdf', type: 'pdf', size: '1.2 MB', date: '2026-01-20' },
-      { name: 'Invoice Bundle Jan-Dec 2025.pdf', type: 'pdf', size: '3.4 MB', date: '2026-01-20' },
-      {
-        name: 'Outstanding Balance Statement.xlsx',
-        type: 'xlsx',
-        size: '45 KB',
-        date: '2026-01-21',
-      },
-    ],
-  },
-  {
-    id: 2,
-    caseNo: 'LC-2026-002',
-    title: 'Land Acquisition Dispute – Kandy Exchange Site',
-    caseType: 'Land Case',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Kandy Municipal Council',
-    natureOfCase: 'Encroachment on SLT registered land parcel during urban development.',
-    dateOfOccurrence: '2025-09-12',
-    filedDate: '2026-01-28',
-    financialExposure: 12000000,
-    court: 'Kandy District Court',
-    assignedLawyer: 'N. Silva, Attorney-at-Law',
-    status: 'Pending Hearing',
-    nextHearing: '2026-02-28',
-    summaryOfFacts:
-      'Portion of the Kandy Exchange land registered under SLT was encroached upon during a KMC urban development project without prior notice or compensation.',
-    poly: {
-      deedNumber: 'D/KDY/1987/00442',
-      planNumber: 'SP/KDY/1987/112',
-      landName: 'Kandy Exchange Premises, Peradeniya Road',
-      extent: '120 Perches',
-      district: 'Kandy',
-      gramaNiladari: 'Kandy West 412',
-      encumbrances: 'None on record',
-    },
-    notes: [],
-    auditTrail: [
-      {
-        id: 2,
-        timestamp: '2026-01-28 11:15',
-        user: 'System',
-        action: 'Created',
-        remarks: 'Case record initialized.',
-      },
-    ],
-    proceedings: [
-      {
-        date: '2026-02-05',
-        outcome: 'Adjourned',
-        nextDate: '2026-02-28',
-        notes: 'Judge adjourned to allow defendant to produce original survey plans.',
-        recordedBy: 'N. Silva',
-        recordedAt: '2026-02-05',
-      },
-    ],
-    attachedDocs: [
-      { name: 'Deed of Title – KDY-442.pdf', type: 'pdf', size: '890 KB', date: '2026-01-28' },
-      { name: 'Survey Plan SP-112.jpg', type: 'jpg', size: '2.1 MB', date: '2026-01-28' },
-      { name: 'UDA Approval Doc.pdf', type: 'pdf', size: '450 KB', date: '2026-01-30' },
-      { name: 'Land Survey Points.xlsx', type: 'xlsx', size: '12 KB', date: '2026-01-30' },
-    ],
-  },
-  {
-    id: 3,
-    caseNo: 'LC-2026-003',
-    title: 'Damages Claim – Fiber Cut by Gamage Constructions',
-    caseType: 'Damages',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Gamage Constructions Ltd',
-    natureOfCase: 'Negligent excavation causing optical fiber backbone damage.',
-    dateOfOccurrence: '2025-11-03',
-    filedDate: '2026-02-05',
-    financialExposure: 870000,
-    court: 'Galle Magistrate Court',
-    assignedLawyer: 'P. Jayawardena, Attorney-at-Law',
-    status: 'Active',
-    nextHearing: '2026-03-22',
-    summaryOfFacts:
-      'During road widening works on the Southern Expressway service road, Gamage Constructions negligently cut 600m of SLT backbone fiber cable, causing a 14-hour service outage.',
-    poly: {
-      additionalDetails:
-        'Estimated repair cost LKR 870,000. Service loss claim pending engineering assessment.',
-    },
-    proceedings: [],
-    attachedDocs: [
-      { name: 'Incident Report – Nov 2025.pdf', type: 'pdf', size: '560 KB', date: '2026-02-05' },
-      { name: 'Repair Cost Estimation.xlsx', type: 'xlsx', size: '28 KB', date: '2026-02-06' },
-      { name: 'Site Photos Bundle.pdf', type: 'pdf', size: '8.2 MB', date: '2026-02-06' },
-    ],
-  },
-  {
-    id: 4,
-    caseNo: 'LC-2026-004',
-    title: 'Easement Right Dispute – Colombo 5 Tower Site',
-    caseType: 'Land Case',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Sulaiman Holdings (Pvt) Ltd',
-    natureOfCase: 'Denial of registered easement right for cable routing.',
-    dateOfOccurrence: '2025-10-18',
-    filedDate: '2026-02-10',
-    financialExposure: 3200000,
-    court: 'Colombo High Court',
-    assignedLawyer: 'A. Bandara, PC',
-    status: 'Under Review',
-    nextHearing: null,
-    summaryOfFacts:
-      'Sulaiman Holdings blocked SLT access to a registered easement route for overhead cable infrastructure, forcing a costly rerouting.',
-    poly: {
-      deedNumber: 'D/COL/2001/00789',
-      planNumber: 'SP/COL/2001/334',
-      landName: 'Easement Corridor – Nawala Road, Colombo 5',
-      extent: '15 Perches (easement strip)',
-      district: 'Colombo',
-      gramaNiladari: 'Nawala GN Division',
-      encumbrances: 'Registered Easement in favour of SLT',
-    },
-    proceedings: [],
-    attachedDocs: [],
-  },
-  {
-    id: 5,
-    caseNo: 'LC-2025-012',
-    title: 'Appeal Against Labour Tribunal Award – K.A. Perera',
-    caseType: 'Appeals',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'K.A. Perera (Former Employee)',
-    natureOfCase: 'Appeal against compensation awarded by Labour Tribunal.',
-    dateOfOccurrence: '2025-08-30',
-    filedDate: '2025-09-15',
-    financialExposure: 2300000,
-    court: 'Court of Appeal, Colombo',
-    assignedLawyer: 'S. Dissanayake, Attorney-at-Law',
-    status: 'Closed',
-    nextHearing: null,
-    summaryOfFacts:
-      'SLT appealed a Labour Tribunal award of LKR 2.3M citing procedural error. Court of Appeal dismissed the appeal. Case closed.',
-    poly: {
-      additionalDetails:
-        'Appeal dismissed. LKR 2.3M compensation paid to claimant as per final order dated 2025-12-10.',
-    },
-    proceedings: [
-      {
-        date: '2025-12-10',
-        outcome: 'Judgment',
-        nextDate: null,
-        notes: 'Court of Appeal dismissed SLT appeal. Ordered payment of LKR 2.3M within 30 days.',
-        recordedBy: 'S. Dissanayake',
-        recordedAt: '2025-12-10',
-      },
-      {
-        date: '2025-11-05',
-        outcome: 'Evidence Submitted',
-        nextDate: '2025-12-10',
-        notes: 'Both parties submitted written submissions to the Court of Appeal.',
-        recordedBy: 'S. Dissanayake',
-        recordedAt: '2025-11-05',
-      },
-    ],
-    attachedDocs: [
-      { name: 'Court of Appeal Order.pdf', type: 'pdf', size: '340 KB', date: '2025-12-10' },
-    ],
-  },
-])
+    if (error) throw error
+
+    cases.value = data.map((c) => ({
+      ...c,
+      caseNo: c.case_no,
+      caseType: c.case_type,
+      natureOfCase: c.nature_of_case,
+      dateOfOccurrence: c.date_of_occurrence,
+      filedDate: c.filed_date,
+      financialExposure: c.financial_exposure,
+      summaryOfFacts: c.summary_of_facts,
+      assignedLawyer: c.assigned_lawyer,
+      nextHearing: c.next_hearing,
+      poly: {},
+      proceedings: [],
+      notes: [],
+      auditTrail: [],
+      attachedDocs: [],
+    }))
+  } catch (err) {
+    console.error('Fetch error:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchCases()
+})
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  KPI STRIP
@@ -1955,7 +1929,6 @@ const kpiStats = computed(() => [
 const filter = ref('')
 const filterStatus = ref('All')
 const filterType = ref('All')
-const loading = ref(false)
 
 const columns = [
   { name: 'caseNo', label: 'Case No.', field: 'caseNo', align: 'left', sortable: true },
@@ -2005,6 +1978,7 @@ function resetFilters() {
 //  DETAIL DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showDetailDialog = ref(false)
+const showCreateDialog = ref(false)
 const showQuickHearingDialog = ref(false)
 const showTypeShiftDialog = ref(false)
 const showPreviewDialog = ref(false)
@@ -2015,13 +1989,247 @@ const originalCase = ref(null)
 const detailTab = ref('overview')
 const saving = ref(false)
 
-function openDetails(row, forEdit = false) {
-  // Deep-clone to allow cancel
-  activeCase.value = JSON.parse(JSON.stringify(row))
-  originalCase.value = JSON.parse(JSON.stringify(row))
-  detailTab.value = 'overview'
-  editMode.value = forEdit
-  showDetailDialog.value = true
+const newCaseForm = ref({
+  caseNo: '',
+  title: '',
+  caseType: 'Money Recovery',
+  court: '',
+  plaintiff: '',
+  defendant: '',
+  natureOfCase: '',
+  summaryOfFacts: '',
+  financialExposure: 0,
+  assignedLawyer: '',
+  status: 'Active',
+})
+
+function openCreateDialog() {
+  newCaseForm.value = {
+    caseNo: 'LC-' + Date.now().toString().slice(-4),
+    title: '',
+    caseType: 'Money Recovery',
+    court: '',
+    plaintiff: '',
+    defendant: '',
+    natureOfCase: '',
+    summaryOfFacts: '',
+    financialExposure: 0,
+    assignedLawyer: '',
+    status: 'Active',
+  }
+  showCreateDialog.value = true
+}
+
+async function submitCreateCase() {
+  loading.value = true
+  try {
+    const { error } = await supabase
+      .from('legal_cases')
+      .insert([
+        {
+          case_no: newCaseForm.value.caseNo,
+          title: newCaseForm.value.title,
+          case_type: newCaseForm.value.caseType,
+          court: newCaseForm.value.court,
+          plaintiff: newCaseForm.value.plaintiff,
+          defendant: newCaseForm.value.defendant,
+          nature_of_case: newCaseForm.value.natureOfCase,
+          summary_of_facts: newCaseForm.value.summaryOfFacts,
+          financial_exposure: newCaseForm.value.financialExposure,
+          assigned_lawyer: newCaseForm.value.assignedLawyer,
+          status: newCaseForm.value.status,
+          created_at: new Date().toISOString(),
+        },
+      ])
+      .select()
+
+    if (error) throw error
+
+    $q.notify({
+      type: 'positive',
+      message: 'New case created successfully',
+      icon: 'check_circle',
+    })
+
+    showCreateDialog.value = false
+    await fetchCases()
+  } catch (err) {
+    console.error('Create error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to create case' })
+  } finally {
+    loading.value = false
+  }
+}
+
+async function openDetails(row, forEdit = false) {
+  loading.value = true
+  try {
+    // Basic assignment
+    activeCase.value = JSON.parse(JSON.stringify(row))
+    originalCase.value = JSON.parse(JSON.stringify(row))
+
+    // 1. Fetch Proceedings
+    const { data: procData } = await supabase
+      .from('case_proceedings')
+      .select('*')
+      .eq('case_id', row.id)
+      .order('hearing_date', { ascending: true })
+    activeCase.value.proceedings = (procData || []).map((p) => ({
+      date: p.hearing_date,
+      outcome: p.outcome,
+      nextDate: p.next_date,
+      notes: p.notes,
+      recordedBy: 'User',
+      recordedAt: p.recorded_at,
+    }))
+
+    // 2. Fetch Documents
+    const { data: docData } = await supabase
+      .from('case_documents')
+      .select('*')
+      .eq('case_id', row.id)
+    activeCase.value.attachedDocs = (docData || []).map((d) => ({
+      name: d.file_name,
+      type: d.file_type,
+      size: d.file_size,
+      date: d.created_at?.slice(0, 10),
+    }))
+
+    // 3. Fetch Notes
+    const { data: noteData } = await supabase
+      .from('case_notes')
+      .select('*')
+      .eq('case_id', row.id)
+      .order('created_at', { ascending: true })
+    activeCase.value.notes = (noteData || []).map((n) => ({
+      text: n.text,
+      author: n.author_name || 'User',
+      timestamp: n.created_at,
+      isPrivate: n.is_private,
+    }))
+
+    // 4. Fetch Type-Specific (Poly) Data
+    if (row.caseType === 'Money Recovery') {
+      const { data: polyData } = await supabase
+        .from('money_recovery_details')
+        .select('*')
+        .eq('case_id', row.id)
+        .maybeSingle()
+      if (polyData) {
+        activeCase.value.poly = {
+          claimAmount: polyData.claim_amount,
+          paidAmount: polyData.paid_amount,
+          payments: [],
+        }
+        // Fetch payments
+        const { data: payData } = await supabase
+          .from('money_recovery_payments')
+          .select('*')
+          .eq('case_id', row.id)
+        activeCase.value.poly.payments = (payData || []).map((p) => ({
+          date: p.payment_date,
+          amount: p.amount,
+          method: p.method,
+          ref: p.reference,
+        }))
+      }
+    } else if (row.caseType === 'Land Case') {
+      const { data: polyData } = await supabase
+        .from('land_case_details')
+        .select('*')
+        .eq('case_id', row.id)
+        .maybeSingle()
+      if (polyData) {
+        activeCase.value.poly = {
+          deedNumber: polyData.deed_number,
+          planNumber: polyData.plan_number,
+          landName: polyData.land_name,
+          extent: polyData.extent,
+          district: polyData.district,
+          gramaNiladari: polyData.grama_niladari,
+          encumbrances: polyData.encumbrances,
+          ownershipHistory: [],
+        }
+      }
+    } else if (row.caseType === 'Damages') {
+      const { data: polyData } = await supabase
+        .from('damages_details')
+        .select('*')
+        .eq('case_id', row.id)
+        .maybeSingle()
+      if (polyData) {
+        activeCase.value.poly = {
+          assessedDamage: polyData.assessed_damage,
+          compensationClaimed: polyData.compensation_claimed,
+          compensationReceived: polyData.compensation_received,
+          damageType: polyData.damage_type,
+          assessmentStatus: polyData.assessment_status,
+          damageDescription: polyData.damage_description,
+          settlementStatus: polyData.settlement_status,
+          settlementAmount: polyData.settlement_amount,
+          settlementDate: polyData.settlement_date,
+          settlementRemarks: polyData.settlement_remarks,
+        }
+      }
+    }
+
+    // 5. Audit Trail
+    const { data: auditData } = await supabase
+      .from('case_audit_trail')
+      .select('*')
+      .eq('case_id', row.id)
+      .order('performed_at', { ascending: false })
+    activeCase.value.auditTrail = (auditData || []).map((a) => ({
+      timestamp: a.performed_at,
+      user: a.performer_name || 'System',
+      action: a.action,
+      remarks: a.details,
+    }))
+
+    // 6. Fetch Criminal/Inquiry specific lists if applicable
+    if (row.caseType === 'Criminal') {
+      const { data: chargeData } = await supabase
+        .from('criminal_case_charges')
+        .select('*')
+        .eq('case_id', row.id)
+      activeCase.value.poly.charges = (chargeData || []).map((c) => ({
+        id: c.id,
+        charge: c.charge,
+        status: c.status,
+      }))
+
+      const { data: histData } = await supabase
+        .from('criminal_hearing_history')
+        .select('*')
+        .eq('case_id', row.id)
+        .order('hearing_date', { ascending: true })
+      activeCase.value.poly.hearingHistory = (histData || []).map((h) => ({
+        id: h.id,
+        date: h.hearing_date,
+        bench: h.judge_name,
+        order: h.court_order,
+      }))
+    } else if (row.caseType === 'Other') {
+      const { data: panelData } = await supabase
+        .from('inquiry_panel_members')
+        .select('*')
+        .eq('case_id', row.id)
+      activeCase.value.poly.panelMembers = (panelData || []).map((m) => ({
+        id: m.id,
+        name: m.member_name,
+        role: m.role,
+      }))
+    }
+
+    detailTab.value = 'overview'
+    editMode.value = forEdit
+    showDetailDialog.value = true
+  } catch (err) {
+    console.error('Error fetching details:', err)
+    $q.notify({ type: 'negative', message: 'Failed to load case details' })
+  } finally {
+    loading.value = false
+  }
 }
 
 function cancelEdit() {
@@ -2031,28 +2239,102 @@ function cancelEdit() {
 
 async function saveCase() {
   saving.value = true
-  await new Promise((r) => setTimeout(r, 700))
-  const idx = cases.value.findIndex((c) => c.id === activeCase.value.id)
-  if (idx !== -1) cases.value[idx] = JSON.parse(JSON.stringify(activeCase.value))
-  saving.value = false
-  editMode.value = false
-  $q.notify({
-    type: 'positive',
-    message: `Case #${activeCase.value.caseNo} updated successfully.`,
-    icon: 'check_circle',
-  })
+  try {
+    // 1. Update main case record
+    const { error } = await supabase
+      .from('legal_cases')
+      .update({
+        title: activeCase.value.title,
+        nature_of_case: activeCase.value.natureOfCase,
+        court: activeCase.value.court,
+        plaintiff: activeCase.value.plaintiff,
+        defendant: activeCase.value.defendant,
+        summary_of_facts: activeCase.value.summaryOfFacts,
+        financial_exposure: activeCase.value.financialExposure,
+        next_hearing: activeCase.value.nextHearing,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', activeCase.value.id)
+
+    if (error) throw error
+
+    // 2. Sync type-specific (poly) data
+    if (activeCase.value.caseType === 'Money Recovery') {
+      await supabase.from('money_recovery_details').upsert({
+        case_id: activeCase.value.id,
+        claim_amount: activeCase.value.poly.claimAmount,
+        paid_amount: activeCase.value.poly.paidAmount,
+        updated_at: new Date().toISOString(),
+      })
+    } else if (activeCase.value.caseType === 'Land Case') {
+      await supabase.from('land_case_details').upsert({
+        case_id: activeCase.value.id,
+        deed_number: activeCase.value.poly.deedNumber,
+        plan_number: activeCase.value.poly.planNumber,
+        land_name: activeCase.value.poly.landName,
+        extent: activeCase.value.poly.extent,
+        district: activeCase.value.poly.district,
+        grama_niladari: activeCase.value.poly.gramaNiladari,
+        encumbrances: activeCase.value.poly.encumbrances,
+        updated_at: new Date().toISOString(),
+      })
+    } else if (activeCase.value.caseType === 'Damages') {
+      await supabase.from('damages_details').upsert({
+        case_id: activeCase.value.id,
+        assessed_damage: activeCase.value.poly.assessedDamage,
+        compensation_claimed: activeCase.value.poly.compensationClaimed,
+        compensation_received: activeCase.value.poly.compensationReceived,
+        damage_type: activeCase.value.poly.damageType,
+        assessment_status: activeCase.value.poly.assessmentStatus,
+        damage_description: activeCase.value.poly.damageDescription,
+        settlement_status: activeCase.value.poly.settlementStatus,
+        settlement_amount: activeCase.value.poly.settlementAmount,
+        settlement_date: activeCase.value.poly.settlementDate,
+        settlement_remarks: activeCase.value.poly.settlementRemarks,
+        updated_at: new Date().toISOString(),
+      })
+    }
+
+    await fetchCases()
+    saving.value = false
+    editMode.value = false
+    $q.notify({
+      type: 'positive',
+      message: `Case #${activeCase.value.caseNo} updated successfully.`,
+      icon: 'check_circle',
+    })
+  } catch (err) {
+    console.error('Save error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to save changes' })
+    saving.value = false
+  }
 }
 
-function toggleClose(row) {
-  const idx = cases.value.findIndex((c) => c.id === row.id)
-  if (idx === -1) return
-  const isClosing = cases.value[idx].status !== 'Closed'
-  cases.value[idx].status = isClosing ? 'Closed' : 'Active'
-  $q.notify({
-    type: isClosing ? 'info' : 'positive',
-    message: `Case #${row.caseNo} ${isClosing ? 'closed' : 'reopened'}.`,
-    icon: isClosing ? 'lock' : 'lock_open',
-  })
+async function toggleClose(row) {
+  const isClosing = row.status !== 'Closed'
+  const newStatus = isClosing ? 'Closed' : 'Active'
+
+  try {
+    const { error } = await supabase
+      .from('legal_cases')
+      .update({
+        status: newStatus,
+        closed_at: isClosing ? new Date().toISOString() : null,
+      })
+      .eq('id', row.id)
+
+    if (error) throw error
+
+    await fetchCases()
+    $q.notify({
+      type: isClosing ? 'info' : 'positive',
+      message: `Case #${row.caseNo} ${isClosing ? 'closed' : 'reopened'}.`,
+      icon: isClosing ? 'lock' : 'lock_open',
+    })
+  } catch (err) {
+    console.error('Status update error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to update case status' })
+  }
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -2084,9 +2366,23 @@ const paymentCols = [
   { name: 'ref', label: 'Reference', field: 'ref', align: 'left' },
 ]
 
-function addPaymentRow() {
-  if (!activeCase.value.poly.payments) activeCase.value.poly.payments = []
-  activeCase.value.poly.payments.push({ id: Date.now(), date: '', amount: 0, method: '', ref: '' })
+async function addPaymentRow() {
+  const newPayment = {
+    case_id: activeCase.value.id,
+    payment_date: new Date().toISOString().split('T')[0],
+    amount: 0,
+    method: 'Cash',
+    reference: 'REF-' + Date.now().toString().slice(-4),
+  }
+  try {
+    const { error } = await supabase.from('money_recovery_payments').insert([newPayment])
+    if (error) throw error
+    await openDetails(activeCase.value) // Refresh
+    $q.notify({ type: 'positive', message: 'New payment record initialized in database.' })
+  } catch (err) {
+    console.error('Payment add error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to initialize payment record' })
+  }
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -2096,23 +2392,45 @@ const showHearingForm = ref(false)
 const emptyHearing = () => ({ date: '', outcome: 'Adjourned', nextDate: '', notes: '' })
 const newHearing = ref(emptyHearing())
 
-function saveHearing() {
+async function saveHearing() {
   if (!newHearing.value.date || !newHearing.value.notes) {
     $q.notify({ type: 'warning', message: 'Hearing date and notes are required.' })
     return
   }
-  activeCase.value.proceedings.push({
-    ...newHearing.value,
-    recordedBy: 'Admin User',
-    recordedAt: new Date().toISOString().slice(0, 10),
-  })
-  // Update nextHearing on the case
-  if (newHearing.value.nextDate) {
-    activeCase.value.nextHearing = newHearing.value.nextDate
+
+  try {
+    // 1. Insert into proceedings
+    const { error: pErr } = await supabase.from('case_proceedings').insert([
+      {
+        case_id: activeCase.value.id,
+        hearing_date: newHearing.value.date,
+        outcome: newHearing.value.outcome,
+        next_date: newHearing.value.nextDate || null,
+        notes: newHearing.value.notes,
+      },
+    ])
+
+    if (pErr) throw pErr
+
+    // 2. Update case next_hearing
+    if (newHearing.value.nextDate) {
+      await supabase
+        .from('legal_cases')
+        .update({ next_hearing: newHearing.value.nextDate })
+        .eq('id', activeCase.value.id)
+    }
+
+    await fetchCases()
+    // Refresh local activeCase to show in timeline
+    openDetails(activeCase.value)
+
+    newHearing.value = emptyHearing()
+    showHearingForm.value = false
+    $q.notify({ type: 'positive', message: 'Hearing record added.', icon: 'event_note' })
+  } catch (err) {
+    console.error('Hearing save error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to save hearing' })
   }
-  newHearing.value = emptyHearing()
-  showHearingForm.value = false
-  $q.notify({ type: 'positive', message: 'Hearing record added.', icon: 'event_note' })
 }
 
 // Quick Add Hearing from table row
@@ -2125,26 +2443,43 @@ function quickAddHearing(row) {
   showQuickHearingDialog.value = true
 }
 
-function saveQuickHearing() {
+async function saveQuickHearing() {
   if (!newHearing.value.date || !newHearing.value.notes) {
     $q.notify({ type: 'warning', message: 'Hearing date and notes are required.' })
     return
   }
-  const idx = cases.value.findIndex((c) => c.id === quickHearingCase.value.id)
-  if (idx !== -1) {
-    cases.value[idx].proceedings.push({
-      ...newHearing.value,
-      recordedBy: 'Admin User',
-      recordedAt: new Date().toISOString().slice(0, 10),
+
+  try {
+    const { error: pErr } = await supabase.from('case_proceedings').insert([
+      {
+        case_id: quickHearingCase.value.id,
+        hearing_date: newHearing.value.date,
+        outcome: newHearing.value.outcome,
+        next_date: newHearing.value.nextDate || null,
+        notes: newHearing.value.notes,
+      },
+    ])
+
+    if (pErr) throw pErr
+
+    if (newHearing.value.nextDate) {
+      await supabase
+        .from('legal_cases')
+        .update({ next_hearing: newHearing.value.nextDate })
+        .eq('id', quickHearingCase.value.id)
+    }
+
+    await fetchCases()
+    showQuickHearingDialog.value = false
+    $q.notify({
+      type: 'positive',
+      message: `Hearing added to case #${quickHearingCase.value.caseNo}.`,
+      icon: 'event_note',
     })
-    if (newHearing.value.nextDate) cases.value[idx].nextHearing = newHearing.value.nextDate
+  } catch (err) {
+    console.error('Quick hearing save error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to add hearing' })
   }
-  showQuickHearingDialog.value = false
-  $q.notify({
-    type: 'positive',
-    message: `Hearing added to case #${quickHearingCase.value.caseNo}.`,
-    icon: 'event_note',
-  })
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -2297,9 +2632,22 @@ const chargeCols = [
   { name: 'charge', label: 'Charge / Offence', field: 'charge', align: 'left' },
   { name: 'status', label: 'Charge Status', field: 'status', align: 'center' },
 ]
-function addChargeRow() {
-  if (!activeCase.value.poly.charges) activeCase.value.poly.charges = []
-  activeCase.value.poly.charges.push({ id: Date.now(), charge: '', status: 'Pending' })
+async function addChargeRow() {
+  try {
+    const { error } = await supabase.from('criminal_charges').insert([
+      {
+        case_id: activeCase.value.id,
+        charge: 'New Charge',
+        statute: 'Pending Statute',
+        offence_details: 'Initial details...',
+      },
+    ])
+    if (error) throw error
+    await openDetails(activeCase.value)
+    $q.notify({ type: 'info', message: 'Charge initialized.' })
+  } catch (err) {
+    console.error('Charge add error:', err)
+  }
 }
 
 // Hearing History (Criminal)
@@ -2308,9 +2656,21 @@ const hearingHistoryCols = [
   { name: 'bench', label: 'Magistrate/Judge', field: 'bench', align: 'left' },
   { name: 'order', label: 'Court Order', field: 'order', align: 'left' },
 ]
-function addHearingHistoryRow() {
-  if (!activeCase.value.poly.hearingHistory) activeCase.value.poly.hearingHistory = []
-  activeCase.value.poly.hearingHistory.push({ id: Date.now(), date: '', bench: '', order: '' })
+async function addHearingHistoryRow() {
+  try {
+    const { error } = await supabase.from('criminal_hearing_history').insert([
+      {
+        case_id: activeCase.value.id,
+        hearing_date: new Date().toISOString().split('T')[0],
+        judge_name: 'Hon. Judge',
+        court_order: 'Mention',
+      },
+    ])
+    if (error) throw error
+    await openDetails(activeCase.value)
+  } catch (err) {
+    console.error('Hearing history add error:', err)
+  }
 }
 
 function downloadDocument(doc) {
@@ -2354,24 +2714,45 @@ const panelCols = [
   { name: 'name', label: 'Panel Member Name', field: 'name', align: 'left' },
   { name: 'role', label: 'Role', field: 'role', align: 'center' },
 ]
-function addPanelMember() {
-  if (!activeCase.value.poly.panelMembers) activeCase.value.poly.panelMembers = []
-  activeCase.value.poly.panelMembers.push({ id: Date.now(), name: '', role: 'Inquiry Officer' })
+async function addPanelMember() {
+  try {
+    const { error } = await supabase.from('inquiry_panel_members').insert([
+      {
+        case_id: activeCase.value.id,
+        member_name: 'New Member',
+        role: 'Inquiry Officer',
+      },
+    ])
+    if (error) throw error
+    await openDetails(activeCase.value)
+  } catch (err) {
+    console.error('Panel member add error:', err)
+  }
 }
 
 // Notes & Audit
 const newNote = ref('')
-function addNote() {
+async function addNote() {
   if (!newNote.value) return
-  if (!activeCase.value.notes) activeCase.value.notes = []
-  activeCase.value.notes.push({
-    text: newNote.value,
-    author: 'Current User',
-    timestamp: new Date().toLocaleString(),
-    isPrivate: false,
-  })
-  newNote.value = ''
-  $q.notify({ type: 'info', message: 'Note added to case.' })
+  try {
+    const { error } = await supabase.from('case_notes').insert([
+      {
+        case_id: activeCase.value.id,
+        text: newNote.value,
+        author_name: 'Current User',
+        is_private: false,
+      },
+    ])
+    if (error) throw error
+
+    newNote.value = ''
+    // Refresh details to show new note
+    await openDetails(activeCase.value)
+    $q.notify({ type: 'info', message: 'Note added to case persistent storage.' })
+  } catch (err) {
+    console.error('Note add error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to save note' })
+  }
 }
 
 const auditCols = [
@@ -2463,19 +2844,30 @@ function executeTypeShift() {
   border: 1px solid #e0e7ef;
   border-radius: 8px;
   padding: 12px 16px;
+  body.body--dark & {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
 }
 .slt-section-label {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: #003f87;
-  border-bottom: 2px solid #003f87;
-  padding-bottom: 4px;
-  margin-bottom: 10px;
+  border-bottom: 3px solid #003f87;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  body.body--dark & {
+    color: #4fc3f7;
+    border-color: #4fc3f7;
+  }
 }
 .slt-info-row {
   border-bottom: 1px solid #eef2f8;
+  body.body--dark & {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
   &:last-child {
     border-bottom: none;
   }

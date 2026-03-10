@@ -15,8 +15,12 @@ export default {
     agreementsCaption: 'Contracts & MOUs',
     approvals: 'Approvals',
     approvalsCaption: 'Multi-level approvals',
+    history: 'History',
+    historyCaption: 'Closed & archived records',
     reports: 'Reports',
     reportsCaption: 'Analytics & reports',
+    help: 'Help Guide',
+    helpCaption: 'How to use the system',
     settings: 'Settings',
     settingsCaption: 'System configuration',
   },
@@ -29,7 +33,9 @@ export default {
     legalCases: 'Legal Cases',
     agreements: 'Agreements',
     approvals: 'Approvals',
+    history: 'History',
     reports: 'Reports',
+    help: 'Help Guide',
     settings: 'Settings',
     profile: 'My Profile',
   },
@@ -66,6 +72,9 @@ export default {
     generateReport: 'Generate Report',
     monthlySummary: 'Monthly legal summary',
     vsLastPeriod: 'vs last period',
+    legalInsightsTitle: 'Legal Insights: Filing & Recovery Trends',
+    recoveryTrend: 'Recovery Progress',
+    caseTrend: 'New Case Filings',
     hearings: 'Hearings',
     caseId: 'Case ID',
     caseTitle: 'Case Title',
@@ -155,6 +164,16 @@ export default {
     submitForReview: 'Submit for Review',
     approve: 'Approve',
     reject: 'Reject',
+    stages: {
+      draft: 'Draft',
+      underReview: 'Under Review',
+      l1: 'L1 Approval',
+      l2: 'L2 Approval',
+      active: 'Active',
+      rejected: 'Rejected',
+      terminated: 'Terminated',
+      archived: 'Archived',
+    },
   },
 
   // ── Approvals Page ─────────────────────────────────────────
@@ -241,6 +260,7 @@ export default {
     attorney: 'Attorney',
     upcomingHearingsTitle: 'UPCOMING HEARINGS (30 DAYS)',
     monthlyTrendTitle: 'Monthly Case Filing Trend — 2025/2026',
+    caseAgingWorkload: 'Case Aging & Workload Distribution',
   },
 
   // ── User Profile Page ──────────────────────────────────────
@@ -329,6 +349,7 @@ export default {
     actions: 'Actions',
     noData: 'No data available',
     rowsPerPage: 'Rows per page',
+    urgent: 'URGENT',
   },
 
   // ── Status labels ──────────────────────────────────────────
@@ -346,4 +367,233 @@ export default {
 
   failed: 'Action failed',
   success: 'Action was successful',
+
+  // ── Help Page ─────────────────────────────────────────────
+  help: {
+    title: 'Help Guide',
+    subtitle: 'Learn how to use every feature of SLT LegalEdge',
+    searchPlaceholder: 'Search help topics…',
+
+    // Quick Start Cards
+    qs: {
+      initialDocsTitle: 'Initial Documents',
+      initialDocsDesc: 'File new legal case requests',
+      legalCasesTitle: 'Legal Cases',
+      legalCasesDesc: 'Track hearings & proceedings',
+      agreementsTitle: 'Agreements',
+      agreementsDesc: 'Manage contracts & MOUs',
+      approvalsTitle: 'Approvals',
+      approvalsDesc: 'Multi-level approval flow',
+    },
+
+    // Section Headers
+    sections: {
+      initialDocsTitle: 'Initial Documents',
+      initialDocsSubtitle: 'Document intake, review & approval tracking',
+      legalCasesTitle: 'Legal Cases',
+      legalCasesSubtitle: 'Active case management & tracking',
+      agreementsTitle: 'Agreements',
+      agreementsSubtitle: 'Contracts, MOUs & service level agreements',
+      approvalsTitle: 'Approvals Workflow',
+      approvalsSubtitle: 'Multi-level approval process for supervisors & managers',
+      historyTitle: 'History & Reports',
+      historySubtitle: 'Past records, closed cases & analytics',
+      workflowTitle: 'System Workflow',
+      workflowSubtitle: 'End-to-end legal case lifecycle',
+      contactTitle: 'Need More Help?',
+      contactSubtitle: 'Contact the IT helpdesk or legal admin',
+      glossaryTitle: 'Key Legal Terms',
+      glossarySubtitle: 'Common abbreviations used in agreements and contracts',
+    },
+
+    // Glossary Descriptions
+    glossary: {
+      slaDesc:
+        '<strong>Service Level Agreement</strong> — A contract between a service provider and a customer that defines the quality of service, response times, uptime %, and other performance standards. <em>(e.g., SLT guaranteeing 99.9% uptime for ISP services)</em>',
+      mouDesc:
+        '<strong>Memorandum of Understanding</strong> — A document that expresses mutual agreement between two parties when initiating a joint project or collaboration. It may or may not be legally binding depending on the terms.',
+      ndaDesc:
+        '<strong>Non-Disclosure Agreement</strong> — A contract where parties agree not to disclose confidential information to third parties. <em>(e.g., not revealing technical details of a new project)</em>',
+    },
+
+    // Initial Documents FAQs
+    initialDocsFaq: {
+      q1: 'How do I file a new Initial Document?',
+      a1: '<ol><li>Go to <strong>Initial Documents</strong> from the sidebar menu.</li><li>Click the <strong>"+ New Document"</strong> button (top right).</li><li>Fill in all required fields: Reference No, Title, Case Type, Parties, Court, Financial Exposure, Summary of Facts.</li><li>Attach relevant supporting documents (PDF, Word, images).</li><li>Click <strong>"Save"</strong> to store the document. It will be saved as <em>"Pending"</em> status.</li><li>The document will appear in the <strong>Approvals Inbox</strong> for supervisor review.</li></ol>',
+      q2: 'What are the different status values for Initial Documents?',
+      a2: '<ul><li><strong>Draft</strong> — Created but not yet submitted for review</li><li><strong>Pending</strong> — Submitted and waiting for supervisor approval</li><li><strong>Approved</strong> — Approved by supervisor; a Legal Case will be auto-created</li><li><strong>Rejected</strong> — Returned by supervisor with remarks</li></ul>',
+      q3: 'What happens after an Initial Document is approved?',
+      a3: 'When a supervisor approves an Initial Document, a new <strong>Legal Case</strong> record is automatically created in the Legal Cases module. The case inherits the core details (type, parties, court, financial exposure) from the initial document.',
+      q4: 'Can I edit an Initial Document after submission?',
+      a4: 'You can only edit documents in <strong>Draft</strong> status. Once submitted (Pending/Approved/Rejected), the document becomes read-only to maintain audit integrity.',
+    },
+
+    // Legal Cases FAQs
+    legalCasesFaq: {
+      q1: 'How are Legal Cases created?',
+      a1: 'Legal Cases are created automatically when an <strong>Initial Document</strong> is approved by a supervisor. You can also view and manage existing cases from the <strong>Legal Cases</strong> page in the sidebar.',
+      q2: 'What are the different Case Types?',
+      a2: "<ul><li><strong>Money Recovery</strong> — Debt collection and financial recovery suits</li><li><strong>Land Case</strong> — Property, land title, and boundary disputes</li><li><strong>Damages</strong> — Infrastructure damage claims (e.g. fiber cuts)</li><li><strong>Appeals</strong> — Appealing decisions from lower courts</li><li><strong>Criminal</strong> — Criminal prosecution cases</li><li><strong>Other</strong> — Any case that doesn't fit the above categories</li></ul>",
+      q3: 'How do I add a hearing to a case?',
+      a3: '<ol><li>Open the <strong>Legal Cases</strong> page.</li><li>Find your case in the table and click the <strong>green "+" button</strong> in Actions.</li><li>Enter the hearing date, outcome, and notes.</li><li>Click <strong>Save</strong>. The Next Hearing date will automatically update.</li></ol>',
+      q4: 'How do I close a case?',
+      a4: "Click the <strong>lock icon</strong> in the Actions column. You'll need to enter closure remarks. Once closed, the case moves to the <strong>History</strong> page and is no longer editable. You can reopen a closed case using the same button if needed.",
+      q5: 'Where do closed cases go?',
+      a5: 'Closed cases are moved to the <strong>History</strong> page (accessible from the sidebar). They remain fully searchable and viewable, but cannot be edited unless reopened.',
+    },
+
+    // Agreements FAQs
+    agreementsFaq: {
+      q1: 'How do I create a new Agreement?',
+      a1: '<ol><li>Navigate to <strong>Agreements</strong> from the sidebar.</li><li>Click <strong>"+ New Agreement"</strong>.</li><li>Fill in: Title, Type, Reference No, Parties, Value, Start/Expiry Dates, and Description.</li><li>Attach relevant documents.</li><li>Click <strong>"Save as Draft"</strong>.</li></ol>',
+      q2: 'What is the approval workflow for Agreements?',
+      a2: '<div>Agreements follow a multi-level approval process:</div><ol><li><strong>Draft</strong> → Author creates and reviews</li><li><strong>Submit for Review</strong> → Goes to supervisor</li><li><strong>L1 Approval</strong> → First-level supervisor approves</li><li><strong>L2 Final Approval</strong> → Senior manager gives final sign-off</li><li><strong>Active</strong> → Agreement is fully approved and active</li></ol><div class="q-mt-sm">At any stage, the agreement can be <strong>rejected</strong> with remarks and sent back.</div>',
+      q3: 'What are the Agreement types?',
+      a3: '<ul><li><strong>Vendor Agreement</strong> — Contracts with external vendors</li><li><strong>Service Level Agreement (SLA)</strong> — Performance-based service contracts</li><li><strong>MOU</strong> — Memorandum of Understanding</li><li><strong>Maintenance Contract</strong> — Equipment or facility maintenance</li><li><strong>Lease Agreement</strong> — Property or equipment leasing</li><li><strong>NDA</strong> — Non-Disclosure Agreement</li></ul>',
+      q4: 'How do I track agreement expiry?',
+      a4: 'The Agreements table shows the <strong>Expiry Date</strong> for each agreement. Agreements nearing expiry (within 30 days) are highlighted in <strong>red</strong>. You can also enable <strong>Expiry Alert notifications</strong> from Settings.',
+    },
+
+    // Approvals FAQs
+    approvalsFaq: {
+      q1: 'How does the approval process work?',
+      a1: '<div>When a document or agreement is submitted for review, it appears in the <strong>Approvals Inbox</strong> of the designated supervisor/manager.</div><ol class="q-mt-sm"><li>Open the <strong>Approvals</strong> page from the sidebar.</li><li>Review the pending item by clicking the <strong>eye icon</strong>.</li><li>Click <strong>Approve</strong> or <strong>Reject</strong>.</li><li>Enter mandatory <strong>remarks</strong> explaining your decision.</li><li>Confirm. The action is logged in the audit trail.</li></ol>',
+      q2: 'What is the difference between L1 and L2 approval?',
+      a2: '<ul><li><strong>L1 (Level 1)</strong> — First-level supervisor review. For agreements under a certain value threshold, L1 is sufficient.</li><li><strong>L2 (Level 2)</strong> — Senior manager or AGM review. Required for high-value agreements or sensitive items.</li></ul>',
+      q3: 'Can I see my past approval decisions?',
+      a3: 'Yes! Go to the <strong>"My Actions History"</strong> tab in the Approvals page. It shows a timeline of all your past approve/reject actions with timestamps and remarks.',
+    },
+
+    // History FAQs
+    historyFaq: {
+      q1: 'What records appear in the History page?',
+      a1: 'The History page shows all <strong>closed legal cases</strong>, <strong>expired agreements</strong>, and <strong>terminated agreements</strong>. These are records that have reached their final state and are archived for reference.',
+      q2: 'Can I search through historical records?',
+      a2: 'Yes. The History page provides full <strong>search and filter</strong> capabilities. You can filter by date range, case type, and status. All data remains fully accessible for audit and compliance purposes.',
+      q3: 'Can I reopen a closed case from History?',
+      a3: 'Yes. If a case needs to be reopened (e.g. appeal filed), you can click the <strong>"Reopen"</strong> button on the case detail. This will move it back to the active Legal Cases page.',
+    },
+
+    // Workflow Steps
+    workflow: {
+      submit: 'Submit',
+      submitDesc: 'File initial document',
+      review: 'Review',
+      reviewDesc: 'Supervisor checks',
+      approve: 'Approve',
+      approveDesc: 'L1 / L2 approval',
+      caseCreated: 'Case Created',
+      caseCreatedDesc: 'Auto-generated case',
+      proceedings: 'Proceedings',
+      proceedingsDesc: 'Hearings & updates',
+      closed: 'Closed',
+      closedDesc: 'Case resolved',
+      history: 'History',
+      historyDesc: 'Archived records',
+    },
+
+    // Contact Support
+    contact: {
+      emailTitle: 'Email Support',
+      emailValue: 'legaledge-support@sltmobitel.lk',
+      phoneTitle: 'Phone',
+      phoneValue: 'Ext. 2345 (IT Helpdesk)',
+      chatTitle: 'Internal Chat',
+      chatValue: 'MS Teams: LegalEdge Support',
+    },
+  },
+
+  // ── History Page ──────────────────────────────────────────
+  history: {
+    title: 'History',
+    subtitle: 'View closed cases, expired agreements & processed documents',
+  },
+
+  // ── AI Copilot ───────────────────────────────────────────
+  aiCopilot: {
+    title: 'LegalEdge AI',
+    subtitle: 'Your Legal Assistant',
+    placeholder: 'Ask me anything about cases or agreements...',
+    welcome: 'Hello! I am LegalEdge AI. How can I assist you today?',
+    thinking: 'Thinking...',
+    error: 'Sorry, I encountered an error. Please try again later.',
+    suggestions: {
+      pendingDocs: 'Pending documents?',
+      openCases: 'All open cases',
+      expiringAgreements: 'Expiring soon?',
+      systemOverview: 'System summary',
+    },
+  },
+
+  // ── Innovation Roadmap ─────────────────────────────────────
+  innovation: {
+    badge: 'FUTURE VISION',
+    title: 'LegalEdge Innovation Portal',
+    subtitle:
+      'Conceptualizing the next generation of AI-driven legal management. Our roadmap integrates advanced artificial intelligence to transform legal workflows into intelligent ecosystems.',
+    visionTitle: 'Agentic AI Infrastructure',
+    visionDesc:
+      'Beyond simple automation, SLT LegalEdge is evolving into an Agentic System. Using our MCP (Model Context Protocol) architecture, AI agents will soon handle legal research, cross-departmental coordination, and data ingestion autonomously.',
+    exploreBtn: 'Explore Agents',
+    timelineTitle: 'Timeline Journey',
+    pillars: {
+      drafting: {
+        title: 'AI Drafting Engine',
+        desc: 'Transforming case notes into professional legal drafts automatically using fine-tuned LLMs.',
+        features: [
+          'Automated Response Letters',
+          'Agreement Template Filling',
+          'Tone Consistency Check',
+        ],
+      },
+      voice: {
+        title: 'Voice-to-Record',
+        desc: 'Conversational data entry via multilingual speech-to-text specifically for legal terminology.',
+        features: [
+          'Multi-lingual Support (SI/TA)',
+          'Auto-Tagging Facts',
+          'Instant Record Generation',
+        ],
+      },
+      analytics: {
+        title: 'Predictive Analytics',
+        desc: 'Data-driven forecasting for case outcomes based on historical trends and judicial patterns.',
+        features: [
+          'Success Probability Score',
+          'Timeline Forecasting',
+          'Resource Allocation Optimization',
+        ],
+      },
+      agent: {
+        title: 'AI Agent (MCP)',
+        desc: 'Distributed agents that interact with external data sources and internal APIs autonomously.',
+        features: ['Cross-System Search', 'Automatic Data Ingestion', 'Tool-calling via MCP'],
+      },
+      deadline: {
+        title: 'Smart Deadline Tracker',
+        desc: 'Intelligent monitoring of statutory limits and judicial dates with proactive alerts.',
+        features: [
+          'Auto-date Extraction',
+          'Proactive Risk Assessment',
+          'Priority Queue Management',
+        ],
+      },
+      search: {
+        title: 'Multilingual Search',
+        desc: 'Semantic search across thousands of documents in any language (Sinhala, Tamil, English).',
+        features: [
+          'Semantic Understanding',
+          'Cross-language retrieval',
+          'Natural Language Queries',
+        ],
+      },
+    },
+    timeline: {
+      step1: { title: 'Digital Foundation', caption: 'Core DB & Auth Setup' },
+      step2: { title: 'AI Summarization', caption: 'Document Intelligence' },
+      step3: { title: 'Smart Drafting', caption: 'Q4 2026 - Automation' },
+      step4: { title: 'Legal Agents', caption: '2027 - Autonomy' },
+      step5: { title: 'Global Intelligence', caption: 'Future Vision' },
+    },
+  },
 }

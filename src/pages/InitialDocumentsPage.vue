@@ -58,6 +58,7 @@
             label="Status"
             emit-value
             map-options
+            behavior="menu"
             @update:model-value="applyFilters"
           />
         </div>
@@ -70,6 +71,7 @@
             label="Case Type"
             emit-value
             map-options
+            behavior="menu"
             @update:model-value="applyFilters"
           />
         </div>
@@ -136,6 +138,19 @@
         <template #body-cell-actions="props">
           <q-td :props="props" class="text-center">
             <div class="row justify-center q-gutter-xs no-wrap">
+              <!-- AI Summarize -->
+              <q-btn
+                flat
+                round
+                dense
+                icon="auto_awesome"
+                color="blue-7"
+                size="sm"
+                @click="summarizeDocument(props.row)"
+              >
+                <q-tooltip>AI Summarize</q-tooltip>
+              </q-btn>
+
               <!-- View -->
               <q-btn
                 flat
@@ -353,13 +368,31 @@
 
             <!-- ── Section 4: Supporting Documents ────────────── -->
             <div class="slt-form-section-label q-mt-md">Supporting Documents</div>
+
+            <!-- Existing attachments (edit mode) -->
+            <div v-if="isEditMode && existingAttachments.length" class="col-12 q-mb-sm">
+              <div class="text-caption text-grey-7 q-mb-xs">Existing documents:</div>
+              <q-chip
+                v-for="(att, i) in existingAttachments"
+                :key="i"
+                icon="insert_drive_file"
+                color="blue-1"
+                text-color="primary"
+                dense
+                class="q-mr-xs q-mb-xs"
+              >
+                {{ att.name }} ({{ att.size }})
+              </q-chip>
+            </div>
+
+            <!-- New file upload -->
             <div class="col-12 q-mb-md">
               <q-file
-                v-model="form.attachments"
+                v-model="newAttachments"
                 outlined
                 dense
                 multiple
-                label="Attach Supporting Documents"
+                :label="isEditMode ? 'Add More Documents' : 'Attach Supporting Documents'"
                 accept=".pdf,.doc,.docx,.jpg,.png"
                 hint="PDF, DOC, DOCX, JPG, PNG — max 10 MB each"
                 max-total-size="52428800"
@@ -418,83 +451,165 @@
         <q-tab-panels v-model="docDetailTab" animated>
           <q-tab-panel name="details" class="q-pa-md">
             <div v-if="selectedDoc" class="row q-col-gutter-sm">
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="tag" size="14px" class="q-mr-xs" />Reference No.
-                </div>
-                <div class="text-body2 text-weight-medium truncate">#{{ selectedDoc.refNo }}</div>
-              </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="title" size="14px" class="q-mr-xs" />Case Title
-                </div>
-                <div class="text-body2 text-weight-medium truncate">
-                  {{ selectedDoc.caseTitle }}
-                </div>
-              </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="category" size="14px" class="q-mr-xs" />Case Type
-                </div>
-                <div class="text-body2 text-weight-medium truncate">{{ selectedDoc.caseType }}</div>
-              </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="info" size="14px" class="q-mr-xs" />Status
-                </div>
-                <div class="text-body2 text-weight-medium truncate">{{ selectedDoc.status }}</div>
-              </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="person" size="14px" class="q-mr-xs" />Plaintiff
-                </div>
-                <div class="text-body2 text-weight-medium truncate">
-                  {{ selectedDoc.plaintiff }}
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="tag" size="14px" class="q-mr-xs" />Reference No.
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    #{{ selectedDoc.refNo }}
+                  </div>
                 </div>
               </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="person_off" size="14px" class="q-mr-xs" />Defendant
-                </div>
-                <div class="text-body2 text-weight-medium truncate">
-                  {{ selectedDoc.defendant }}
-                </div>
-              </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="event" size="14px" class="q-mr-xs" />Date of Occurrence
-                </div>
-                <div class="text-body2 text-weight-medium truncate">
-                  {{ selectedDoc.dateOfOccurrence || '—' }}
-                </div>
-              </div>
-              <div class="col-12 col-sm-6 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
-                  <q-icon name="payments" size="14px" class="q-mr-xs" />Financial Exposure
-                </div>
-                <div class="text-body2 text-weight-medium truncate">
-                  {{
-                    selectedDoc.financialExposure
-                      ? `LKR ${formatCurrency(selectedDoc.financialExposure)}`
-                      : '—'
-                  }}
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="title" size="14px" class="q-mr-xs" />Case Title
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ selectedDoc.caseTitle }}
+                  </div>
                 </div>
               </div>
-              <div class="col-12 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="category" size="14px" class="q-mr-xs" />Case Type
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ selectedDoc.caseType }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="info" size="14px" class="q-mr-xs" />Status
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ selectedDoc.status }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="person" size="14px" class="q-mr-xs" />Plaintiff
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ selectedDoc.plaintiff }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="person_off" size="14px" class="q-mr-xs" />Defendant
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ selectedDoc.defendant }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="event" size="14px" class="q-mr-xs" />Date
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ selectedDoc.dateOfOccurrence || '—' }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <div class="row items-center q-py-ms border-bottom">
+                  <div
+                    class="col-5 row items-center text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                  >
+                    <q-icon name="payments" size="14px" class="q-mr-xs" />Exposure
+                  </div>
+                  <div
+                    class="col-7 text-body2 text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{
+                      selectedDoc.financialExposure
+                        ? `LKR ${formatCurrency(selectedDoc.financialExposure)}`
+                        : '—'
+                    }}
+                  </div>
+                </div>
+              </div>
+              <div class="col-12">
+                <div
+                  class="text-caption text-weight-bold q-mb-xs"
+                  :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                >
                   <q-icon name="gavel" size="14px" class="q-mr-xs" />Nature of Case
                 </div>
-                <div class="text-body2 text-weight-medium truncate">
+                <p
+                  class="text-body2 text-weight-medium q-mb-none"
+                  :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-8'"
+                >
                   {{ selectedDoc.natureOfCase || '—' }}
-                </div>
+                </p>
               </div>
-              <div class="col-12 q-py-xs">
-                <div class="text-caption text-grey-6 row items-center">
+              <div class="col-12 q-mt-md">
+                <div
+                  class="text-caption text-weight-bold q-mb-xs"
+                  :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                >
                   <q-icon name="notes" size="14px" class="q-mr-xs" />Summary of Facts
                 </div>
-                <div class="text-body2 text-weight-medium truncate">
+                <p
+                  class="text-body2 text-weight-medium q-mb-none"
+                  :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-8'"
+                >
                   {{ selectedDoc.summaryOfFacts || '—' }}
-                </div>
+                </p>
               </div>
             </div>
           </q-tab-panel>
@@ -717,14 +832,49 @@
         </q-card-section>
       </q-card>
     </q-dialog>
+    <!-- ═══════════════════════════════════════════════════════════
+         AI SUMMARY DIALOG
+    ════════════════════════════════════════════════════════════ -->
+    <q-dialog v-model="showSummaryDialog">
+      <q-card style="width: 500px; max-width: 95vw">
+        <q-bar class="slt-dialog-bar text-white">
+          <q-icon name="auto_awesome" />
+          <div class="text-weight-bold q-ml-sm">AI Case Summary</div>
+          <q-space />
+          <q-btn dense flat icon="close" v-close-popup />
+        </q-bar>
+
+        <q-card-section class="q-pa-md">
+          <div v-if="currentSummarizedDoc" class="text-subtitle2 text-primary q-mb-sm">
+            #{{ currentSummarizedDoc.refNo }} — {{ currentSummarizedDoc.caseTitle }}
+          </div>
+
+          <div v-if="summarizing" class="column items-center q-py-xl">
+            <q-spinner-dots color="primary" size="40px" />
+            <div class="text-caption text-grey-6 q-mt-md">AI is analyzing the facts...</div>
+          </div>
+
+          <div v-else class="ai-summary-content" v-html="formatAiText(aiSummaryText)" />
+        </q-card-section>
+
+        <q-card-actions align="right" class="q-pa-md">
+          <q-btn unelevated no-caps color="primary" label="Close" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
+import { supabase } from 'src/boot/supabase'
+import { useAuthStore } from 'src/stores/authStore'
 
 const $q = useQuasar()
+const { locale } = useI18n()
+const authStore = useAuthStore()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  CONSTANTS
@@ -733,7 +883,15 @@ const $q = useQuasar()
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  CONSTANTS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const caseTypeOptions = ['Money Recovery', 'Damages', 'Appeals', 'Land', 'Criminal', 'Other']
+const caseTypeOptions = [
+  'Money Recovery',
+  'Damages',
+  'Appeals',
+  'Land Case',
+  'Criminal',
+  'Inquiry',
+  'Other',
+]
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  TABLE
@@ -761,110 +919,48 @@ const columns = [
   { name: 'actions', label: 'Actions', field: 'actions', align: 'center', sortable: false },
 ]
 
-// ── Mock dataset ──────────────────────────────────────────────
-const documents = ref([
-  {
-    id: 1,
-    refNo: 'SLT/LEG/2026/001',
-    caseTitle: 'Recovery of Outstanding Payments – Netwin Pvt Ltd',
-    caseType: 'Money Recovery',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Netwin Pvt Ltd',
-    partiesInvolved: '',
-    natureOfCase: 'Unpaid dues for leased circuit charges spanning 18 months.',
-    dateOfOccurrence: '2025-06-01',
-    financialExposure: 4500000,
-    summaryOfFacts:
-      'SLT Mobitel initiated recovery proceedings against Netwin Pvt Ltd for outstanding leased-circuit charges amounting to LKR 4.5M.',
-    submittedDate: '2026-01-15',
-    status: 'Pending',
-    attachments: [
-      { name: 'Unpaid_Invoices_Bundle.pdf', type: 'pdf', size: '2.4 MB', date: '2026-01-15' },
-      { name: 'Lease_Agreement_Scan.pdf', type: 'pdf', size: '1.1 MB', date: '2026-01-15' },
-      { name: 'Arrears_Calculation.xlsx', type: 'xlsx', size: '32 KB', date: '2026-01-15' },
-    ],
-  },
-  {
-    id: 2,
-    refNo: 'SLT/LEG/2026/002',
-    caseTitle: 'Land Acquisition Dispute – Kandy Exchange Site',
-    caseType: 'Land',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Kandy Municipal Council',
-    partiesInvolved: 'Urban Development Authority',
-    natureOfCase: 'Encroachment on SLT registered land parcel.',
-    dateOfOccurrence: '2025-09-12',
-    financialExposure: 12000000,
-    summaryOfFacts:
-      'Portion of the Kandy Exchange land was encroached upon during urban development activities without prior notice to SLT.',
-    submittedDate: '2026-01-22',
-    status: 'Under Review',
-    attachments: [
-      { name: 'Survey_Plan_Kandy.jpg', type: 'jpg', size: '1.8 MB', date: '2026-01-22' },
-      { name: 'Land_Registry_Extract.pdf', type: 'pdf', size: '890 KB', date: '2026-01-22' },
-    ],
-  },
-  {
-    id: 3,
-    refNo: 'SLT/LEG/2026/003',
-    caseTitle: 'Damages Claim – Fiber Cut by Contractor',
-    caseType: 'Damages',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Gamage Constructions',
-    partiesInvolved: '',
-    natureOfCase: 'Negligent excavation causing fiber cable damage.',
-    dateOfOccurrence: '2025-11-03',
-    financialExposure: 870000,
-    summaryOfFacts:
-      'During road widening, contractor cut 600m of SLT Fiber backbone cable resulting in service disruption for 4,200 customers.',
-    submittedDate: '2026-02-01',
-    status: 'Approved',
-    attachments: [
-      { name: 'Incident_Report_Southern.pdf', type: 'pdf', size: '560 KB', date: '2026-02-01' },
-      { name: 'Repair_Estimate_v2.xlsx', type: 'xlsx', size: '24 KB', date: '2026-02-01' },
-    ],
-  },
-  {
-    id: 4,
-    refNo: 'SLT/LEG/2026/004',
-    caseTitle: 'Criminal Complaint – Telecom Fraud',
-    caseType: 'Criminal',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Unknown Parties',
-    partiesInvolved: 'CID Sri Lanka',
-    natureOfCase: 'SIM-swap fraud causing financial loss.',
-    dateOfOccurrence: '2025-12-20',
-    financialExposure: 0,
-    summaryOfFacts:
-      'Fraudulent SIM swaps detected on 14 corporate accounts. Complaint filed with CID for investigation.',
-    submittedDate: '2026-02-10',
-    status: 'Pending',
-    attachments: null,
-  },
-  {
-    id: 5,
-    refNo: 'SLT/LEG/2026/005',
-    caseTitle: 'Appeal Against Labour Tribunal Award',
-    caseType: 'Appeals',
-    plaintiff: 'SLT Mobitel PLC',
-    defendant: 'Former Employee K.A. Perera',
-    partiesInvolved: '',
-    natureOfCase: 'Appeal against compensation awarded by Labour Tribunal.',
-    dateOfOccurrence: '2025-08-30',
-    financialExposure: 2300000,
-    summaryOfFacts:
-      'Labour Tribunal awarded LKR 2.3M to former employee. SLT is appealing on grounds of procedural error and new evidence.',
-    submittedDate: '2026-02-14',
-    status: 'Rejected',
-    attachments: null,
-  },
-])
+// ── Database State ───────────────────────────────────────────
+const documents = ref([])
+const loading = ref(false)
+
+async function fetchDocuments() {
+  loading.value = true
+  try {
+    const { data, error } = await supabase
+      .from('initial_documents')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    // Map DB fields to component fields if they differ
+    documents.value = data.map((d) => ({
+      ...d,
+      refNo: d.reference_number,
+      caseTitle: d.case_title,
+      caseType: d.case_type,
+      natureOfCase: d.nature_of_case,
+      dateOfOccurrence: d.date_of_occurrence,
+      financialExposure: d.financial_exposure,
+      summaryOfFacts: d.summary_of_facts,
+      submittedDate: d.submitted_at ? new Date(d.submitted_at).toISOString().slice(0, 10) : '',
+    }))
+  } catch (err) {
+    console.error('Error fetching documents:', err)
+    $q.notify({ type: 'negative', message: 'Failed to load documents from database.' })
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchDocuments()
+})
 
 // ── Filters ───────────────────────────────────────────────────
 const filter = ref('')
 const filterStatus = ref('All')
 const filterType = ref('All')
-const loading = ref(false)
 
 const filteredDocs = computed(() => {
   return documents.value.filter((d) => {
@@ -935,10 +1031,18 @@ const emptyForm = () => ({
 })
 
 const form = ref(emptyForm())
+const newAttachments = ref(null)
+
+// Existing attachments from mock data (shown as chips in edit mode)
+const existingAttachments = computed(() => {
+  if (!isEditMode.value || !form.value.attachments) return []
+  return Array.isArray(form.value.attachments) ? form.value.attachments : []
+})
 
 function openCreateDialog() {
   isEditMode.value = false
   form.value = emptyForm()
+  newAttachments.value = null
   showFormDialog.value = true
 }
 
@@ -948,11 +1052,13 @@ function editDocument(doc) {
     ...doc,
     referenceNumber: doc.refNo, // Map refNo to referenceNumber used by form input
   }
+  newAttachments.value = null
   showFormDialog.value = true
 }
 
 function closeDialog() {
   showFormDialog.value = false
+  newAttachments.value = null
   docFormRef.value?.resetValidation()
 }
 
@@ -961,31 +1067,48 @@ async function submitForm() {
   if (!valid) return
 
   submitting.value = true
-  // Simulate async API call
-  await new Promise((r) => setTimeout(r, 800))
-
-  if (isEditMode.value) {
-    const idx = documents.value.findIndex((d) => d.id === form.value.id)
-    if (idx !== -1) documents.value[idx] = { ...form.value }
-    $q.notify({ type: 'positive', message: 'Document updated successfully.', icon: 'edit' })
-  } else {
-    const newDoc = {
-      ...form.value,
-      id: Date.now(),
-      refNo: form.value.referenceNumber,
-      submittedDate: new Date().toISOString().slice(0, 10),
+  try {
+    const payload = {
+      reference_number: form.value.referenceNumber,
+      case_title: form.value.caseTitle,
+      case_type: form.value.caseType,
+      plaintiff: form.value.plaintiff,
+      defendant: form.value.defendant,
+      parties_involved: form.value.partiesInvolved,
+      nature_of_case: form.value.natureOfCase,
+      date_of_occurrence: form.value.dateOfOccurrence,
+      financial_exposure: form.value.financialExposure,
+      summary_of_facts: form.value.summaryOfFacts,
+      submitted_by: authStore.profile?.id || authStore.user?.id,
       status: 'Pending',
     }
-    documents.value.unshift(newDoc)
-    $q.notify({
-      type: 'positive',
-      message: 'Initial document submitted successfully.',
-      icon: 'check_circle',
-    })
-  }
 
-  submitting.value = false
-  showFormDialog.value = false
+    if (isEditMode.value) {
+      const { error } = await supabase
+        .from('initial_documents')
+        .update(payload)
+        .eq('id', form.value.id)
+
+      if (error) throw error
+      $q.notify({ type: 'positive', message: 'Document updated successfully.', icon: 'edit' })
+    } else {
+      const { error } = await supabase.from('initial_documents').insert([payload])
+
+      if (error) throw error
+      $q.notify({
+        type: 'positive',
+        message: 'Initial document submitted successfully.',
+        icon: 'check_circle',
+      })
+    }
+    await fetchDocuments() // Refresh list
+    showFormDialog.value = false
+  } catch (err) {
+    console.error('Submission error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to save document to database.' })
+  } finally {
+    submitting.value = false
+  }
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -993,6 +1116,72 @@ async function submitForm() {
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const selectedDoc = ref(null)
 const docDetailTab = ref('details')
+const showSummaryDialog = ref(false)
+const summarizing = ref(false)
+const aiSummaryText = ref('')
+const currentSummarizedDoc = ref(null)
+
+async function summarizeDocument(doc) {
+  if (!doc.summaryOfFacts) {
+    $q.notify({ type: 'warning', message: 'No facts available to summarize.' })
+    return
+  }
+
+  currentSummarizedDoc.value = doc
+  summarizing.value = true
+  aiSummaryText.value = ''
+  showSummaryDialog.value = true
+
+  try {
+    const { data, error } = await supabase.functions.invoke('ai-copilot', {
+      body: {
+        content: doc.summaryOfFacts,
+        mode: 'summarize',
+        language: locale.value || 'English',
+      },
+    })
+
+    if (error) {
+      // Simulation / Mock Fallback for Demo
+      await new Promise((resolve) => setTimeout(resolve, 1500)) // Simulation delay
+
+      const isSinhala = locale.value === 'si'
+      const isTamil = locale.value === 'ta'
+
+      if (isSinhala) {
+        aiSummaryText.value = `✨ **AI සාරාංශය (නිරූපණ මාදිලිය)**\n\nමෙම නඩුව සම්බන්ධයෙන් AI විසින් හඳුනාගත් ප්‍රධාන කරුණු:\n\n- **නඩුවේ ස්වභාවය:** ${doc.caseType || 'හඳුනා නොගත්'}\n- **මූල්‍ය වටිනාකම:** LKR ${formatCurrency(doc.financialExposure || 0)}\n- **ප්‍රධාන කරුණ:** සැපයුම්කරු සහ ආයතනය අතර ඇති වූ ගිවිසුම්ගත ආරවුලක්.\n\n**නිර්දේශය:** ඉක්මනින් බේරුම්කරණයකට (Arbitration) යොමු වීම යෝග්‍ය වේ.`
+      } else if (isTamil) {
+        aiSummaryText.value = `✨ **AI சுருக்கம் (டெமோ பயன்முறை)**\n\nஇந்த வழக்கு தொடர்பாக AI கண்டறிந்த முக்கிய குறிப்புகள்:\n\n- **வழக்கின் வகை:** ${doc.caseType || 'குறிப்பிடப்படவில்லை'}\n- **நிதி மதிப்பு:** LKR ${formatCurrency(doc.financialExposure || 0)}\n- **முக்கிய புள்ளி:** ஒப்பந்தம் தொடர்பான சர்ச்சை.\n\n**பரிந்துரை:** விரைவான தீர்வுக்காக இப்பிரச்சினையை மத்தியஸ்தத்திற்கு (Arbitration) கொண்டு செல்வது நல்லது.`
+      } else {
+        aiSummaryText.value = `✨ **AI Summary (Simulation Mode)**\n\nKey highlights identified by LegalEdge AI:\n\n- **Case Classification:** ${doc.caseType || 'General'}\n- **Financial Exposure:** LKR ${formatCurrency(doc.financialExposure || 0)}\n- **Risk Level:** High priority due to contractual obligations.\n\n**AI Recommendation:** Proceed with internal review and prepare for possible mediation/arbitration.`
+      }
+
+      $q.notify({
+        message: 'Demo Simulation: Real AI API key not found.',
+        color: 'amber-9',
+        icon: 'info',
+        position: 'bottom-right',
+      })
+    } else {
+      aiSummaryText.value = data.text || data.response || 'Failed to generate summary.'
+    }
+  } catch (err) {
+    console.error('Summarize error:', err)
+    aiSummaryText.value =
+      'Sorry, I encountered an error while summarizing. Please check your connection and configuration.'
+  } finally {
+    summarizing.value = false
+  }
+}
+
+function formatAiText(text) {
+  if (!text) return ''
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/^- (.*)/gm, '• $1')
+    .replace(/\n/g, '<br>')
+}
 
 function viewRecordDetails(doc) {
   selectedDoc.value = doc
@@ -1023,21 +1212,38 @@ function confirmAction(doc, action) {
   showConfirmDialog.value = true
 }
 
-function executeAction() {
+async function executeAction() {
   if (pendingAction.value === 'Reject' && !actionRemarks.value.trim()) {
     $q.notify({ type: 'negative', message: 'Please provide a rejection reason.' })
     return
   }
-  const idx = documents.value.findIndex((d) => d.id === pendingDoc.value.id)
-  if (idx !== -1) {
-    documents.value[idx].status = pendingAction.value === 'Approve' ? 'Approved' : 'Rejected'
+
+  try {
+    const status = pendingAction.value === 'Approve' ? 'Approved' : 'Rejected'
+    const { error } = await supabase
+      .from('initial_documents')
+      .update({
+        status,
+        approval_remarks: actionRemarks.value,
+        approved_by: authStore.profile?.id || authStore.user?.id,
+        approved_at: new Date().toISOString(),
+      })
+      .eq('id', pendingDoc.value.id)
+
+    if (error) throw error
+
+    $q.notify({
+      type: pendingAction.value === 'Approve' ? 'positive' : 'negative',
+      message: `Document #${pendingDoc.value.refNo} has been ${pendingAction.value === 'Approve' ? 'approved' : 'rejected'}.`,
+      icon: pendingAction.value === 'Approve' ? 'check_circle' : 'cancel',
+    })
+    await fetchDocuments()
+  } catch (err) {
+    console.error('Action error:', err)
+    $q.notify({ type: 'negative', message: 'Failed to update document status.' })
+  } finally {
+    showConfirmDialog.value = false
   }
-  $q.notify({
-    type: pendingAction.value === 'Approve' ? 'positive' : 'negative',
-    message: `Document #${pendingDoc.value.refNo} has been ${pendingAction.value === 'Approve' ? 'approved' : 'rejected'}.`,
-    icon: pendingAction.value === 'Approve' ? 'check_circle' : 'cancel',
-  })
-  showConfirmDialog.value = false
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──

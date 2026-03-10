@@ -7,9 +7,19 @@
           <q-icon name="bar_chart" size="28px" class="q-mr-sm" />
           {{ $t('reports.title') }}
         </div>
-        <div class="text-caption text-grey-6">
+        <div
+          class="text-caption text-weight-medium"
+          :class="$q.dark.isActive ? 'text-blue-1' : 'text-grey-9'"
+          style="opacity: 0.85"
+        >
           Legal performance metrics &amp; workload overview &nbsp;·&nbsp; Data as of:
-          <strong>22 February 2026</strong>
+          <strong :class="$q.dark.isActive ? 'text-blue-4' : 'text-blue-9'">{{
+            new Date().toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })
+          }}</strong>
         </div>
       </div>
       <div class="col-auto row q-gutter-sm">
@@ -69,7 +79,11 @@
                 <div class="text-h5 text-weight-bold" :class="`text-${kpi.color}`">
                   {{ kpi.value }}
                 </div>
-                <div class="text-caption text-grey-6" style="line-height: 1.2">
+                <div
+                  class="text-caption text-weight-medium"
+                  :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+                  style="line-height: 1.2"
+                >
                   {{ kpi.label }}
                 </div>
               </div>
@@ -186,10 +200,22 @@
               <tbody>
                 <tr v-for="s in caseStatusRows" :key="s.status">
                   <td>
-                    <q-badge rounded :color="s.color" :label="s.status" />
+                    <q-badge
+                      rounded
+                      :color="s.color"
+                      :label="s.status"
+                      :text-color="s.color === 'warning' ? 'black' : 'white'"
+                    />
                   </td>
-                  <td class="text-right text-weight-bold">{{ s.count }}</td>
-                  <td class="text-right text-grey-6">{{ pct(s.count, totalCases) }}%</td>
+                  <td
+                    class="text-right text-weight-bold"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'"
+                  >
+                    {{ s.count }}
+                  </td>
+                  <td class="text-right" :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'">
+                    {{ pct(s.count, totalCases) }}%
+                  </td>
                 </tr>
                 <tr class="text-weight-bold">
                   <td>{{ $t('reports.total') }}</td>
@@ -200,7 +226,12 @@
             </q-markup-table>
 
             <!-- Visual donut substitute — stacked bar -->
-            <div class="text-caption text-grey-5 q-mb-xs">Status share</div>
+            <div
+              class="text-caption q-mb-xs"
+              :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+            >
+              Status share
+            </div>
             <div
               class="slt-segbar row no-wrap"
               style="height: 18px; border-radius: 9px; overflow: hidden"
@@ -214,10 +245,14 @@
                 }"
               />
             </div>
-            <div class="row q-gutter-sm q-mt-xs">
+            <div class="row q-gutter-md q-mt-sm">
               <div v-for="s in caseStatusRows" :key="s.status" class="row items-center">
                 <div class="slt-legend-dot" :style="{ background: statusColorHex(s.color) }" />
-                <span class="text-caption text-grey-7 q-ml-xs">{{ s.status }}</span>
+                <span
+                  class="text-caption q-ml-xs"
+                  :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-7'"
+                  >{{ s.status }}</span
+                >
               </div>
             </div>
           </q-card-section>
@@ -239,7 +274,10 @@
             <div class="row q-col-gutter-md q-mb-md">
               <div class="col-12 col-sm-4">
                 <div class="slt-fin-box slt-fin-box--total">
-                  <div class="text-caption text-grey-6 q-mb-xs">
+                  <div
+                    class="text-caption q-mb-xs"
+                    :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-6'"
+                  >
                     {{ $t('reports.totalClaimValue') }}
                   </div>
                   <div class="text-h5 text-weight-bold text-primary">
@@ -252,7 +290,10 @@
               </div>
               <div class="col-12 col-sm-4">
                 <div class="slt-fin-box slt-fin-box--paid">
-                  <div class="text-caption text-grey-6 q-mb-xs">
+                  <div
+                    class="text-caption q-mb-xs"
+                    :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-6'"
+                  >
                     {{ $t('reports.totalRecoveredPaid') }}
                   </div>
                   <div class="text-h5 text-weight-bold text-positive">
@@ -269,11 +310,16 @@
               </div>
               <div class="col-12 col-sm-4">
                 <div class="slt-fin-box slt-fin-box--balance">
-                  <div class="text-caption text-grey-6 q-mb-xs">Outstanding Balance</div>
+                  <div
+                    class="text-caption q-mb-xs"
+                    :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-6'"
+                  >
+                    {{ $t('reports.outstandingBalance') }}
+                  </div>
                   <div class="text-h5 text-weight-bold text-negative">
                     LKR {{ fmt(financialSummary.totalBalance) }}
                   </div>
-                  <div class="text-caption text-grey-5">Pending recovery</div>
+                  <div class="text-caption text-grey-5">{{ $t('reports.pendingRecovery') }}</div>
                 </div>
               </div>
             </div>
@@ -299,14 +345,29 @@
                   class="cursor-pointer slt-drilldown-row"
                   @click="drillDown(r.caseNo, r.title)"
                 >
-                  <td class="text-weight-medium text-primary">
+                  <td
+                    class="text-weight-medium"
+                    :class="$q.dark.isActive ? 'text-white' : 'text-primary'"
+                  >
                     {{ r.caseNo }}
-                    <q-icon name="open_in_new" size="12px" color="grey-5" class="q-ml-xs" />
+                    <q-icon
+                      name="open_in_new"
+                      size="12px"
+                      :color="$q.dark.isActive ? 'white' : 'grey-5'"
+                      class="q-ml-xs"
+                    />
                   </td>
                   <td>
                     <div style="max-width: 220px" class="ellipsis">{{ r.title }}</div>
                   </td>
-                  <td><q-badge outline :color="caseTypeColor(r.type)" :label="r.type" /></td>
+                  <td>
+                    <q-badge
+                      :outline="!$q.dark.isActive"
+                      :color="caseTypeColor(r.type)"
+                      :label="r.type"
+                      :class="$q.dark.isActive ? 'text-white' : ''"
+                    />
+                  </td>
                   <td class="text-right">{{ fmt(r.claim) }}</td>
                   <td class="text-right text-positive text-weight-medium">{{ fmt(r.paid) }}</td>
                   <td class="text-right text-negative text-weight-bold">
@@ -360,11 +421,13 @@
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
-            <!-- Total value KPI -->
-            <div class="row q-col-gutter-sm q-mb-md">
+            <div class="row q-col-gutter-md q-mb-md">
               <div class="col-6">
                 <div class="slt-fin-box q-pa-sm">
-                  <div class="text-caption text-grey-5">
+                  <div
+                    class="text-caption"
+                    :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+                  >
                     {{ $t('reports.totalAgreementValue') }}
                   </div>
                   <div class="text-h6 text-weight-bold text-primary">
@@ -374,7 +437,12 @@
               </div>
               <div class="col-6">
                 <div class="slt-fin-box q-pa-sm">
-                  <div class="text-caption text-grey-5">{{ $t('reports.kpiAgreements') }}</div>
+                  <div
+                    class="text-caption"
+                    :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+                  >
+                    {{ $t('reports.kpiAgreements') }}
+                  </div>
                   <div class="text-h6 text-weight-bold text-positive">
                     {{ agrmStageRows.find((r) => r.stage === $t('statuses.active'))?.count || 0 }}
                   </div>
@@ -382,10 +450,11 @@
               </div>
             </div>
 
-            <!-- Stage pipeline bars -->
             <div v-for="row in agrmStageRows" :key="row.stage" class="q-mb-sm">
               <div class="row items-center q-mb-xs">
-                <q-badge rounded :color="row.color" :label="row.stage" class="q-mr-sm" />
+                <div style="min-width: 140px" class="q-mr-sm">
+                  <q-badge rounded :color="row.color" :label="row.stage" class="full-width" />
+                </div>
                 <div class="col">
                   <q-linear-progress
                     :value="row.count / totalAgreements"
@@ -395,7 +464,8 @@
                   />
                 </div>
                 <div
-                  class="col-auto text-caption text-grey-6 q-ml-sm"
+                  class="col-auto text-caption q-ml-sm"
+                  :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
                   style="min-width: 48px; text-align: right"
                 >
                   {{ row.count }} ({{ pct(row.count, totalAgreements) }}%)
@@ -406,13 +476,18 @@
             <q-separator class="q-my-md" />
 
             <!-- Top agreements by value -->
-            <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
+            <div
+              class="text-caption text-weight-bold q-mb-sm"
+              :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+            >
               {{ $t('reports.topAgreementsByValue') }}
             </div>
             <div v-for="a in topAgreements" :key="a.title" class="row items-center q-mb-sm">
               <div class="col">
                 <div class="text-body2 ellipsis" style="max-width: 240px">{{ a.title }}</div>
-                <div class="text-caption text-grey-5">{{ a.party }}</div>
+                <div class="text-caption" :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'">
+                  {{ a.party }}
+                </div>
               </div>
               <div class="col-auto text-right">
                 <div
@@ -438,12 +513,19 @@
           <q-separator />
           <q-card-section class="q-pa-md">
             <!-- Aging buckets -->
-            <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
+            <div
+              class="text-caption text-weight-bold q-mb-sm"
+              :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+            >
               {{ $t('reports.caseAgeDist') }}
             </div>
             <div v-for="bucket in agingBuckets" :key="bucket.label" class="q-mb-sm">
               <div class="row items-center q-mb-xs">
-                <div class="col-auto text-caption text-grey-7" style="min-width: 110px">
+                <div
+                  class="col-auto text-caption"
+                  :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+                  style="min-width: 110px"
+                >
                   {{ bucket.label }}
                 </div>
                 <div class="col">
@@ -467,7 +549,10 @@
             <q-separator class="q-my-md" />
 
             <!-- Lawyer workload table — DRILL-DOWN clickable -->
-            <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
+            <div
+              class="text-caption text-weight-bold q-mb-sm"
+              :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+            >
               {{ $t('reports.lawyerWorkloadTitle') }}
             </div>
             <q-markup-table flat dense separator="horizontal" class="slt-mu-table">
@@ -476,7 +561,7 @@
                   <th class="text-left">{{ $t('reports.attorney') }}</th>
                   <th class="text-center">{{ $t('statuses.active') }}</th>
                   <th class="text-center">{{ $t('statuses.pendingHearing') }}</th>
-                  <th class="text-right">Exposure (LKR)</th>
+                  <th class="text-right">{{ $t('reports.kpiExposure') }}</th>
                   <th class="text-center">Load</th>
                 </tr>
               </thead>
@@ -489,7 +574,12 @@
                 >
                   <td class="text-weight-medium">
                     {{ l.name }}
-                    <q-icon name="open_in_new" size="12px" color="grey-5" class="q-ml-xs" />
+                    <q-icon
+                      name="open_in_new"
+                      size="12px"
+                      :color="$q.dark.isActive ? 'grey-4' : 'grey-8'"
+                      class="q-ml-xs"
+                    />
                   </td>
                   <td class="text-center">{{ l.active }}</td>
                   <td class="text-center">{{ l.pending }}</td>
@@ -509,7 +599,10 @@
             <q-separator class="q-my-md" />
 
             <!-- Upcoming hearings in next 30 days -->
-            <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">
+            <div
+              class="text-caption text-weight-bold q-mb-sm"
+              :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-8'"
+            >
               {{ $t('reports.upcomingHearingsTitle') }}
             </div>
             <q-list dense>
@@ -539,7 +632,7 @@
                   <q-badge
                     rounded
                     :color="h.urgency === 'high' ? 'negative' : 'info'"
-                    :label="h.urgency === 'high' ? 'URGENT' : `${h.daysAway}d`"
+                    :label="h.urgency === 'high' ? $t('common.urgent') : `${h.daysAway}d`"
                   />
                 </q-item-section>
               </q-item>
@@ -566,10 +659,15 @@
             <q-separator class="q-my-sm" />
 
             <!-- Monthly summary table -->
-            <q-markup-table flat dense separator="none" class="slt-mu-table">
+            <q-markup-table flat dense separator="none" class="slt-mu-table q-mt-md">
               <thead>
                 <tr>
-                  <th v-for="m in monthlyTrend" :key="m.month" class="text-center text-caption">
+                  <th
+                    v-for="m in monthlyTrend"
+                    :key="m.month"
+                    class="text-center text-weight-bolder text-subtitle2"
+                    :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-9'"
+                  >
                     {{ m.month }}
                   </th>
                 </tr>
@@ -579,7 +677,8 @@
                   <td
                     v-for="m in monthlyTrend"
                     :key="m.month"
-                    class="text-center text-weight-bold text-primary"
+                    class="text-center text-weight-bolder text-h6 text-primary"
+                    style="padding: 12px 0"
                   >
                     {{ m.filed }}
                   </td>
@@ -588,7 +687,8 @@
                   <td
                     v-for="m in monthlyTrend"
                     :key="m.month"
-                    class="text-center text-caption text-grey-5"
+                    class="text-center text-weight-bolder text-subtitle1 text-positive"
+                    style="padding: 12px 0"
                   >
                     ✓ {{ m.closed }}
                   </td>
@@ -634,7 +734,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { supabase } from 'src/boot/supabase'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useI18n } from 'vue-i18n'
@@ -667,6 +768,297 @@ const periodOptions = computed(() => [
   { label: t('reports.thisYear'), value: 'thisYear' },
   { label: t('reports.allTime'), value: 'allTime' },
 ])
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  REAL-TIME DATA STATE
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const dbStats = ref({
+  totalCases: 0,
+  activeCases: 0,
+  pendingHearings: 0,
+  totalExposure: 0,
+  totalRecovered: 0,
+  totalAgreements: 0,
+  activeAgreements: 0,
+  upcomingHearingsCount: 0,
+})
+
+const casesByTypeData = ref([])
+const caseStatusData = ref([])
+const financialData = ref([])
+const agreementStageData = ref([])
+const topAgreementsData = ref([])
+const agingData = ref([])
+const lawyerData = ref([])
+const upcomingHearingsData = ref([])
+const monthlyTrendData = ref([])
+
+const loading = ref(false)
+
+async function fetchDashboardData() {
+  loading.value = true
+  try {
+    // 1. Basic Counts
+    const { count: casesCount } = await supabase
+      .from('legal_cases')
+      .select('*', { count: 'exact', head: true })
+    const { count: activeCasesCount } = await supabase
+      .from('legal_cases')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'Active')
+    const { count: pendingHearingsCount } = await supabase
+      .from('legal_cases')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'Pending Hearing')
+    const { count: agrmCount } = await supabase
+      .from('agreements')
+      .select('*', { count: 'exact', head: true })
+    const { count: activeAgrmCount } = await supabase
+      .from('agreements')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'Active')
+
+    dbStats.value.totalCases = casesCount || 0
+    dbStats.value.activeCases = activeCasesCount || 0
+    dbStats.value.pendingHearings = pendingHearingsCount || 0
+    dbStats.value.totalAgreements = agrmCount || 0
+    dbStats.value.activeAgreements = activeAgrmCount || 0
+
+    // 2. Financial Aggregates
+    const { data: finDetails } = await supabase
+      .from('money_recovery_details')
+      .select('claim_amount, paid_amount')
+    if (finDetails) {
+      dbStats.value.totalExposure = finDetails.reduce((s, r) => s + (r.claim_amount || 0), 0)
+      dbStats.value.totalRecovered = finDetails.reduce((s, r) => s + (r.paid_amount || 0), 0)
+    }
+
+    // 3. Cases By Type
+    const { data: cases } = await supabase
+      .from('legal_cases')
+      .select('id, case_type, status, case_no, title, filed_date, closed_at, assigned_lawyer')
+    if (cases) {
+      const typeMap = {}
+      cases.forEach((c) => {
+        typeMap[c.case_type] = (typeMap[c.case_type] || 0) + 1
+      })
+      casesByTypeData.value = Object.keys(typeMap).map((type) => ({ type, total: typeMap[type] }))
+
+      const statusMap = {}
+      cases.forEach((c) => {
+        statusMap[c.status] = (statusMap[c.status] || 0) + 1
+      })
+      caseStatusData.value = Object.keys(statusMap).map((status) => ({
+        status,
+        count: statusMap[status],
+        color:
+          status === 'Closed'
+            ? 'positive'
+            : status === 'Pending Hearing'
+              ? 'warning'
+              : status === 'Under Review'
+                ? 'teal-7'
+                : status === 'New'
+                  ? 'indigo-7'
+                  : 'blue-7',
+      }))
+
+      // Financial Rows Join
+      const { data: finRecs } = await supabase
+        .from('money_recovery_details')
+        .select('case_id, claim_amount, paid_amount')
+      financialData.value = cases
+        .filter((c) => c.case_type === 'Money Recovery')
+        .map((c) => {
+          const d = finRecs?.find((r) => r.case_id === c.id)
+          return {
+            caseNo: c.case_no,
+            title: c.title,
+            type: c.case_type,
+            claim: d?.claim_amount || 0,
+            paid: d?.paid_amount || 0,
+            status: c.status,
+          }
+        })
+
+      // 4. Aging Buckets (Real calculation)
+      const now = new Date()
+      const buckets = {
+        '< 30 days': 0,
+        '30 – 90 days': 0,
+        '90 – 180 days': 0,
+        '180 – 365 days': 0,
+        '> 1 year': 0,
+      }
+      cases.forEach((c) => {
+        const diff = (now - new Date(c.filed_date)) / (1000 * 60 * 60 * 24)
+        if (diff < 30) buckets['< 30 days']++
+        else if (diff < 90) buckets['30 – 90 days']++
+        else if (diff < 180) buckets['90 – 180 days']++
+        else if (diff < 365) buckets['180 – 365 days']++
+        else buckets['> 1 year']++
+      })
+      agingData.value = Object.keys(buckets).map((label) => ({
+        label,
+        count: buckets[label],
+        color: label === '< 30 days' ? 'positive' : label === '> 1 year' ? 'negative' : 'warning',
+      }))
+
+      // 5. Lawyer Workload - Direct from DB
+      const lawyerMap = {}
+      cases.forEach((c) => {
+        const name = c.assigned_lawyer || 'Unassigned'
+        if (!lawyerMap[name]) lawyerMap[name] = { name, active: 0, pending: 0, exposure: 0 }
+        if (c.status === 'Active') lawyerMap[name].active++
+        if (c.status === 'Pending Hearing') lawyerMap[name].pending++
+        const d = finRecs?.find((r) => r.case_id === c.id)
+        lawyerMap[name].exposure += d?.claim_amount || 0
+      })
+      lawyerData.value = Object.values(lawyerMap).sort((a, b) => b.active - a.active)
+
+      // 6. Agreement Stages
+      const { data: agrmData } = await supabase
+        .from('agreements')
+        .select('status, value, title, party2')
+      if (agrmData) {
+        const agrmStatusMap = {}
+        agrmData.forEach((a) => {
+          agrmStatusMap[a.status] = (agrmStatusMap[a.status] || 0) + 1
+        })
+        agreementStageData.value = Object.keys(agrmStatusMap).map((status) => ({
+          stage: status,
+          count: agrmStatusMap[status],
+          color:
+            status === 'Active'
+              ? 'positive'
+              : status === 'Draft'
+                ? 'grey-6'
+                : status.includes('L1') || status.includes('L2')
+                  ? 'warning'
+                  : status === 'Rejected'
+                    ? 'negative'
+                    : 'info',
+        }))
+
+        // Top Agreements
+        topAgreementsData.value = [...agrmData]
+          .sort((a, b) => (b.value || 0) - (a.value || 0))
+          .slice(0, 5)
+          .map((a) => ({
+            title: a.title,
+            party: a.party2,
+            value: a.value,
+            status: a.status,
+            statusColor:
+              a.status === 'Active'
+                ? 'positive'
+                : a.status.includes('Approval')
+                  ? 'warning'
+                  : 'grey-6',
+          }))
+      }
+
+      // 7. Upcoming Hearings
+      const thirtyDaysHence = new Date()
+      thirtyDaysHence.setDate(thirtyDaysHence.getDate() + 30)
+      const { data: hearings } = await supabase
+        .from('legal_cases')
+        .select('case_no, title, court, next_hearing')
+        .not('next_hearing', 'is', null)
+        .gte('next_hearing', new Date().toISOString().split('T')[0])
+        .lte('next_hearing', thirtyDaysHence.toISOString().split('T')[0])
+        .order('next_hearing', { ascending: true })
+
+      if (hearings) {
+        upcomingHearingsData.value = hearings.map((h) => {
+          const hDate = new Date(h.next_hearing)
+          const diffDays = Math.ceil((hDate - new Date()) / (1000 * 60 * 60 * 24))
+          return {
+            caseNo: h.case_no,
+            title: h.title,
+            court: h.court,
+            date: hDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }),
+            daysAway: diffDays,
+            urgency: diffDays <= 7 ? 'high' : 'normal',
+          }
+        })
+        dbStats.value.upcomingHearingsCount = hearings.length
+      }
+    }
+
+    // 6. Monthly Trend (Ensuring 12 months)
+    const trendMap = {}
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]
+
+    // Initialize trendMap with last 12 months (0 by default)
+    const now = new Date()
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+      const key = `${months[d.getMonth()]}'${d.getFullYear().toString().slice(-2)}`
+      trendMap[key] = { month: key, filed: 0, closed: 0, sortKey: d.getTime() }
+    }
+
+    // Populate with data from database
+    cases.forEach((c) => {
+      const fDate = new Date(c.filed_date)
+      const fKey = `${months[fDate.getMonth()]}'${fDate.getFullYear().toString().slice(-2)}`
+      if (trendMap[fKey]) trendMap[fKey].filed++
+
+      if (c.status === 'Closed' && c.closed_at) {
+        const cDate = new Date(c.closed_at)
+        const cKey = `${months[cDate.getMonth()]}'${cDate.getFullYear().toString().slice(-2)}`
+        if (trendMap[cKey]) trendMap[cKey].closed++
+      }
+    })
+
+    const finalTrendData = Object.values(trendMap).sort((a, b) => a.sortKey - b.sortKey)
+    monthlyTrendData.value = finalTrendData
+  } catch (err) {
+    console.error('Error fetching dashboard data:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchDashboardData()
+
+  // Set up real-time subscriptions
+  const casesChannel = supabase
+    .channel('reports-db-changes')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'legal_cases' }, () => {
+      fetchDashboardData()
+    })
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'money_recovery_details' },
+      () => {
+        fetchDashboardData()
+      },
+    )
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'agreements' }, () => {
+      fetchDashboardData()
+    })
+    .subscribe()
+
+  // Cleanup subscription on unmount
+  return () => {
+    supabase.removeChannel(casesChannel)
+  }
+})
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  EXPORT FUNCTIONALITY
@@ -759,38 +1151,38 @@ function drillDownLawyer(name) {
 const topKpis = computed(() => [
   {
     label: t('reports.totalCases'),
-    value: '24',
+    value: dbStats.value.totalCases.toString(),
     icon: 'gavel',
     color: 'primary',
     bg: 'blue-1',
-    trend: 12,
+    trend: 0,
     trendGood: false,
   },
   {
     label: t('reports.kpiExposure'),
-    value: 'LKR 287M',
+    value: `LKR ${fmt(dbStats.value.totalExposure / 1000000)}M`,
     icon: 'account_balance_wallet',
     color: 'negative',
     bg: 'red-1',
-    trend: 8,
+    trend: 0,
     trendGood: false,
   },
   {
     label: t('reports.kpiAgreements'),
-    value: '11',
+    value: dbStats.value.totalAgreements.toString(),
     icon: 'handshake',
     color: 'positive',
     bg: 'green-1',
-    trend: 22,
+    trend: 0,
     trendGood: true,
   },
   {
     label: t('dashboard.hearings'),
-    value: '7',
+    value: dbStats.value.upcomingHearingsCount.toString(),
     icon: 'event',
     color: 'warning',
     bg: 'orange-1',
-    trend: -15,
+    trend: 0,
     trendGood: true,
   },
 ])
@@ -798,22 +1190,23 @@ const topKpis = computed(() => [
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 1 — ACTIVE CASES BY TYPE (CHART.JS DOUGHNUT)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const casesByType = computed(() => [
-  { type: t('cases.types.recovery'), total: 9 },
-  { type: t('cases.types.land'), total: 7 },
-  { type: t('cases.types.damages'), total: 4 },
-  { type: t('cases.types.appeals'), total: 3 },
-  { type: t('cases.types.disputes'), total: 3 },
-  { type: t('cases.types.regulatory'), total: 2 },
-])
+const casesByType = computed(() => {
+  if (casesByTypeData.value.length > 0) return casesByTypeData.value
+  return [
+    { type: t('cases.types.recovery'), total: 0 },
+    { type: t('cases.types.land'), total: 0 },
+    { type: t('cases.types.damages'), total: 0 },
+  ]
+})
 
 const caseTypeColors = [
-  '#003F87', // Money Recovery — primary blue
-  '#7B1FA2', // Land Case — purple
-  '#F57C00', // Damages — deep orange
-  '#00838F', // Appeals — teal
-  '#C62828', // Employee Disputes — deep red
-  '#546E7A', // Other — blue-grey
+  '#0D47A1', // Money Recovery (Vibrant Blue)
+  '#8E24AA', // Land Case (Vibrant Purple)
+  '#F4511E', // Damages (Vibrant Deep Orange)
+  '#00897B', // Inquiry/Teal
+  '#D81B60', // Criminal/Pink-Red
+  '#0277BD', // Appeals/Light Blue
+  '#546E7A', // Other/Blue Grey
 ]
 
 const casesByTypeChartData = computed(() => ({
@@ -856,21 +1249,22 @@ const doughnutOptions = {
   },
 }
 
-const caseStatusRows = computed(() => [
-  { status: t('statuses.active'), count: 14, color: 'positive' },
-  { status: t('statuses.pendingHearing'), count: 7, color: 'warning' },
-  { status: t('statuses.underReview'), count: 4, color: 'info' },
-  { status: t('statuses.closed'), count: 3, color: 'grey-6' },
-])
+const caseStatusRows = computed(() => {
+  if (caseStatusData.value.length > 0) return caseStatusData.value
+  return [
+    { status: t('statuses.active'), count: 0, color: 'positive' },
+    { status: t('statuses.pendingHearing'), count: 0, color: 'warning' },
+  ]
+})
 
 const totalCases = computed(() => caseStatusRows.value.reduce((s, r) => s + r.count, 0))
 
 const statusColorHexMap = {
-  positive: '#21ba45',
-  warning: '#f2c037',
-  info: '#31ccec',
-  'grey-6': '#9e9e9e',
-  negative: '#c10015',
+  positive: '#21BA45', // Closed
+  warning: '#F2C037', // Pending
+  'teal-7': '#00796B', // Under Review
+  'indigo-7': '#303F9F', // New
+  'blue-7': '#1976D2', // Active
   primary: '#003F87',
 }
 function statusColorHex(color) {
@@ -880,77 +1274,12 @@ function statusColorHex(color) {
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 2 — FINANCIAL EXPOSURE
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const financialRows = [
-  {
-    caseNo: 'LC-2026-001',
-    title: 'Recovery – Netwin Pvt Ltd',
-    type: 'Money Recovery',
-    claim: 4500000,
-    paid: 1200000,
-    status: 'Active',
-  },
-  {
-    caseNo: 'LC-2026-005',
-    title: 'Leased Circuit Dues – DataNet LK',
-    type: 'Money Recovery',
-    claim: 8200000,
-    paid: 6500000,
-    status: 'Active',
-  },
-  {
-    caseNo: 'LC-2026-006',
-    title: 'Recovery – CloudHost Solutions',
-    type: 'Money Recovery',
-    claim: 3100000,
-    paid: 0,
-    status: 'Active',
-  },
-  {
-    caseNo: 'LC-2026-007',
-    title: 'Unpaid Govt Agency Dues – SLBFE',
-    type: 'Money Recovery',
-    claim: 12400000,
-    paid: 10000000,
-    status: 'Active',
-  },
-  {
-    caseNo: 'LC-2026-008',
-    title: 'National Carrier Billing – AirLink',
-    type: 'Money Recovery',
-    claim: 6700000,
-    paid: 2100000,
-    status: 'Pending Hearing',
-  },
-  {
-    caseNo: 'LC-2026-002',
-    title: 'Land Dispute – Kandy Exchange Site',
-    type: 'Land Case',
-    claim: 12000000,
-    paid: 0,
-    status: 'Pending Hearing',
-  },
-  {
-    caseNo: 'LC-2026-004',
-    title: 'Easement – Colombo 5 Tower Site',
-    type: 'Land Case',
-    claim: 3200000,
-    paid: 0,
-    status: 'Under Review',
-  },
-  {
-    caseNo: 'LC-2026-003',
-    title: 'Fiber Damage – Gamage Constructions',
-    type: 'Damages',
-    claim: 870000,
-    paid: 0,
-    status: 'Active',
-  },
-]
+const financialRows = computed(() => financialData.value)
 
 const financialSummary = computed(() => ({
-  totalClaim: financialRows.reduce((s, r) => s + r.claim, 0),
-  totalPaid: financialRows.reduce((s, r) => s + r.paid, 0),
-  totalBalance: financialRows.reduce((s, r) => s + (r.claim - r.paid), 0),
+  totalClaim: dbStats.value.totalExposure,
+  totalPaid: dbStats.value.totalRecovered,
+  totalBalance: dbStats.value.totalExposure - dbStats.value.totalRecovered,
 }))
 
 function caseTypeColor(type) {
@@ -959,179 +1288,127 @@ function caseTypeColor(type) {
       'Money Recovery': 'primary',
       'Land Case': 'purple-7',
       Damages: 'orange-8',
-      Appeals: 'grey-7',
-    }[type] || 'grey-6'
+      Appeals: 'deep-orange-9',
+      Inquiry: 'teal-7',
+      Criminal: 'red-9',
+      Other: 'blue-grey-6',
+    }[type] || 'grey-7'
   )
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 3 — AGREEMENTS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const agrmStageRows = computed(() => [
-  { stage: t('statuses.active'), count: 3, color: 'positive' },
-  { stage: t('statuses.pendingL2'), count: 2, color: 'orange-8' },
-  { stage: t('statuses.pendingL1'), count: 2, color: 'warning' },
-  { stage: t('statuses.underReview'), count: 1, color: 'info' },
-  { stage: t('statuses.draft'), count: 1, color: 'grey-6' },
-  { stage: t('statuses.rejected'), count: 1, color: 'negative' },
-  { stage: t('statuses.terminated'), count: 1, color: 'grey-7' },
-])
+const agrmStageRows = computed(() => {
+  if (agreementStageData.value.length > 0) return agreementStageData.value
+  return [
+    { stage: t('statuses.active'), count: 0, color: 'positive' },
+    { stage: t('statuses.draft'), count: 0, color: 'grey-6' },
+  ]
+})
 
-const totalAgreements = computed(() => agrmStageRows.value.reduce((s, r) => s + r.count, 0))
+const totalAgreements = computed(() => dbStats.value.totalAgreements)
 
-const topAgreements = [
-  {
-    title: 'Oracle Licensing Agreement',
-    party: 'Oracle Corp Lanka',
-    value: 34000000,
-    status: 'Pending L1',
-    statusColor: 'warning',
-  },
-  {
-    title: 'Network Maintenance SLA',
-    party: 'TechServ Solutions',
-    value: 18500000,
-    status: 'Active',
-    statusColor: 'positive',
-  },
-  {
-    title: 'Cybersecurity Managed Services',
-    party: 'SecureCo Lanka',
-    value: 9500000,
-    status: 'Pending L1',
-    statusColor: 'warning',
-  },
-  {
-    title: 'Tower Site Maintenance',
-    party: 'Techno Build Eng.',
-    value: 7800000,
-    status: 'Rejected',
-    statusColor: 'negative',
-  },
-  {
-    title: 'Data Centre Co-location MOU',
-    party: 'Virtusa Corporation',
-    value: 6200000,
-    status: 'Pending L2',
-    statusColor: 'orange-8',
-  },
-]
+const topAgreements = computed(() => topAgreementsData.value)
 
-const totalAgrmValue = computed(() => topAgreements.reduce((s, a) => s + a.value, 0))
+const totalAgrmValue = computed(() => topAgreements.value.reduce((s, a) => s + (a.value || 0), 0))
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 4 — CASE AGING & WORKLOAD
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const agingBuckets = computed(() => [
-  { label: '< 30 days', count: 5, color: 'positive' },
-  { label: '30 – 90 days', count: 8, color: 'info' },
-  { label: '90 – 180 days', count: 6, color: 'warning' },
-  { label: '180 – 365 days', count: 4, color: 'orange-8' },
-  { label: '> 1 year', count: 5, color: 'negative' },
-])
+const agingBuckets = computed(() => {
+  if (agingData.value.length > 0) return agingData.value
+  return [{ label: '< 30 days', count: dbStats.value.totalCases, color: 'positive' }]
+})
 
-const lawyerWorkload = [
-  { name: 'K. Fernando', active: 5, pending: 3, exposure: 42000000 },
-  { name: 'N. Silva', active: 4, pending: 2, exposure: 31500000 },
-  { name: 'P. Jayawardena', active: 3, pending: 1, exposure: 8700000 },
-  { name: 'S. Dissanayake', active: 3, pending: 2, exposure: 12400000 },
-  { name: 'A. Bandara, PC', active: 2, pending: 1, exposure: 18700000 },
-]
+const lawyerWorkload = computed(() => {
+  if (lawyerData.value.length > 0) return lawyerData.value
+  return [
+    {
+      name: 'N. Silva',
+      active: dbStats.value.totalCases,
+      pending: 0,
+      exposure: dbStats.value.totalExposure,
+    },
+  ]
+})
 
-const maxLawyerCases = computed(() => Math.max(...lawyerWorkload.map((l) => l.active)))
+const maxLawyerCases = computed(() => Math.max(...lawyerWorkload.value.map((l) => l.active)))
 
-const upcomingHearings = [
-  {
-    caseNo: 'LC-2026-002',
-    title: 'Land Dispute – Kandy Exchange',
-    court: 'Kandy DC',
-    date: '2026-02-28',
-    daysAway: 6,
-    urgency: 'high',
-  },
-  {
-    caseNo: 'LC-2026-001',
-    title: 'Recovery – Netwin Pvt Ltd',
-    court: 'Colombo DC',
-    date: '2026-03-10',
-    daysAway: 16,
-    urgency: 'normal',
-  },
-  {
-    caseNo: 'LC-2026-003',
-    title: 'Fiber Damage – Gamage Constructions',
-    court: 'Galle MC',
-    date: '2026-03-22',
-    daysAway: 28,
-    urgency: 'normal',
-  },
-  {
-    caseNo: 'LC-2026-005',
-    title: 'Leased Circuit Recovery – DataNet LK',
-    court: 'Colombo MC',
-    date: '2026-03-15',
-    daysAway: 21,
-    urgency: 'normal',
-  },
-  {
-    caseNo: 'LC-2026-008',
-    title: 'National Carrier Billing – AirLink',
-    court: 'Colombo DC',
-    date: '2026-03-05',
-    daysAway: 11,
-    urgency: 'normal',
-  },
-]
+const upcomingHearings = computed(() => upcomingHearingsData.value)
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  SECTION 5 — MONTHLY TREND (CHART.JS BAR)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const monthlyTrend = [
-  { month: "Mar'25", filed: 3, closed: 1 },
-  { month: "Apr'25", filed: 2, closed: 0 },
-  { month: "May'25", filed: 4, closed: 2 },
-  { month: "Jun'25", filed: 3, closed: 1 },
-  { month: "Jul'25", filed: 5, closed: 2 },
-  { month: "Aug'25", filed: 4, closed: 1 },
-  { month: "Sep'25", filed: 6, closed: 3 },
-  { month: "Oct'25", filed: 4, closed: 2 },
-  { month: "Nov'25", filed: 5, closed: 2 },
-  { month: "Dec'25", filed: 3, closed: 2 },
-  { month: "Jan'26", filed: 6, closed: 1 },
-  { month: "Feb'26", filed: 4, closed: 0 },
-]
+const monthlyTrend = computed(() => {
+  if (Array.isArray(monthlyTrendData.value) && monthlyTrendData.value.length > 0) {
+    return monthlyTrendData.value
+  }
+  // Fallback for demo if DB is empty (should not happen with our seeds)
+  const fallbackMonths = [
+    "Mar'25",
+    "Apr'25",
+    "May'25",
+    "Jun'25",
+    "Jul'25",
+    "Aug'25",
+    "Sep'25",
+    "Oct'25",
+    "Nov'25",
+    "Dec'25",
+    "Jan'26",
+    "Feb'26",
+  ]
+  return fallbackMonths.map((m) => ({ month: m, filed: 0, closed: 0 }))
+})
 
-const monthlyChartData = computed(() => ({
-  labels: monthlyTrend.map((m) => m.month),
-  datasets: [
-    {
-      label: 'Cases Filed',
-      data: monthlyTrend.map((m) => m.filed),
-      backgroundColor: (ctx) => {
-        const chart = ctx.chart
-        const { ctx: canvasCtx, chartArea } = chart
-        if (!chartArea) return '#1976D2'
-        const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
-        gradient.addColorStop(0, '#003F87')
-        gradient.addColorStop(1, '#42A5F5')
-        return gradient
+const monthlyChartData = computed(() => {
+  const data = monthlyTrend.value
+  const isDark = $q.dark.isActive
+  return {
+    labels: data.map((m) => m.month),
+    datasets: [
+      {
+        label: 'Cases Filed',
+        data: data.map((m) => m.filed),
+        backgroundColor: (ctx) => {
+          const chart = ctx.chart
+          const { ctx: canvasCtx, chartArea } = chart
+          if (!chartArea) return '#0072ff'
+          const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+          gradient.addColorStop(0, '#00c6ff')
+          gradient.addColorStop(1, '#0072ff')
+          return gradient
+        },
+        borderRadius: 6,
+        borderWidth: isDark ? 1 : 0,
+        borderColor: 'rgba(255, 255, 255, 0.4)',
+        borderSkipped: false,
+        barPercentage: 0.85,
+        categoryPercentage: 0.75,
       },
-      borderRadius: 6,
-      borderSkipped: false,
-      barPercentage: 0.6,
-      categoryPercentage: 0.7,
-    },
-    {
-      label: 'Cases Closed',
-      data: monthlyTrend.map((m) => m.closed),
-      backgroundColor: 'rgba(33, 186, 69, 0.7)',
-      borderRadius: 6,
-      borderSkipped: false,
-      barPercentage: 0.6,
-      categoryPercentage: 0.7,
-    },
-  ],
-}))
+      {
+        label: 'Cases Closed',
+        data: data.map((m) => m.closed),
+        backgroundColor: (ctx) => {
+          const chart = ctx.chart
+          const { ctx: canvasCtx, chartArea } = chart
+          if (!chartArea) return '#00b09b'
+          const gradient = canvasCtx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom)
+          gradient.addColorStop(0, '#96c93d')
+          gradient.addColorStop(1, '#00b09b')
+          return gradient
+        },
+        borderRadius: 6,
+        borderWidth: isDark ? 1 : 0,
+        borderColor: 'rgba(255, 255, 255, 0.4)',
+        borderSkipped: false,
+        barPercentage: 0.85,
+        categoryPercentage: 0.75,
+      },
+    ],
+  }
+})
 
 const barChartOptions = {
   responsive: true,
@@ -1173,20 +1450,19 @@ const barChartOptions = {
     x: {
       grid: { display: false },
       ticks: {
-        font: { size: 11, weight: '600' },
-        color: '#78909C',
+        font: { size: 12, weight: '700' },
+        color: () => ($q.dark.isActive ? '#ECEFF1' : '#455A64'),
       },
     },
     y: {
       beginAtZero: true,
-      max: 8,
       ticks: {
-        stepSize: 2,
-        font: { size: 11 },
-        color: '#B0BEC5',
+        precision: 0,
+        font: { size: 12, weight: '700' },
+        color: () => ($q.dark.isActive ? '#ECEFF1' : '#455A64'),
       },
       grid: {
-        color: 'rgba(0,0,0,0.04)',
+        color: () => ($q.dark.isActive ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'),
         drawBorder: false,
       },
     },
@@ -1230,11 +1506,30 @@ function fmt(val) {
 
 // ── KPI cards ─────────────────────────────────────────────────
 .slt-kpi-card {
-  border-radius: 10px;
-  transition: box-shadow 0.15s;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  animation: fadeIn 0.6s ease-out;
+
   &:hover {
-    box-shadow: 0 4px 16px rgba(0, 63, 135, 0.12);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 63, 135, 0.15);
+    border-color: var(--q-primary);
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slt-page-bg {
+  animation: fadeIn 0.8s ease-out;
 }
 
 // ── Financial summary boxes ───────────────────────────────────

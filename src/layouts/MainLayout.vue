@@ -8,8 +8,16 @@
 
         <!-- Brand -->
         <q-toolbar-title class="exec-brand cursor-pointer" @click="$router.push('/')">
-          <q-icon name="gavel" size="24px" class="q-mr-sm" />
-          SLT LegalEdge
+          <img
+            src="~assets/logo-main.png"
+            style="
+              height: 38px;
+              vertical-align: middle;
+              mix-blend-mode: screen;
+              filter: brightness(1.2) contrast(1.1);
+            "
+            class="q-mr-sm"
+          />
         </q-toolbar-title>
 
         <!-- Global Search -->
@@ -49,8 +57,48 @@
           <q-tooltip>{{ $t('common.notifications') }}</q-tooltip>
         </q-btn>
 
-        <q-btn flat round dense icon="help_outline" color="white" class="q-mr-sm">
+        <q-btn flat round dense icon="help_outline" color="white" class="q-mr-sm" :to="'/help'">
           <q-tooltip>{{ $t('common.help') }}</q-tooltip>
+        </q-btn>
+
+        <!-- Quick Language Switcher -->
+        <q-btn-dropdown flat round dense icon="language" color="white" class="q-mr-xs">
+          <q-list style="min-width: 150px">
+            <q-item clickable v-close-popup @click="changeLang('en-US')">
+              <q-item-section avatar
+                ><q-icon name="img:https://flagcdn.com/w20/us.png"
+              /></q-item-section>
+              <q-item-section>English</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="changeLang('si')">
+              <q-item-section avatar
+                ><q-icon name="img:https://flagcdn.com/w20/lk.png"
+              /></q-item-section>
+              <q-item-section>සිංහල</q-item-section>
+            </q-item>
+            <q-item clickable v-close-popup @click="changeLang('ta')">
+              <q-item-section avatar
+                ><q-icon name="img:https://flagcdn.com/w20/lk.png"
+              /></q-item-section>
+              <q-item-section>தமிழ்</q-item-section>
+            </q-item>
+          </q-list>
+          <q-tooltip>{{ $t('settings.language') }}</q-tooltip>
+        </q-btn-dropdown>
+
+        <!-- Quick Dark Mode Toggle -->
+        <q-btn
+          flat
+          round
+          dense
+          :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+          color="white"
+          class="q-mr-xs"
+          @click="$q.dark.toggle()"
+        >
+          <q-tooltip>{{
+            $q.dark.isActive ? $t('settings.lightEnabled') : $t('settings.darkEnabled')
+          }}</q-tooltip>
         </q-btn>
 
         <q-separator vertical inset color="white" class="q-mx-sm opacity-30" />
@@ -65,7 +113,7 @@
               class="q-mr-sm"
               font-size="13px"
             >
-              <img v-if="authStore.user.avatar" :src="authStore.user.avatar" />
+              <img v-if="authStore.userAvatar" :src="authStore.userAvatar" />
               <template v-else>{{ authStore.userInitials }}</template>
             </q-avatar>
             <span class="text-body2">{{ authStore.displayName }}</span>
@@ -105,7 +153,7 @@
     <!-- ─── LEFT SIDEBAR ────────────────────────────────────── -->
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered dark class="exec-drawer">
       <!-- Profile section -->
-      <div class="exec-drawer-profile column items-center q-py-lg">
+      <div class="exec-drawer-profile column items-center q-py-md">
         <q-avatar
           size="64px"
           color="primary"
@@ -113,7 +161,7 @@
           font-size="24px"
           class="exec-avatar-ring"
         >
-          <img v-if="authStore.user.avatar" :src="authStore.user.avatar" />
+          <img v-if="authStore.userAvatar" :src="authStore.userAvatar" />
           <template v-else>{{ authStore.userInitials }}</template>
         </q-avatar>
         <div class="text-white text-weight-bold text-subtitle1 q-mt-sm">
@@ -129,6 +177,10 @@
           >
         </div>
       </div>
+
+      <q-separator class="opacity-10" />
+
+      <!-- Branding/Logo section moved to bottom (will use absolute/relative container if needed, but here we just reorder the list) -->
 
       <q-separator class="opacity-10" />
 
@@ -167,9 +219,12 @@
         </template>
       </q-list>
 
-      <!-- Footer -->
-      <div class="exec-drawer-footer absolute-bottom q-pa-md text-caption opacity-30 text-white">
-        SLT LegalEdge v1.0.0
+      <!-- Branding Logo Area (BOTTOM) -->
+      <div class="column items-center q-pb-xl">
+        <div class="row flex-center q-pa-sm" style="transform: scale(0.8); opacity: 0.8">
+          <img src="~assets/logo-main.png" style="width: 130px; filter: brightness(1.1)" />
+        </div>
+        <div class="text-caption opacity-30 text-white">SLT LegalEdge v1.0.0</div>
       </div>
     </q-drawer>
 
@@ -180,22 +235,32 @@
 
     <!-- ─── NOTIFICATION DRAWER ─────────────────────────────── -->
     <NotificationsDrawer v-model="showNotifDrawer" />
+
+    <!-- ─── AI COPILOT CHAT ──────────────────────────────────── -->
+    <AiCopilotChat />
   </q-layout>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/authStore'
 import { useNotificationStore } from 'src/stores/notificationStore'
 import NotificationsDrawer from 'src/components/NotificationsDrawer.vue'
+import AiCopilotChat from 'src/components/AiCopilotChat.vue'
 
 const router = useRouter()
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const authStore = useAuthStore()
 const notifStore = useNotificationStore()
+const $q = useQuasar()
+
+onMounted(() => {
+  notifStore.syncNotifications()
+})
 
 const leftDrawerOpen = ref(false)
 const showNotifDrawer = ref(false)
@@ -205,14 +270,36 @@ function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
 }
 
-function logout() {
-  authStore.logout()
+function changeLang(lang) {
+  locale.value = lang
+  $q.notify({
+    message: t('settings.languageChanged', {
+      lang: lang === 'en-US' ? 'English' : lang === 'si' ? 'Sinhala' : 'Tamil',
+    }),
+    color: 'positive',
+    icon: 'check',
+    position: 'top',
+    timeout: 1000,
+  })
+}
+
+async function logout() {
+  try {
+    await authStore.logout()
+  } catch (e) {
+    console.error('Logout error:', e)
+  }
   router.push('/login')
 }
 
 // ── Role color ────────────────────────────────────────────────
 const roleColor = computed(() => {
   const map = {
+    admin: 'deep-purple',
+    supervisor: 'positive',
+    manager: 'info',
+    legal_officer: 'cyan-7',
+    viewer: 'grey-6',
     Admin: 'deep-purple',
     Executive: 'positive',
     Manager: 'info',
@@ -228,7 +315,9 @@ const routeMetaKeys = {
   '/cases': { key: 'breadcrumb.legalCases', icon: 'gavel' },
   '/agreements': { key: 'breadcrumb.agreements', icon: 'handshake' },
   '/approvals': { key: 'breadcrumb.approvals', icon: 'verified' },
+  '/history': { key: 'breadcrumb.history', icon: 'history' },
   '/reports': { key: 'breadcrumb.reports', icon: 'bar_chart' },
+  '/help': { key: 'breadcrumb.help', icon: 'help_outline' },
   '/settings': { key: 'breadcrumb.settings', icon: 'settings' },
   '/profile': { key: 'breadcrumb.profile', icon: 'person' },
 }
@@ -244,7 +333,7 @@ const breadcrumbs = computed(() => {
 
 // ── Navigation items (Filtered by Department) ─────────────────
 const navItems = computed(() => {
-  const dept = authStore.user.department
+  const dept = authStore.userDepartment
   const allItems = [
     {
       label: t('nav.dashboard'),
@@ -289,16 +378,35 @@ const navItems = computed(() => {
     },
     { separator: t('nav.systemGroup') },
     {
+      label: t('nav.history'),
+      caption: t('nav.historyCaption'),
+      icon: 'history',
+      route: '/history',
+    },
+    {
       label: t('nav.reports'),
       caption: t('nav.reportsCaption'),
       icon: 'bar_chart',
       route: '/reports',
     },
     {
+      label: t('nav.help'),
+      caption: t('nav.helpCaption'),
+      icon: 'help_outline',
+      route: '/help',
+    },
+    {
       label: t('nav.settings'),
       caption: t('nav.settingsCaption'),
       icon: 'settings',
       route: '/settings',
+    },
+    { separator: 'INNOVATION & AI' },
+    {
+      label: 'Innovation Portal',
+      caption: 'Future legal tech vision',
+      icon: 'auto_awesome',
+      route: '/innovation',
     },
   ]
 

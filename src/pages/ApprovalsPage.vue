@@ -54,7 +54,7 @@
         v-model="activeTab"
         dense
         class="slt-tabs"
-        active-color="primary"
+        :active-color="$q.dark.isActive ? 'white' : 'primary'"
         indicator-color="primary"
         align="left"
       >
@@ -156,7 +156,7 @@
             <!-- Actions -->
             <template #body-cell-actions="props">
               <q-td :props="props" class="text-center">
-                <div class="row justify-center no-wrap q-gutter-xs">
+                <div class="row justify-center no-wrap q-gutter-sm">
                   <q-btn
                     flat
                     round
@@ -178,7 +178,7 @@
                     "
                     size="sm"
                     no-caps
-                    class="q-px-sm"
+                    class="slt-btn-fixed q-px-sm"
                     @click="openAction(props.row, 'approve', 'agreement')"
                   />
                   <q-btn
@@ -189,7 +189,7 @@
                     label="Reject"
                     size="sm"
                     no-caps
-                    class="q-px-sm"
+                    class="slt-btn-fixed q-px-sm"
                     @click="openAction(props.row, 'reject', 'agreement')"
                   />
                 </div>
@@ -256,7 +256,7 @@
             <!-- Actions -->
             <template #body-cell-actions="props">
               <q-td :props="props" class="text-center">
-                <div class="row justify-center no-wrap q-gutter-xs">
+                <div class="row justify-center no-wrap q-gutter-sm">
                   <q-btn
                     flat
                     round
@@ -276,7 +276,7 @@
                     label="Approve"
                     size="sm"
                     no-caps
-                    class="q-px-sm"
+                    class="slt-btn-fixed q-px-sm"
                     @click="openAction(props.row, 'approve', 'doc')"
                   />
                   <q-btn
@@ -287,7 +287,7 @@
                     label="Reject"
                     size="sm"
                     no-caps
-                    class="q-px-sm"
+                    class="slt-btn-fixed q-px-sm"
                     @click="openAction(props.row, 'reject', 'doc')"
                   />
                 </div>
@@ -459,8 +459,18 @@
                 <ViewRow icon="info" label="Stage" :value="viewingItem.status" />
               </div>
               <div class="col-12">
-                <div class="text-caption text-grey-5 q-mb-xs">Description</div>
-                <p class="text-body2 text-grey-8 q-mb-none">{{ viewingItem.description }}</p>
+                <div
+                  class="text-caption text-weight-bold q-mb-xs"
+                  :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                >
+                  Description
+                </div>
+                <p
+                  class="text-body2 text-weight-medium q-mb-none"
+                  :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-8'"
+                >
+                  {{ viewingItem.description }}
+                </p>
               </div>
             </template>
 
@@ -482,8 +492,18 @@
                 <ViewRow icon="info" label="Status" :value="viewingItem.status" />
               </div>
               <div class="col-12">
-                <div class="text-caption text-grey-5 q-mb-xs">Summary of Facts</div>
-                <p class="text-body2 text-grey-8 q-mb-none">{{ viewingItem.summaryOfFacts }}</p>
+                <div
+                  class="text-caption text-weight-bold q-mb-xs"
+                  :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'"
+                >
+                  Summary of Facts
+                </div>
+                <p
+                  class="text-body2 text-weight-medium q-mb-none"
+                  :class="$q.dark.isActive ? 'text-grey-3' : 'text-grey-8'"
+                >
+                  {{ viewingItem.summaryOfFacts }}
+                </p>
               </div>
             </template>
 
@@ -647,11 +667,11 @@ const $q = useQuasar()
 const ViewRow = {
   props: { label: String, value: String, icon: String },
   template: `
-    <div class="row items-start q-py-xs" style="border-bottom:1px solid #eef2f8">
-      <div class="col-5 row items-center text-caption text-grey-5">
+    <div class="row items-start q-py-xs" style="border-bottom:1px solid rgba(0,0,0,0.05)">
+      <div class="col-5 row items-center text-weight-bold" :class="$q.dark.isActive ? 'text-blue-2' : 'text-blue-9'">
         <q-icon :name="icon" size="13px" class="q-mr-xs"/>{{ label }}
       </div>
-      <div class="col-7 text-body2 text-weight-medium text-grey-9">{{ value || '—' }}</div>
+      <div class="col-7 text-body2 text-weight-bold" :class="$q.dark.isActive ? 'text-white' : 'text-grey-9'">{{ value || '—' }}</div>
     </div>
   `,
 }
@@ -1094,22 +1114,41 @@ function viewDocument(doc) {
 // ── Tab bottom border ─────────────────────────────────────────
 .slt-tabs {
   border-bottom: 1px solid var(--q-primary);
-  opacity: 0.2;
-  background: var(--q-dark-page); // Default for dark mode
+  background: var(--q-dark-page);
+
+  :deep(.q-tab__label) {
+    font-weight: 700;
+  }
+
   body.body--light & {
-    background: #f8f9fb; // Light mode background
+    background: #f8f9fb;
+    :deep(.q-tab__label),
+    :deep(.q-tab__icon) {
+      color: #003f87 !important;
+    }
+  }
+
+  body.body--dark & {
+    :deep(.q-tab__label),
+    :deep(.q-tab__icon) {
+      color: #ffffff !important;
+    }
   }
 }
 
 .slt-section-label {
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.8px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: #003f87;
-  border-bottom: 2px solid #003f87;
-  padding-bottom: 4px;
+  border-bottom: 3px solid #003f87;
+  padding-bottom: 6px;
   margin-bottom: 12px;
+  body.body--dark & {
+    color: #4fc3f7;
+    border-color: #4fc3f7;
+  }
 }
 
 // ── Table ─────────────────────────────────────────────────────
@@ -1143,6 +1182,17 @@ function viewDocument(doc) {
     :deep(.q-table__bottom) {
       background: #f8f9fb;
     }
+  }
+}
+
+.slt-btn-fixed {
+  min-width: 125px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 }
 </style>

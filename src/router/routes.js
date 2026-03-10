@@ -4,20 +4,28 @@ const routes = [
     path: '/login',
     component: () => import('pages/LoginPage.vue'),
   },
+  {
+    path: '/register',
+    component: () => import('pages/RegisterPage.vue'),
+  },
 
   // ── Main application (with sidebar layout) ────────────────────
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
+    meta: { requiresAuth: true },
     children: [
       { path: '', component: () => import('pages/IndexPage.vue') },
       { path: 'initial-docs', component: () => import('pages/InitialDocumentsPage.vue') },
       { path: 'cases', component: () => import('pages/LegalCasesPage.vue') },
       { path: 'agreements', component: () => import('pages/AgreementsPage.vue') },
       { path: 'approvals', component: () => import('pages/ApprovalsPage.vue') },
+      { path: 'history', component: () => import('pages/HistoryPage.vue') },
       { path: 'reports', component: () => import('pages/ReportsPage.vue') },
+      { path: 'help', component: () => import('pages/HelpPage.vue') },
       { path: 'settings', component: () => import('pages/SettingsPage.vue') },
       { path: 'profile', component: () => import('pages/UserProfilePage.vue') },
+      { path: 'innovation', component: () => import('pages/InnovationRoadmap.vue') },
     ],
   },
 
