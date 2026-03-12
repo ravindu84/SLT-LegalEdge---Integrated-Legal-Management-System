@@ -13,27 +13,45 @@
       </div>
     </div>
 
-    <!-- ─── Quick Start Cards ──────────────────────────────────── -->
-    <div class="row q-col-gutter-md q-mb-lg">
-      <div v-for="qs in quickStart" :key="qs.titleKey" class="col-12 col-sm-6 col-md-3">
-        <q-card
-          flat
-          bordered
-          class="help-quick-card full-height cursor-pointer"
-          @click="scrollToSection(qs.section)"
-        >
-          <q-card-section class="column items-center text-center q-pa-lg">
-            <q-avatar :color="qs.bg" size="56px" class="q-mb-md">
-              <q-icon :name="qs.icon" :color="qs.color" size="28px" />
-            </q-avatar>
-            <div class="text-subtitle1 text-weight-bold" :class="`text-${qs.color}`">
-              {{ $t(qs.titleKey) }}
-            </div>
-            <div class="text-caption text-grey-6 q-mt-xs">{{ $t(qs.descKey) }}</div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
+    <!-- ─── Tabs Navigation ──────────────────────────────────── -->
+    <q-tabs
+      v-model="activeTab"
+      dense
+      class="text-grey-7 q-mb-lg"
+      active-color="primary"
+      indicator-color="primary"
+      align="left"
+      narrow-indicator
+    >
+      <q-tab name="standard" icon="menu_book" :label="$t('help.tabs.standard')" />
+      <q-tab name="training" icon="school" :label="$t('help.tabs.training')" />
+      <q-tab name="dev" icon="terminal" :label="$t('help.tabs.dev')" />
+    </q-tabs>
+
+    <q-tab-panels v-model="activeTab" animated class="bg-transparent">
+      <!-- PANEL: Standard User Guide -->
+      <q-tab-panel name="standard" class="q-pa-none">
+        <!-- ─── Quick Start Cards ──────────────────────────────────── -->
+        <div class="row q-col-gutter-md q-mb-lg">
+          <div v-for="qs in quickStart" :key="qs.titleKey" class="col-12 col-sm-6 col-md-3">
+            <q-card
+              flat
+              bordered
+              class="help-quick-card full-height cursor-pointer"
+              @click="scrollToSection(qs.section)"
+            >
+              <q-card-section class="column items-center text-center q-pa-lg">
+                <q-avatar :color="qs.bg" size="56px" class="q-mb-md">
+                  <q-icon :name="qs.icon" :color="qs.color" size="28px" />
+                </q-avatar>
+                <div class="text-subtitle1 text-weight-bold" :class="`text-${qs.color}`">
+                  {{ $t(qs.titleKey) }}
+                </div>
+                <div class="text-caption text-grey-6 q-mt-xs">{{ $t(qs.descKey) }}</div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
 
     <!-- ─── Search ─────────────────────────────────────────────── -->
     <q-card flat bordered class="q-mb-lg">
@@ -360,6 +378,99 @@
         </q-card-section>
       </q-card>
     </div>
+  </q-tab-panel>
+
+  <!-- PANEL: Self-Training -->
+  <q-tab-panel name="training" class="q-pa-none">
+    <div class="row q-col-gutter-md">
+      <!-- Admin Guide -->
+      <div class="col-12 col-md-6">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="bg-primary text-white">
+            <div class="text-h6"><q-icon name="admin_panel_settings" class="q-mr-sm" />{{ $t('help.training.admin.title') }}</div>
+            <div class="text-caption">{{ $t('help.training.admin.desc') }}</div>
+          </q-card-section>
+          <q-card-section>
+            <q-list padding>
+              <q-item v-for="(step, idx) in $tm('help.training.admin.steps')" :key="idx">
+                <q-item-section avatar>
+                  <q-avatar color="blue-1" text-color="primary" size="30px">{{ idx + 1 }}</q-avatar>
+                </q-item-section>
+                <q-item-section class="text-body2 text-grey-8">{{ step }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- Legal Officer Guide -->
+      <div class="col-12 col-md-6">
+        <q-card flat bordered class="full-height">
+          <q-card-section class="bg-teal text-white">
+            <div class="text-h6"><q-icon name="assignment_ind" class="q-mr-sm" />{{ $t('help.training.officer.title') }}</div>
+            <div class="text-caption">{{ $t('help.training.officer.desc') }}</div>
+          </q-card-section>
+          <q-card-section>
+            <q-list padding>
+              <q-item v-for="(step, idx) in $tm('help.training.officer.steps')" :key="idx">
+                <q-item-section avatar>
+                  <q-avatar color="teal-1" text-color="teal" size="30px">{{ idx + 1 }}</q-avatar>
+                </q-item-section>
+                <q-item-section class="text-body2 text-grey-8">{{ step }}</q-item-section>
+              </q-item>
+            </q-list>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+  </q-tab-panel>
+
+  <!-- PANEL: Developer Portal -->
+  <q-tab-panel name="dev" class="q-pa-none">
+    <q-card flat bordered class="q-mb-md">
+      <q-card-section class="bg-grey-9 text-white">
+        <div class="text-h6"><q-icon name="code" class="q-mr-sm" />{{ $t('help.devPortal.title') }}</div>
+        <div class="text-caption">{{ $t('help.devPortal.subtitle') }}</div>
+      </q-card-section>
+      
+      <q-card-section>
+        <div class="row q-col-gutter-lg">
+          <!-- Stack -->
+          <div class="col-12 col-md-6">
+            <div class="text-subtitle1 text-weight-bold text-primary q-mb-sm">
+              <q-icon name="layers" class="q-mr-xs" />{{ $t('help.devPortal.stack.title') }}
+            </div>
+            <p class="text-body2 text-grey-8">{{ $t('help.devPortal.stack.content') }}</p>
+            <q-list dense>
+              <q-item><q-item-section side><q-icon name="check" color="positive" size="xs"/></q-item-section><q-item-section class="text-body2">{{ $t('help.devPortal.stack.frontend') }}</q-item-section></q-item>
+              <q-item><q-item-section side><q-icon name="check" color="positive" size="xs"/></q-item-section><q-item-section class="text-body2">{{ $t('help.devPortal.stack.backend') }}</q-item-section></q-item>
+              <q-item><q-item-section side><q-icon name="check" color="positive" size="xs"/></q-item-section><q-item-section class="text-body2">{{ $t('help.devPortal.stack.state') }}</q-item-section></q-item>
+              <q-item><q-item-section side><q-icon name="check" color="positive" size="xs"/></q-item-section><q-item-section class="text-body2">{{ $t('help.devPortal.stack.ai') }}</q-item-section></q-item>
+            </q-list>
+          </div>
+
+          <!-- Security -->
+          <div class="col-12 col-md-6">
+            <div class="text-subtitle1 text-weight-bold text-negative q-mb-sm">
+              <q-icon name="security" class="q-mr-xs" />{{ $t('help.devPortal.security.title') }}
+            </div>
+            <p class="text-body2 text-grey-8">{{ $t('help.devPortal.security.content') }}</p>
+            
+            <q-banner dense class="bg-red-1 text-red-9 rounded-borders q-pa-sm">
+              <div class="text-weight-bold text-uppercase" style="font-size: 0.75rem;">{{ $t('help.devPortal.security.logout.title') }}</div>
+              <div class="text-caption q-mt-xs">{{ $t('help.devPortal.security.logout.desc') }}</div>
+              <ul class="q-pl-md q-mt-xs text-caption">
+                <li>{{ $t('help.devPortal.security.logout.step1') }}</li>
+                <li>{{ $t('help.devPortal.security.logout.step2') }}</li>
+                <li>{{ $t('help.devPortal.security.logout.step3') }}</li>
+              </ul>
+            </q-banner>
+          </div>
+        </div>
+      </q-card-section>
+    </q-card>
+  </q-tab-panel>
+</q-tab-panels>
   </q-page>
 </template>
 
@@ -367,6 +478,7 @@
 import { ref } from 'vue'
 
 const searchQuery = ref('')
+const activeTab = ref('standard')
 
 function matchesSearch(sectionKeywords) {
   if (!searchQuery.value?.trim()) return true

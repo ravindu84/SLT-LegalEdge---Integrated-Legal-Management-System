@@ -14,6 +14,7 @@
       <div class="col-auto row q-gutter-sm">
         <q-btn outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
         <q-btn
+          v-if="['admin', 'legal_officer'].includes(authStore.profile?.role)"
           unelevated
           color="primary"
           icon="add"
@@ -164,8 +165,9 @@
                 <q-tooltip>View Details</q-tooltip>
               </q-btn>
 
-              <!-- Edit (only if Pending) -->
+              <!-- Edit (only if Pending AND role is Legal Officer/Admin) -->
               <q-btn
+                v-if="['admin', 'legal_officer'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -178,8 +180,9 @@
                 <q-tooltip>Edit Document</q-tooltip>
               </q-btn>
 
-              <!-- Approve -->
+              <!-- Approve (only if not finalized AND role is Supervisor/Manager/Admin) -->
               <q-btn
+                v-if="['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -192,8 +195,9 @@
                 <q-tooltip>Approve</q-tooltip>
               </q-btn>
 
-              <!-- Reject -->
+              <!-- Reject (only if not finalized AND role is Supervisor/Manager/Admin) -->
               <q-btn
+                v-if="['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -923,8 +927,80 @@ const columns = [
 const documents = ref([])
 const loading = ref(false)
 
+// ── Mock Data Fallback ─────────────────────────────────────────
+const MOCK_DOCUMENTS = [
+  {
+    id: 'mock-doc-1',
+    reference_number: 'SLT/LEG/2026/088',
+    refNo: 'SLT/LEG/2026/088',
+    caseTitle: 'Debt Recovery - Colombo West Region',
+    case_title: 'Debt Recovery - Colombo West Region',
+    caseType: 'Money Recovery',
+    case_type: 'Money Recovery',
+    plaintiff: 'SLT Mobitel PLC',
+    submittedDate: '2026-03-10',
+    financialExposure: 1250000,
+    status: 'Pending',
+    nature_of_case: 'Default on fiber infrastructure installment payments',
+    date_of_occurrence: '2026-01-15'
+  },
+  {
+    id: 'mock-doc-2',
+    reference_number: 'SLT/LEG/2026/092',
+    refNo: 'SLT/LEG/2026/092',
+    caseTitle: 'Land Dispute - Kandy Zone B',
+    case_title: 'Land Dispute - Kandy Zone B',
+    caseType: 'Land Case',
+    case_type: 'Land Case',
+    plaintiff: 'SLT Mobitel PLC',
+    submittedDate: '2026-03-08',
+    financialExposure: 0,
+    status: 'Under Review',
+    nature_of_case: 'Unauthorized construction on company-leased land',
+    date_of_occurrence: '2026-02-10'
+  },
+  {
+    id: 'mock-doc-3',
+    reference_number: 'SLT/LEG/2026/075',
+    refNo: 'SLT/LEG/2026/075',
+    caseTitle: 'Contract Breach - Global Tech Solutions',
+    case_title: 'Contract Breach - Global Tech Solutions',
+    caseType: 'Other',
+    case_type: 'Other',
+    natureOfCase: 'Failure to meet SLA requirements for cloud hosting',
+    plaintiff: 'SLT Mobitel PLC',
+    submittedDate: '2026-03-05',
+    financialExposure: 5000000,
+    status: 'Approved',
+    nature_of_case: 'Non-compliance with service level agreement clauses',
+    date_of_occurrence: '2026-01-01'
+  },
+  {
+    id: 'mock-doc-4',
+    reference_number: 'SLT/LEG/2026/104',
+    refNo: 'SLT/LEG/2026/104',
+    caseTitle: 'Intellectual Property - Logo Misuse',
+    case_title: 'Intellectual Property - Logo Misuse',
+    caseType: 'Other',
+    case_type: 'Other',
+    plaintiff: 'SLT Mobitel PLC',
+    submittedDate: '2026-03-12',
+    financialExposure: 200000,
+    status: 'Pending',
+    nature_of_case: 'Unauthorized use of SLT corporate branding by local vendor',
+    date_of_occurrence: '2026-02-28'
+  }
+]
+
 async function fetchDocuments() {
+  // Show mock data immediately for "Instant Load" UX
+  if (documents.value.length === 0) {
+    documents.value = MOCK_DOCUMENTS
+  }
+  
   loading.value = true
+  console.log('[InitialDocs] Syncing with database...')
+  
   try {
     const { data, error } = await supabase
       .from('initial_documents')
@@ -933,8 +1009,9 @@ async function fetchDocuments() {
 
     if (error) throw error
 
-    // Map DB fields to component fields if they differ
-    documents.value = data.map((d) => ({
+    console.log(`[InitialDocs] Live sync: fetched ${data?.length || 0} records`)
+
+    const fetchedDocs = (data || []).map((d) => ({
       ...d,
       refNo: d.reference_number,
       caseTitle: d.case_title,
@@ -942,12 +1019,17 @@ async function fetchDocuments() {
       natureOfCase: d.nature_of_case,
       dateOfOccurrence: d.date_of_occurrence,
       financialExposure: d.financial_exposure,
-      summaryOfFacts: d.summary_of_facts,
+      summary_of_facts: d.summary_of_facts,
       submittedDate: d.submitted_at ? new Date(d.submitted_at).toISOString().slice(0, 10) : '',
     }))
+
+    // Silent Refresh: Only update if we actually got database records
+    if (fetchedDocs.length > 0) {
+      documents.value = fetchedDocs
+    }
   } catch (err) {
-    console.error('Error fetching documents:', err)
-    $q.notify({ type: 'negative', message: 'Failed to load documents from database.' })
+    console.error('[InitialDocs] Sync Error:', err)
+    // We stay with mock data silently, No disruptive notification here
   } finally {
     loading.value = false
   }

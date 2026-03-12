@@ -128,7 +128,7 @@
               <q-item-section>{{ $t('nav.settings') }}</q-item-section>
             </q-item>
             <q-separator />
-            <q-item clickable v-close-popup class="text-negative" @click="logout">
+            <q-item clickable v-close-popup class="text-negative" @click="handleLogout">
               <q-item-section avatar><q-icon name="logout" color="negative" /></q-item-section>
               <q-item-section>{{ $t('common.logout') }}</q-item-section>
             </q-item>
@@ -249,7 +249,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/authStore'
@@ -257,7 +257,7 @@ import { useNotificationStore } from 'src/stores/notificationStore'
 import NotificationsDrawer from 'src/components/NotificationsDrawer.vue'
 import AiCopilotChat from 'src/components/AiCopilotChat.vue'
 
-const router = useRouter()
+
 const route = useRoute()
 const { t, locale } = useI18n()
 const authStore = useAuthStore()
@@ -289,13 +289,50 @@ function changeLang(lang) {
   })
 }
 
-async function logout() {
-  try {
-    await authStore.logout()
-  } catch (e) {
-    console.error('Logout error:', e)
+// ── ULTRA-ROBUST LOGOUT (Fail-Safe) ───────────────────────────
+const handleLogout = () => {
+  console.log('--- EMERGENCY LOGOUT TRIGGERED ---')
+  
+  // 1. Force UI feedback
+  if ($q && $q.loading) {
+    $q.loading.show({
+      message: t('common.loggingOut') || 'Logging out...',
+      backgroundColor: 'primary'
+    })
   }
-  router.push('/login')
+  
+  // 2. Clear Auth Store FIRST (so it can use session info)
+  if (authStore && authStore.logout) {
+    authStore.logout().catch(e => console.error('SignOut background error:', e))
+  }
+  
+  // 3. Clear local state synchronously
+  localStorage.clear()
+  sessionStorage.clear()
+  
+  // 4. Force state clear in memory
+  if (authStore) {
+    authStore.isLoggedIn = false
+    authStore.user = null
+    authStore.profile = null
+  }
+  
+  // 5. Hard Redirect to Login Page (Multiple methods)
+  const loginUrl = window.location.origin + '/login'
+  console.log('Redirecting to:', loginUrl)
+  
+  // Method A
+  window.location.href = loginUrl
+  
+  // Method B (Fallback)
+  setTimeout(() => {
+    window.location.assign('/login')
+  }, 100)
+  
+  // Method C (Nuclear fallback if everything else fails)
+  setTimeout(() => {
+    window.location.reload() 
+  }, 500)
 }
 
 // ── Role color ────────────────────────────────────────────────
@@ -337,9 +374,8 @@ const breadcrumbs = computed(() => {
   return crumbs
 })
 
-// ── Navigation items (Filtered by Department) ─────────────────
+// ── Navigation items (Show all for transparency) ──────────────
 const navItems = computed(() => {
-  const dept = authStore.userDepartment
   const allItems = [
     {
       label: t('nav.dashboard'),
@@ -416,10 +452,7 @@ const navItems = computed(() => {
     },
   ]
 
-  // Filter out Legal items if user is not in Legal department
-  if (dept !== 'Legal') {
-    return allItems.filter((item) => item.group !== 'Legal')
-  }
+  // No filtering - all legal staff see all pages for transparency
   return allItems
 })
 </script>

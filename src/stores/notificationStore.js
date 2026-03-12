@@ -18,17 +18,29 @@ export const useNotificationStore = defineStore('notifications', () => {
   async function syncNotifications() {
     loading.value = true
     try {
+      // Parallelize fetches to avoid waterfall bottleneck
+      const [hearingsResult, expiriesResult, pendingDocsResult] = await Promise.all([
+        supabase
+          .from('case_proceedings')
+          .select('id, hearing_date, legal_cases(case_no, title)')
+          .gte('hearing_date', new Date().toISOString().split('T')[0])
+          .lte('hearing_date', new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0]),
+        supabase
+          .from('agreements')
+          .select('id, title, expiry_date')
+          .lte('expiry_date', new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0])
+          .gte('expiry_date', new Date().toISOString().split('T')[0]),
+        supabase
+          .from('initial_documents')
+          .select('id, case_title')
+          .eq('status', 'Pending')
+      ])
+
       const newAlerts = []
 
-      // 1. Upcoming Hearings (Next 7 days)
-      const { data: hearings } = await supabase
-        .from('case_proceedings')
-        .select('id, hearing_date, legal_cases(case_no, title)')
-        .gte('hearing_date', new Date().toISOString().split('T')[0])
-        .lte('hearing_date', new Date(Date.now() + 7 * 86400000).toISOString().split('T')[0])
-
-      if (hearings) {
-        hearings.forEach((h) => {
+      // 1. Upcoming Hearings
+      if (hearingsResult.data) {
+        hearingsResult.data.forEach((h) => {
           newAlerts.push({
             id: `hearing-${h.id}`,
             type: 'hearing',
@@ -42,15 +54,9 @@ export const useNotificationStore = defineStore('notifications', () => {
         })
       }
 
-      // 2. Agreement Expiries (Next 30 days)
-      const { data: expiries } = await supabase
-        .from('agreements')
-        .select('id, title, expiry_date')
-        .lte('expiry_date', new Date(Date.now() + 30 * 86400000).toISOString().split('T')[0])
-        .gte('expiry_date', new Date().toISOString().split('T')[0])
-
-      if (expiries) {
-        expiries.forEach((e) => {
+      // 2. Agreement Expiries
+      if (expiriesResult.data) {
+        expiriesResult.data.forEach((e) => {
           newAlerts.push({
             id: `expiry-${e.id}`,
             type: 'expiry',
@@ -65,13 +71,8 @@ export const useNotificationStore = defineStore('notifications', () => {
       }
 
       // 3. Pending Initial Documents
-      const { data: pendingDocs } = await supabase
-        .from('initial_documents')
-        .select('id, case_title')
-        .eq('status', 'Pending')
-
-      if (pendingDocs) {
-        pendingDocs.forEach((d) => {
+      if (pendingDocsResult.data) {
+        pendingDocsResult.data.forEach((d) => {
           newAlerts.push({
             id: `doc-${d.id}`,
             type: 'approval',

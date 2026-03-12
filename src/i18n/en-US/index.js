@@ -60,7 +60,7 @@ export default {
     inReview: 'In Review',
     approval: 'Approval',
     active: 'Active',
-    recentActivities: 'Recent Case Activities',
+    recentActivity: 'Recent Case Activities',
     quickActions: 'Quick Actions',
     upcomingHearings: 'Upcoming Hearings',
     newInitialDoc: 'New Initial Document',
@@ -68,7 +68,14 @@ export default {
     uploadAgreement: 'Upload Agreement',
     addContract: 'Add new contract or MOU',
     pendingApprovals: 'Pending Approvals',
+    actionRequired: 'Action Required',
+    viewAllApprovals: 'View All Approvals',
     itemsNeedApproval: '3 items need your approval',
+    myTasks: 'My Tasks',
+    caseStatusOverview: 'Case Status Overview',
+    projectResources: 'Project Resources',
+    downloadBRD: 'Download BRD',
+    submissionForm: 'Submission Form',
     generateReport: 'Generate Report',
     monthlySummary: 'Monthly legal summary',
     vsLastPeriod: 'vs last period',
@@ -236,7 +243,7 @@ export default {
     thisYear: 'This Year',
     allTime: 'All Time',
     kpiExposure: 'Total Exposure',
-    kpiAgreements: 'Active Agreements',
+    totalAgreements: 'Active Agreements',
     activeCasesByType: 'Active Cases by Type',
     caseStatusDist: 'Case Status Distribution',
     totalCases: 'Total Cases',
@@ -344,6 +351,7 @@ export default {
     logout: 'Logout',
     myProfile: 'My Profile',
     online: 'Online',
+    loggingOut: 'Logging out...',
     help: 'Help',
     notifications: 'Notifications',
     actions: 'Actions',
@@ -362,6 +370,8 @@ export default {
     draft: 'Draft',
     approved: 'Approved',
     rejected: 'Rejected',
+    approve: 'Approve',
+    reject: 'Reject',
     expired: 'Expired',
   },
 
@@ -500,6 +510,62 @@ export default {
       phoneValue: 'Ext. 2345 (IT Helpdesk)',
       chatTitle: 'Internal Chat',
       chatValue: 'MS Teams: LegalEdge Support',
+    },
+
+    // ── NEW: Self-Training & Developer Sections ────────────────
+    tabs: {
+      standard: 'User Guide',
+      training: 'Self-Training',
+      dev: 'Developer Portal',
+    },
+
+    training: {
+      title: 'Self-Training Portal',
+      subtitle: 'Structured guides for different system roles',
+      admin: {
+        title: 'Administrator Guide',
+        desc: 'Advanced system control, user management, and global reporting.',
+        steps: [
+          'Monitor system-wide activity via the Dashboard.',
+          'Review and manage all active Legal Cases and Agreements.',
+          'Generate high-level analytics for management reporting.',
+          'Manage system settings and security configurations.',
+        ],
+      },
+      officer: {
+        title: 'Legal Officer Guide',
+        desc: 'Core operational tasks, case handling, and document filing.',
+        steps: [
+          'Initiate case intake via Initial Documents.',
+          'Manage case proceedings, hearings, and updates.',
+          'Draft and track Agreements through the approval lifecycle.',
+          'Collaborate with departments for evidence collection.',
+        ],
+      },
+    },
+
+    devPortal: {
+      title: 'Developer Documentation',
+      subtitle: 'Technical overview for system maintainers',
+      stack: {
+        title: 'Technology Stack',
+        content: 'SLT LegalEdge is built on a modern full-stack architecture:',
+        frontend: 'Vue 3 (Composition API) with Vite & Quasar Framework.',
+        backend: 'Supabase (PostgreSQL, Real-time, Storage, Auth).',
+        state: 'Pinia for robust state management.',
+        ai: 'Agentic AI integration via Model Context Protocol (MCP).',
+      },
+      security: {
+        title: 'Security & Auth',
+        content: 'Role-Based Access Control (RBAC) is enforced at both frontend and database levels.',
+        logout: {
+          title: 'Nuclear Logout Protocol',
+          desc: 'To ensure maximum security and prevent session leaks, the system employs a multi-stage logout:',
+          step1: 'Supabase Session Termination: Clears remote auth session.',
+          step2: 'State Purge: Synchronously clears Pinia stores and LocalStorage.',
+          step3: 'Hard Redirect: Redundant window-level redirects to /login.',
+        },
+      },
     },
   },
 

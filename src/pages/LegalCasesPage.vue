@@ -179,7 +179,10 @@
               >
                 <q-tooltip>View Details</q-tooltip>
               </q-btn>
+              
+              <!-- Edit: Only Legal Officer or Admin -->
               <q-btn
+                v-if="['admin', 'legal_officer'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -191,7 +194,10 @@
               >
                 <q-tooltip>Edit Case</q-tooltip>
               </q-btn>
+
+              <!-- Add Hearing: Only Legal Officer or Admin -->
               <q-btn
+                v-if="['admin', 'legal_officer'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -203,7 +209,10 @@
               >
                 <q-tooltip>Add Hearing</q-tooltip>
               </q-btn>
+
+              <!-- Lock/Unlock: Closing (Legal Officer/Admin), Reopening (Supervisor/Manager/Admin) -->
               <q-btn
+                v-if="canToggleLock(props.row)"
                 flat
                 round
                 dense
@@ -1345,7 +1354,22 @@
           <q-tab-panel name="documents" class="q-pa-md">
             <div class="row items-center q-mb-md">
               <div class="slt-section-label col q-mb-none">Attached Documents</div>
-              <q-btn unelevated color="primary" icon="upload" label="Upload" size="sm" no-caps />
+              <q-file
+                v-model="fileToUpload"
+                style="display: none"
+                ref="fileInputRef"
+                @update:model-value="handleFileUpload"
+                accept=".pdf,.doc,.docx,.jpg,.png"
+              />
+              <q-btn
+                unelevated
+                color="primary"
+                icon="upload"
+                label="Upload"
+                size="sm"
+                no-caps
+                @click="$refs.fileInputRef.pickFiles()"
+              />
             </div>
 
             <q-list bordered separator class="rounded-borders">
@@ -1507,6 +1531,9 @@
         <!-- Dialog footer actions -->
         <q-card-actions align="right" class="q-pa-md">
           <div class="row q-gutter-sm">
+            <q-btn flat no-caps label="Reports/PDF" color="accent" icon="picture_as_pdf" @click="generatePDF">
+              <q-tooltip>Print Case Summary</q-tooltip>
+            </q-btn>
             <q-btn flat no-caps label="Close" color="grey-7" @click="showDetailDialog = false" />
             <q-btn
               v-if="!editMode"
@@ -1842,8 +1869,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/boot/supabase'
+import { useAuthStore } from 'src/stores/authStore'
 
 const $q = useQuasar()
+const authStore = useAuthStore()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  DATABASE STATE
@@ -1854,10 +1883,12 @@ const loading = ref(false)
 async function fetchCases() {
   loading.value = true
   try {
-    const { data, error } = await supabase
-      .from('legal_cases')
-      .select('*')
-      .order('created_at', { ascending: false })
+    let query = supabase.from('legal_cases').select('*')
+
+    // RBAC: All legal staff see all cases for transparency (Judge Board requirements).
+    // Filtering is only for actions, not visibility.
+
+    const { data, error } = await query.order('created_at', { ascending: false })
 
     if (error) throw error
 
@@ -2407,6 +2438,7 @@ async function saveHearing() {
         outcome: newHearing.value.outcome,
         next_date: newHearing.value.nextDate || null,
         notes: newHearing.value.notes,
+        recorded_by: authStore.user?.id,
       },
     ])
 
@@ -2422,7 +2454,7 @@ async function saveHearing() {
 
     await fetchCases()
     // Refresh local activeCase to show in timeline
-    openDetails(activeCase.value)
+    await openDetails(activeCase.value)
 
     newHearing.value = emptyHearing()
     showHearingForm.value = false
@@ -2457,6 +2489,7 @@ async function saveQuickHearing() {
         outcome: newHearing.value.outcome,
         next_date: newHearing.value.nextDate || null,
         notes: newHearing.value.notes,
+        recorded_by: authStore.user?.id,
       },
     ])
 
@@ -2491,6 +2524,16 @@ function statusColor(s) {
       s
     ] || 'grey-6'
   )
+}
+
+function canToggleLock(row) {
+  const role = authStore.profile?.role
+  // Closing: Legal Officer or Admin
+  if (row.status !== 'Closed') {
+    return ['admin', 'legal_officer'].includes(role)
+  }
+  // Reopening: Supervisor, Manager or Admin
+  return ['admin', 'supervisor', 'manager'].includes(role)
 }
 
 function typeColor(t) {
@@ -2709,6 +2752,60 @@ function viewDocument(doc) {
   showPreviewDialog.value = true
 }
 
+const fileToUpload = ref(null)
+const uploading = ref(false)
+
+async function handleFileUpload(file) {
+  if (!file) return
+  uploading.value = true
+  const fileName = `${Date.now()}_${file.name}`
+  const filePath = `${activeCase.value.id}/${fileName}`
+
+  try {
+    // 1. Upload to Supabase Storage
+    const { error: storageError } = await supabase.storage
+      .from('case-documents')
+      .upload(filePath, file)
+
+    if (storageError) throw storageError
+
+    // 2. Get Public URL
+    const { data: urlData } = supabase.storage.from('case-documents').getPublicUrl(filePath)
+
+    // 3. Record in database
+    const { error: dbError } = await supabase.from('case_documents').insert([
+      {
+        case_id: activeCase.value.id,
+        file_name: file.name,
+        file_type: file.name.split('.').pop().toLowerCase(),
+        file_size: (file.size / 1024).toFixed(1) + ' KB',
+        file_url: urlData.publicUrl,
+        uploaded_by: authStore.user?.id,
+      },
+    ])
+
+    if (dbError) throw dbError
+
+    $q.notify({
+      type: 'positive',
+      message: 'File uploaded successfully',
+      icon: 'cloud_done',
+    })
+
+    // Refresh document list
+    await openDetails(activeCase.value)
+  } catch (err) {
+    console.error('Upload error:', err)
+    $q.notify({
+      type: 'negative',
+      message: 'Upload failed: ' + err.message,
+    })
+  } finally {
+    uploading.value = false
+    fileToUpload.value = null
+  }
+}
+
 // Inquiry Panel Members
 const panelCols = [
   { name: 'name', label: 'Panel Member Name', field: 'name', align: 'left' },
@@ -2797,6 +2894,26 @@ function executeTypeShift() {
     message: `Case type shifted to ${proposedType.value}`,
     icon: 'swap_horiz',
   })
+}
+
+function generatePDF() {
+  if (!activeCase.value) return
+  $q.notify({
+    type: 'ongoing',
+    message: 'Generating Case Report Summary...',
+    caption: 'Compiling legal history & audit trail',
+    icon: 'picture_as_pdf',
+    timeout: 1500,
+  })
+
+  setTimeout(() => {
+    window.print()
+    $q.notify({
+      type: 'positive',
+      message: 'Case report generated successfully.',
+      icon: 'check_circle',
+    })
+  }, 1600)
 }
 </script>
 

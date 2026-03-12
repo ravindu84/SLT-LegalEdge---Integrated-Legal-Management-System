@@ -186,9 +186,9 @@
                 <q-tooltip>View Details</q-tooltip>
               </q-btn>
 
-              <!-- Submit (Draft only) -->
+              <!-- Submit (Draft only) - Only Legal Officer or Admin -->
               <q-btn
-                v-if="props.row.status === 'Draft'"
+                v-if="props.row.status === 'Draft' && ['admin', 'legal_officer'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -200,13 +200,9 @@
                 <q-tooltip>Submit for Review</q-tooltip>
               </q-btn>
 
-              <!-- Approve (pending states) -->
+              <!-- Approve (Stage-specific RBAC) -->
               <q-btn
-                v-if="
-                  ['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(
-                    props.row.status,
-                  )
-                "
+                v-if="canApprove(props.row)"
                 flat
                 round
                 dense
@@ -218,13 +214,9 @@
                 <q-tooltip>{{ approveLabel(props.row.status) }}</q-tooltip>
               </q-btn>
 
-              <!-- Reject (pending states) -->
+              <!-- Reject (Stage-specific RBAC) -->
               <q-btn
-                v-if="
-                  ['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(
-                    props.row.status,
-                  )
-                "
+                v-if="canApprove(props.row)"
                 flat
                 round
                 dense
@@ -236,9 +228,9 @@
                 <q-tooltip>Reject</q-tooltip>
               </q-btn>
 
-              <!-- Revert to Draft (Rejected only) -->
+              <!-- Revert to Draft (Rejected only) - Only Legal Officer or Admin -->
               <q-btn
-                v-if="props.row.status === 'Rejected'"
+                v-if="props.row.status === 'Rejected' && ['admin', 'legal_officer'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -250,9 +242,9 @@
                 <q-tooltip>Revert to Draft</q-tooltip>
               </q-btn>
 
-              <!-- Terminate (Active only) -->
+              <!-- Terminate (Active only) - Only Manager or Admin -->
               <q-btn
-                v-if="props.row.status === 'Active'"
+                v-if="props.row.status === 'Active' && ['admin', 'manager'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -264,9 +256,9 @@
                 <q-tooltip>Terminate Agreement</q-tooltip>
               </q-btn>
 
-              <!-- Edit (Draft only) -->
+              <!-- Edit (Draft only) - Only Legal Officer or Admin -->
               <q-btn
-                v-if="props.row.status === 'Draft'"
+                v-if="props.row.status === 'Draft' && ['admin', 'legal_officer'].includes(authStore.profile?.role)"
                 flat
                 round
                 dense
@@ -1010,8 +1002,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import { supabase } from 'src/boot/supabase'
+import { useAuthStore } from 'src/stores/authStore'
 
 const $q = useQuasar()
+const authStore = useAuthStore()
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  WORKFLOW DEFINITION
@@ -1055,6 +1049,17 @@ function approveLabel(status) {
   )
 }
 
+function canApprove(row) {
+  const role = authStore.profile?.role
+  if (role === 'admin') return ['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(row.status)
+  
+  if (row.status === 'Under Review' && role === 'legal_officer') return true
+  if (row.status === 'Pending L1 Approval' && role === 'supervisor') return true
+  if (row.status === 'Pending L2 Approval' && role === 'manager') return true
+  
+  return false
+}
+
 function stageIndex(status) {
   const idx = mainStages.indexOf(status)
   return idx === -1 ? (status === 'Rejected' ? 1 : 4) : idx
@@ -1077,10 +1082,12 @@ const loading = ref(false)
 async function fetchAgreements() {
   loading.value = true
   try {
-    const { data, error } = await supabase
-      .from('agreements')
-      .select('*')
-      .order('created_at', { ascending: false })
+    let query = supabase.from('agreements').select('*')
+
+    // RBAC: All legal staff see all agreements for transparency.
+    // Filtering is only for actions (Approve/Reject), not visibility.
+
+    const { data, error } = await query.order('created_at', { ascending: false })
 
     if (error) throw error
 
@@ -1128,6 +1135,18 @@ const mockVersions = [
   { ver: 3, date: '2026-02-15 10:30', by: 'N. Silva' },
   { ver: 2, date: '2026-02-10 14:20', by: 'M. Perera' },
   { ver: 1, date: '2026-02-05 09:00', by: 'M. Perera' },
+]
+
+const mockHistory = [
+  { action: 'Submitted', date: '2026-03-01 14:20', by: 'M. Perera', remarks: 'Draft finalized for board review.' },
+  { action: 'Under Review', date: '2026-03-02 09:15', by: 'N. Silva', remarks: 'Legal terms analyzed. Found minor SLA discrepancy.' },
+  { action: 'Approved', date: '2026-03-03 16:40', by: 'S. Amarasena', remarks: 'L1 approval granted. Proceed to L2.' },
+]
+
+const mockDocs = [
+  { name: 'Agreement_Draft_v1.pdf', type: 'pdf', size: '1.2 MB', date: '2026-03-01' },
+  { name: 'Vendor_KYC_Documents.zip', type: 'other', size: '4.5 MB', date: '2026-03-01' },
+  { name: 'Approval_Board_Minutes.pdf', type: 'pdf', size: '0.8 MB', date: '2026-03-03' },
 ]
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
@@ -1197,24 +1216,28 @@ async function viewAgreement(row) {
       .eq('agreement_id', row.id)
       .order('performed_at', { ascending: true })
 
-    selected.value.history = (hist || []).map((h) => ({
-      action: h.action,
-      date: h.performed_at,
-      by: h.performer_name || 'User',
-      remarks: h.remarks,
-    }))
+    selected.value.history = hist?.length 
+      ? hist.map((h) => ({
+          action: h.action,
+          date: h.performed_at,
+          by: h.performer_name || 'User',
+          remarks: h.remarks,
+        }))
+      : mockHistory
 
     const { data: docs } = await supabase
       .from('agreement_documents')
       .select('*')
       .eq('agreement_id', row.id)
 
-    selected.value.docs = (docs || []).map((d) => ({
-      name: d.file_name,
-      type: d.file_type,
-      size: d.file_size,
-      date: d.created_at?.slice(0, 10),
-    }))
+    selected.value.docs = docs?.length
+      ? docs.map((d) => ({
+          name: d.file_name,
+          type: d.file_type,
+          size: d.file_size,
+          date: d.created_at?.slice(0, 10),
+        }))
+      : mockDocs
   } catch (err) {
     console.error('View detail error:', err)
   }
@@ -1317,11 +1340,12 @@ async function simulateSignature(doc) {
   }).onOk(async () => {
     $q.loading.show({ message: 'Applying cryptographic signature...' })
     try {
-      await supabase.from('agreement_history').insert([
+      await supabase.from('agreement_approvals').insert([
         {
           agreement_id: doc.id,
           action: 'Digitally Signed',
           remarks: 'Digital signature applied via system PKI.',
+          performed_at: new Date().toISOString()
         },
       ])
 
@@ -1359,11 +1383,12 @@ async function advance(row, type) {
       .eq('id', row.id)
     if (error) throw error
 
-    await supabase.from('agreement_history').insert([
+    await supabase.from('agreement_approvals').insert([
       {
         agreement_id: row.id,
         action: type === 'submit' ? 'Submitted' : 'Reverted',
         remarks: remark,
+        performed_at: new Date().toISOString()
       },
     ])
 
@@ -1418,7 +1443,7 @@ async function executeWorkflow() {
       .eq('id', doc.id)
     if (error) throw error
 
-    await supabase.from('agreement_history').insert([
+    await supabase.from('agreement_approvals').insert([
       {
         agreement_id: doc.id,
         action:
@@ -1426,6 +1451,7 @@ async function executeWorkflow() {
             ? `Approved (${doc.status})`
             : pendingAction.value.charAt(0).toUpperCase() + pendingAction.value.slice(1),
         remarks: workflowRemark.value,
+        performed_at: new Date().toISOString()
       },
     ])
 

@@ -29,39 +29,49 @@ export const useAuthStore = defineStore('auth', () => {
 
   // ── Actions ─────────────────────────────────────────────────────
 
+  let initPromise = null
+
   /**
    * Initialize auth state — call on app startup
    */
   async function init() {
-    loading.value = true
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
+    if (isLoggedIn.value && user.value) return
+    if (initPromise) return initPromise
 
-      if (session?.user) {
-        user.value = session.user
-        isLoggedIn.value = true
-        await fetchProfile()
-      }
+    initPromise = (async () => {
+      loading.value = true
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession()
 
-      // Listen for auth state changes
-      supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session?.user) {
+        if (session?.user) {
           user.value = session.user
           isLoggedIn.value = true
           await fetchProfile()
-        } else if (event === 'SIGNED_OUT') {
-          user.value = null
-          profile.value = null
-          isLoggedIn.value = false
         }
-      })
-    } catch (err) {
-      console.error('Auth init error:', err)
-    } finally {
-      loading.value = false
-    }
+
+        // Listen for auth state changes
+        supabase.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' && session?.user) {
+            user.value = session.user
+            isLoggedIn.value = true
+            await fetchProfile()
+          } else if (event === 'SIGNED_OUT') {
+            user.value = null
+            profile.value = null
+            isLoggedIn.value = false
+          }
+        })
+      } catch (err) {
+        console.error('Auth init error:', err)
+      } finally {
+        loading.value = false
+        initPromise = null
+      }
+    })()
+
+    return initPromise
   }
 
   /**
@@ -137,12 +147,18 @@ export const useAuthStore = defineStore('auth', () => {
    * Logout
    */
   async function logout() {
-    const { error } = await supabase.auth.signOut()
-    if (error) throw error
-
-    user.value = null
-    profile.value = null
-    isLoggedIn.value = false
+    try {
+      await supabase.auth.signOut()
+    } catch (err) {
+      console.error('Supabase signOut error:', err)
+    } finally {
+      // ALWAYS clear local state regardless of server response
+      user.value = null
+      profile.value = null
+      isLoggedIn.value = false
+      localStorage.clear() // Extra safety
+      sessionStorage.clear()
+    }
   }
 
   /**

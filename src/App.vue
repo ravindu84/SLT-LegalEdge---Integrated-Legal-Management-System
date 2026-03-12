@@ -3,5 +3,12 @@
 </template>
 
 <script setup>
-// Deployment trigger: Fresh build for UI polishes and AI fixes
+import { onMounted } from 'vue'
+import { useAuthStore } from 'src/stores/authStore'
+
+const authStore = useAuthStore()
+
+onMounted(() => {
+  authStore.init()
+})
 </script>

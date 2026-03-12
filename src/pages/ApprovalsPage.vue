@@ -656,10 +656,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { supabase } from 'src/boot/supabase'
+import { useAuthStore } from 'src/stores/authStore'
+
 
 const $q = useQuasar()
+const authStore = useAuthStore()
+
+
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  INLINE COMPONENT
@@ -679,84 +685,7 @@ const ViewRow = {
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  MOCK DATA — PENDING AGREEMENTS  (L1 & L2 stage)
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const pendingAgreements = ref([
-  {
-    id: 101,
-    title: 'Software Licensing Agreement – Oracle',
-    agreementType: 'Vendor Agreement',
-    referenceNo: 'AGR/SLT/2026/003',
-    party1: 'SLT Mobitel PLC – IT Department',
-    party2: 'Oracle Corporation Lanka (Pvt) Ltd',
-    value: 34000000,
-    startDate: '2026-02-01',
-    expiryDate: '2029-01-31',
-    status: 'Pending L1 Approval',
-    daysPending: 12,
-    submittedBy: 'T. Gunathilaka',
-    description:
-      '3-year Oracle Database Enterprise Edition licensing and support for SLT core billing systems.',
-    docs: [
-      { name: 'Oracle-License-Agreement.pdf', type: 'pdf', size: '4.2 MB' },
-      { name: 'IT_Infrastructure_Certificate.pdf', type: 'pdf', size: '1.2 MB' },
-    ],
-  },
-  {
-    id: 102,
-    title: 'Data Centre Co-location MOU – Virtusa',
-    agreementType: 'MOU',
-    referenceNo: 'AGR/SLT/2026/002',
-    party1: 'SLT Mobitel PLC – ICT Division',
-    party2: 'Virtusa Corporation',
-    value: 6200000,
-    startDate: '2026-03-01',
-    expiryDate: '2027-02-28',
-    status: 'Pending L2 Approval',
-    daysPending: 5,
-    submittedBy: 'A. Ranasinghe',
-    description:
-      'Co-location of Virtusa development servers at SLT Welikade data centre with managed connectivity.',
-    docs: [
-      { name: 'Virtusa_MOU_Draft_Final.pdf', type: 'pdf', size: '1.4 MB' },
-      { name: 'Commercial_Terms_Matrix.xlsx', type: 'xlsx', size: '42 KB' },
-    ],
-  },
-  {
-    id: 103,
-    title: 'Cybersecurity Managed Services – SecureCo',
-    agreementType: 'Service Level Agreement',
-    referenceNo: 'AGR/SLT/2026/007',
-    party1: 'SLT Mobitel PLC – IT Security',
-    party2: 'SecureCo Lanka (Pvt) Ltd',
-    value: 9500000,
-    startDate: '2026-04-01',
-    expiryDate: '2027-03-31',
-    status: 'Pending L1 Approval',
-    daysPending: 3,
-    submittedBy: 'R. Kulathunga',
-    description:
-      'Annual managed SOC and threat monitoring services for SLT enterprise network boundary.',
-  },
-  {
-    id: 104,
-    title: 'Fleet Vehicle Maintenance Contract – AutoCare',
-    agreementType: 'Maintenance Contract',
-    referenceNo: 'AGR/SLT/2026/008',
-    party1: 'SLT Mobitel PLC – Administration',
-    party2: 'AutoCare Services Ltd',
-    value: 3400000,
-    startDate: '2026-03-01',
-    expiryDate: '2027-02-28',
-    status: 'Pending L2 Approval',
-    daysPending: 9,
-    submittedBy: 'D. Wijesinghe',
-    description:
-      'Full preventive and corrective maintenance of 45 SLT fleet vehicles including trucks and vans.',
-  },
-])
-
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  MOCK DATA — PENDING INITIAL DOCUMENTS
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+const pendingAgreements = ref([])
 const pendingDocs = ref([
   {
     id: 201,
@@ -823,6 +752,69 @@ const pendingDocs = ref([
       'Greenfield Developers damaged 400m of SLT underground fiber during excavation on the Matara bypass, causing a 6-hour outage affecting 800+ subscribers.',
   },
 ])
+const actionHistory = ref([])
+const loading = ref(false)
+
+async function fetchPendingData() {
+  loading.value = true
+  try {
+    // 1. Fetch Agreements pending L1 or L2
+    const { data: agData, error: agErr } = await supabase
+      .from('agreements')
+      .select('*')
+      .in('status', ['Pending L1 Approval', 'Pending L2 Approval'])
+      .order('created_at', { ascending: false })
+    if (agErr) throw agErr
+    pendingAgreements.value = (agData || []).map((a) => ({
+      ...a,
+      title: a.title,
+      agreementType: a.agreement_type,
+      referenceNo: a.reference_no,
+      daysPending: Math.floor((new Date() - new Date(a.created_at)) / (1000 * 60 * 60 * 24)),
+      submittedBy: a.created_by_name || 'Legal Officer',
+    }))
+
+    // 2. Fetch Initial Documents pending
+    const { data: docData, error: docErr } = await supabase
+      .from('initial_documents')
+      .select('*')
+      .eq('status', 'Pending')
+      .order('created_at', { ascending: false })
+    if (docErr) throw docErr
+    pendingDocs.value = (docData || []).map((d) => ({
+      ...d,
+      title: d.case_title,
+      caseType: d.case_type,
+      referenceNo: d.reference_number,
+      daysPending: Math.floor((new Date() - new Date(d.created_at)) / (1000 * 60 * 60 * 24)),
+      submittedBy: d.submitted_by_name || 'Officer',
+    }))
+
+    // 3. Fetch History (Agreement Approvals)
+    const { data: histData, error: histErr } = await supabase
+      .from('agreement_approvals')
+      .select('*')
+      .eq('performer_name', authStore.profile?.full_name || 'User')
+      .order('performed_at', { ascending: false })
+      .limit(20)
+    if (histErr) throw histErr
+    actionHistory.value = (histData || []).map((h) => ({
+      action: h.action,
+      title: `Agreement Action: ${h.action}`,
+      itemType: 'agreement',
+      remarks: h.remarks,
+      at: new Date(h.performed_at).toLocaleString('en-LK'),
+    }))
+  } catch (err) {
+    console.error('Fetch error:', err)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchPendingData()
+})
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  KPI CARDS
@@ -956,62 +948,69 @@ function openAction(row, type, itemType) {
 }
 
 async function confirmAction() {
-  // Validate remarks field
   const valid = await remarksRef.value?.validate()
   if (!valid) return
 
   processing.value = true
-  await new Promise((r) => setTimeout(r, 700))
-
   const isApprove = actionType.value === 'approve'
   const item = actionItem.value
-  const list = activeItemType.value === 'agreement' ? pendingAgreements : pendingDocs
+  const itemType = activeItemType.value
+  const performerName = authStore.profile?.full_name || 'Supervisor'
 
-  if (isApprove) {
-    const nextStatus = nextStateMap[item.status]
-    if (nextStatus === 'Active' || nextStatus === 'Approved') {
-      // Remove from pending list — it advanced past this inbox
-      const idx = list.value.findIndex((i) => i.id === item.id)
-      if (idx !== -1) list.value.splice(idx, 1)
-      $q.notify({
-        type: 'positive',
-        icon: 'check_circle',
-        message: `"${item.title}" — Final approval granted. Now ${nextStatus}.`,
-      })
+  try {
+    if (itemType === 'agreement') {
+      const nextStatus = isApprove ? nextStateMap[item.status] : 'Rejected'
+      
+      // 1. Update Agreement Status
+      const { error: upErr } = await supabase
+        .from('agreements')
+        .update({ status: nextStatus, updated_at: new Date().toISOString() })
+        .eq('id', item.id)
+      if (upErr) throw upErr
+
+      // 2. Log Approval History
+      const { error: logErr } = await supabase.from('agreement_approvals').insert([
+        {
+          agreement_id: item.id,
+          action: isApprove ? 'Approved' : 'Rejected',
+          from_status: item.status,
+          to_status: nextStatus,
+          remarks: actionRemarks.value,
+          performer_name: performerName,
+          performed_at: new Date().toISOString(),
+        },
+      ])
+      if (logErr) throw logErr
     } else {
-      // Advance to next stage but keep in list (still pending the next level)
-      const idx = list.value.findIndex((i) => i.id === item.id)
-      if (idx !== -1) list.value[idx].status = nextStatus
-      $q.notify({
-        type: 'positive',
-        icon: 'send',
-        message: `"${item.title}" advanced to ${nextStatus}.`,
-      })
+      // Initial Doc
+      const nextStatus = isApprove ? 'Approved' : 'Rejected'
+      const { error: upErr } = await supabase
+        .from('initial_documents')
+        .update({
+          status: nextStatus,
+          approval_remarks: actionRemarks.value,
+          approved_by: authStore.user?.id,
+          approved_at: new Date().toISOString(),
+        })
+        .eq('id', item.id)
+      if (upErr) throw upErr
     }
-  } else {
-    // Reject → remove from pending list
-    const idx = list.value.findIndex((i) => i.id === item.id)
-    if (idx !== -1) list.value.splice(idx, 1)
-    $q.notify({ type: 'negative', icon: 'cancel', message: `"${item.title}" rejected.` })
+
+    $q.notify({
+      type: isApprove ? 'positive' : 'negative',
+      message: `Action successful for "${item.title}"`,
+      icon: isApprove ? 'check_circle' : 'cancel',
+    })
+
+    await fetchPendingData()
+  } catch (err) {
+    console.error('Workflow error:', err)
+    $q.notify({ type: 'negative', message: 'Workflow action failed' })
+  } finally {
+    processing.value = false
+    showActionDialog.value = false
   }
-
-  // Log to history
-  actionHistory.value.push({
-    action: isApprove ? 'Approved' : 'Rejected',
-    title: item.title,
-    itemType: activeItemType.value,
-    remarks: actionRemarks.value,
-    at: new Date().toLocaleString('en-LK'),
-  })
-
-  processing.value = false
-  showActionDialog.value = false
 }
-
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  ACTION HISTORY (session)
-// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-const actionHistory = ref([])
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  REFRESH
