@@ -353,11 +353,16 @@
           </div>
 
           <div class="row q-col-gutter-md">
+            <!-- Email Support Card -->
             <div class="col-12 col-sm-4">
-              <q-card flat bordered class="q-pa-md text-center">
-                <q-icon name="email" size="32px" color="primary" />
+              <q-card flat bordered class="q-pa-md text-center support-contact-card">
+                <!-- Using mail_outline instead of email to avoid adblocker cosmetic filters -->
+                <q-icon name="mail_outline" size="32px" color="primary" />
                 <div class="text-weight-bold q-mt-sm">{{ $t('help.contact.emailTitle') }}</div>
-                <div class="text-caption text-grey-6">{{ $t('help.contact.emailValue') }}</div>
+                <div class="text-caption text-grey-6" style="word-break: break-all;">
+                  <!-- Spanning parts to prevent bots/adblockers from stripping it -->
+                  <span>legaledge-support</span><span>@</span><span>sltmobitel.lk</span>
+                </div>
               </q-card>
             </div>
             <div class="col-12 col-sm-4">
