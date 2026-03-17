@@ -661,5 +661,17 @@ export default {
       step4: { title: 'Legal Agents', caption: '2027 - Autonomy' },
       step5: { title: 'Global Intelligence', caption: 'Future Vision' },
     },
+    security: {
+      title: 'Confidential File Security',
+      badge: 'Blockchain & Zero-Trust Architecture',
+      currentArchitecture: {
+        title: 'Current Architecture: Zero-Trust Security',
+        desc: 'Our blueprint secures files via Cloud Storage S3 buckets fortified by strict Row-Level Security (RLS) at the Supabase PostgreSQL database layer. This ensures documents are completely inaccessible to unauthorized roles. Terminal security is guaranteed via our "Nuclear Logout" protocol, which synchronously purges in-memory states and wipes LocalStorage to prevent session hijacking on shared computers.',
+      },
+      futureEvolution: {
+        title: 'Future Evolution: Blockchain Integration',
+        desc: 'To address advanced security concerns, we are designing a robust Cybersecurity framework utilizing a private Blockchain ledger system. This integration will provide cryptographic proof-of-authenticity, absolute immutability, and tamper-proof audit trails for every highly sensitive legal document uploaded to the platform, ensuring evidence remains completely uncompromised.',
+      },
+    },
   },
 }

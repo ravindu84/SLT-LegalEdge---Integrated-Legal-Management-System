@@ -38,6 +38,47 @@
       </div>
     </div>
 
+    <!-- ─── SECURITY POSTURE (BLOCKCHAIN & ZERO-TRUST) ──────────── -->
+    <div class="security-banner q-mt-xl q-pa-xl shadow-24 animate-slide-up" style="animation-delay: 0.4s">
+      <div class="row q-col-gutter-xl items-center">
+        <div class="col-12 col-md-5 text-center">
+          <q-icon name="security" size="100px" color="amber-8" class="q-mb-md glow-amber" />
+          <div class="text-h4 text-weight-bold text-white q-mb-sm">
+            {{ $t('innovation.security.title') }}
+          </div>
+          <div class="innovation-badge q-mb-md q-mt-sm">
+            <q-icon name="verified_user" size="16px" color="amber-8" class="q-mr-sm" />
+            <span class="text-amber-8 text-weight-bold">{{ $t('innovation.security.badge') }}</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-7">
+          <q-card class="security-card q-mb-md shadow-3">
+            <q-card-section>
+              <div class="row items-center q-mb-sm">
+                <q-icon name="shield" color="cyan-4" size="24px" class="q-mr-sm" />
+                <div class="text-h6 text-white text-weight-bold">{{ $t('innovation.security.currentArchitecture.title') }}</div>
+              </div>
+              <p class="text-body2 text-blue-2 opacity-80 q-mb-none">
+                {{ $t('innovation.security.currentArchitecture.desc') }}
+              </p>
+            </q-card-section>
+          </q-card>
+          
+          <q-card class="security-card highlight-border shadow-5">
+            <q-card-section>
+              <div class="row items-center q-mb-sm">
+                <q-icon name="link" color="amber-8" size="24px" class="q-mr-sm" />
+                <div class="text-h6 text-amber-8 text-weight-bold">{{ $t('innovation.security.futureEvolution.title') }}</div>
+              </div>
+              <p class="text-body2 text-blue-2 opacity-80 q-mb-none">
+                {{ $t('innovation.security.futureEvolution.desc') }}
+              </p>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+    </div>
+
     <!-- ─── VISON STATEMENT ─────────────────────────────────── -->
     <div class="vision-banner q-mt-xl q-pa-xl text-center shadow-24 animate-slide-up">
       <div class="row items-center justify-center q-gutter-md">
@@ -305,6 +346,24 @@ const roadmapSteps = computed(() => [
   backdrop-filter: blur(20px);
 }
 
+.security-banner {
+  background: rgba(0, 11, 33, 0.65);
+  border-radius: 32px;
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.security-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  
+  &.highlight-border {
+    border: 1px solid rgba(255, 193, 7, 0.4);
+    background: rgba(255, 193, 7, 0.03);
+  }
+}
+
 // ── Animations ───────────────────────────────────────────────
 @keyframes fadeIn {
   from {
@@ -366,6 +425,30 @@ body.body--light .innovation-page {
     }
     .text-blue-2 {
       color: #e3f2fd !important;
+    }
+  }
+
+  .security-banner {
+    background: linear-gradient(135deg, #ffffff 0%, #f4f7fc 100%);
+    border: 1px solid rgba(0, 47, 108, 0.15);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+
+    .text-white {
+      color: #002f6c !important;
+    }
+  }
+  
+  .security-card {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+
+    .text-white {
+      color: #002f6c !important;
+    }
+
+    &.highlight-border {
+      border: 1px solid rgba(255, 193, 7, 0.6);
+      background: rgba(255, 193, 7, 0.05);
     }
   }
 }
