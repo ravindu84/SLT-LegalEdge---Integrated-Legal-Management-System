@@ -18,15 +18,26 @@
         <div class="text-caption text-grey-7 q-mb-sm">
           Access case files offline, authenticate securely with Biometrics, and stay synced in courtrooms.
         </div>
-        <q-btn
-          outline
-          no-caps
-          color="primary"
-          icon="download"
-          label="Download APK"
-          size="sm"
-          @click="downloadApk"
-        />
+        <div class="row q-gutter-sm">
+          <q-btn
+            outline
+            no-caps
+            color="primary"
+            icon="android"
+            label="Android APK"
+            size="sm"
+            @click="downloadApk"
+          />
+          <q-btn
+            outline
+            no-caps
+            color="primary"
+            icon="apple"
+            label="iOS App"
+            size="sm"
+            @click="downloadIos"
+          />
+        </div>
       </div>
     </q-card-section>
   </q-card>
@@ -47,10 +58,11 @@ function downloadApk() {
     timeout: 1500,
   })
   setTimeout(() => {
-    // Mock download action for preview
+    // Real download action pointing to public folder
     const link = document.createElement('a')
-    link.href = 'data:application/vnd.android.package-archive;base64,'
+    link.href = appLink.value
     link.download = 'SLT-LegalEdge-v1.0.apk'
+    link.target = '_blank'
     document.body.appendChild(link)
     link.click()
     document.body.removeChild(link)
@@ -60,6 +72,15 @@ function downloadApk() {
       icon: 'check_circle',
     })
   }, 1600)
+}
+
+function downloadIos() {
+  $q.notify({
+    type: 'info',
+    message: 'Redirecting to Apple App Store / TestFlight...',
+    icon: 'apple',
+    timeout: 1500,
+  })
 }
 </script>
 
