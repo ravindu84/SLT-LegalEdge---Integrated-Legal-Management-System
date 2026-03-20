@@ -256,7 +256,7 @@ import { useAuthStore } from 'src/stores/authStore'
 import { useNotificationStore } from 'src/stores/notificationStore'
 import NotificationsDrawer from 'src/components/NotificationsDrawer.vue'
 import AiCopilotChat from 'src/components/AiCopilotChat.vue'
-
+import { Preferences } from '@capacitor/preferences'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -290,7 +290,7 @@ function changeLang(lang) {
 }
 
 // ── ULTRA-ROBUST LOGOUT (Fail-Safe) ───────────────────────────
-const handleLogout = () => {
+const handleLogout = async () => {
   console.log('--- EMERGENCY LOGOUT TRIGGERED ---')
   
   // 1. Force UI feedback
@@ -309,6 +309,14 @@ const handleLogout = () => {
   // 3. Clear local state synchronously
   localStorage.clear()
   sessionStorage.clear()
+
+  // ** MOBILE NUCLEAR LOGOUT **
+  try {
+    await Preferences.clear()
+    console.log('Capacitor Preferences WIPED for total security.')
+  } catch (err) {
+    console.warn('Not in Capacitor context or Failed to clear Preferences:', err)
+  }
   
   // 4. Force state clear in memory
   if (authStore) {

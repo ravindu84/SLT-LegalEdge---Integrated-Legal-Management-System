@@ -226,8 +226,8 @@
 
     <!-- ═══ ROW 4: Project Resources (Flyer Compliance) ══════ -->
     <div class="row q-col-gutter-md q-mt-md">
-      <div class="col-12">
-        <q-card flat bordered class="slt-resource-card">
+      <div class="col-12 col-md-7">
+        <q-card flat bordered class="slt-resource-card full-height">
           <q-card-section class="row items-center q-pa-md">
             <div class="col">
               <div class="text-h6 text-weight-bold text-primary">
@@ -262,6 +262,9 @@
           </q-card-section>
         </q-card>
       </div>
+      <div class="col-12 col-md-5">
+        <MobileAppDistCard />
+      </div>
     </div>
   </q-page>
 </template>
@@ -290,6 +293,7 @@ const $q = useQuasar()
 import { supabase } from 'src/boot/supabase'
 import { useAuthStore } from 'src/stores/authStore'
 import { onMounted, watch } from 'vue'
+import MobileAppDistCard from 'src/components/MobileAppDistCard.vue'
 
 const authStore = useAuthStore()
 const now = ref(new Date())
