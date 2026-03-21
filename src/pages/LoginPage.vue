@@ -22,6 +22,58 @@
         </div>
       </div>
 
+      <!-- ── Mobile App Download Section ── -->
+      <div class="slt-app-promo q-mt-xl row items-center no-wrap">
+        <!-- QR Code -->
+        <div class="qr-box bg-white q-pa-xs rounded-borders shadow-3 q-mr-md" style="width: 78px; height: 78px">
+          <qrcode-vue :value="apkUrl" :size="70" level="H" foreground="#002f6c" />
+        </div>
+        
+        <!-- App Details -->
+        <div class="column justify-center" style="flex: 1">
+          <div class="text-white text-subtitle2 text-weight-bold" style="letter-spacing: 0.5px">
+            Get the Mobile App
+          </div>
+          <div class="text-white text-caption opacity-70 q-mb-sm" style="font-size: 0.75rem; line-height: 1.2">
+            Scan to download for Android
+          </div>
+          
+          <div class="row q-gutter-x-sm">
+            <!-- Android Button -->
+            <q-btn
+              type="a"
+              :href="apkTargetUrl"
+              download
+              target="_blank"
+              flat
+              dense
+              no-caps
+              class="app-store-btn bg-white text-dark"
+            >
+              <q-icon name="android" size="xs" color="positive" class="q-mr-xs" />
+              <div class="column items-start justify-center">
+                <span class="text-weight-medium" style="font-size: 10px; line-height: 1">Android APK</span>
+              </div>
+            </q-btn>
+            
+            <!-- iOS Dummy Button -->
+            <q-btn
+              flat
+              dense
+              no-caps
+              disable
+              class="app-store-btn bg-white text-dark"
+              style="opacity: 0.6"
+            >
+              <q-icon name="apple" size="xs" color="grey-8" class="q-mr-xs" />
+              <div class="column items-start justify-center">
+                <span class="text-weight-medium" style="font-size: 10px; line-height: 1">Coming Soon</span>
+              </div>
+            </q-btn>
+          </div>
+        </div>
+      </div>
+
       <div class="text-white text-caption opacity-40 q-mt-auto q-pt-xl text-center">
         SLT Mobitel PLC · Legal Department · v1.0.0<br />
         <span class="text-weight-bold" style="letter-spacing: 1px">NEXGEN CREATORS</span>
@@ -152,14 +204,23 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/authStore'
+import QrcodeVue from 'qrcode.vue'
 
 const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
+
+const apkTargetUrl = '/download/app-release.apk'
+const apkUrl = computed(() => {
+  if (typeof window !== 'undefined') {
+    return window.location.origin + apkTargetUrl
+  }
+  return apkTargetUrl
+})
 
 const form = ref({
   email: '',
@@ -273,6 +334,44 @@ const features = [
 
   &:hover {
     background: rgba(255, 255, 255, 0.16);
+  }
+}
+
+// ── App Promo Section ────────────────────────────────────────
+.slt-app-promo {
+  width: 100%;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, background 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .qr-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .app-store-btn {
+    border-radius: 6px;
+    padding: 6px 10px;
+    min-height: 32px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+    &:hover:not(.disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
   }
 }
 

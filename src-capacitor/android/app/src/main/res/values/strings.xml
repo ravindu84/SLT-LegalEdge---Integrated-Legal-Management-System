@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">SLT LegalEdge</string>
+    <string name="title_activity_main">SLT LegalEdge</string>
+    <string name="package_name">com.slt.legaledge</string>
+    <string name="custom_url_scheme">com.slt.legaledge</string>
+</resources>
