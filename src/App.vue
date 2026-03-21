@@ -17,7 +17,19 @@
         @click="checkBiometric"
         v-if="authFailed"
       />
-      <q-spinner-dots v-else color="primary" size="40px" />
+      
+      <!-- Fallback Option to Logout if stuck -->
+      <q-btn
+        v-if="authFailed"
+        flat
+        color="negative"
+        icon="logout"
+        label="Sign Out & Reset"
+        class="full-width q-mb-md"
+        @click="forceLogout"
+      />
+
+      <q-spinner-dots v-else color="primary" size="40px" class="q-mb-md" />
     </div>
   </div>
 
@@ -36,6 +48,12 @@ const authStore = useAuthStore()
 const syncStore = useSyncStore()
 const isUnlocked = ref(false)
 const authFailed = ref(false)
+
+async function forceLogout() {
+  await authStore.logout()
+  isUnlocked.value = true
+  authFailed.value = false
+}
 
 async function checkBiometric() {
   if (!Capacitor.isNativePlatform()) {

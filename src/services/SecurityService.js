@@ -45,7 +45,17 @@ export const SecurityService = {
 
     } catch (error) {
       console.error('Biometric authentication failed or cancelled:', error)
-      return false
+      
+      const errStr = String(error).toLowerCase()
+      // If the user explicitly cancelled or authentication actually failed (wrong fingerprint), we block.
+      if (errStr.includes('cancel') || errStr.includes('user_cancel') || errStr.includes('authentication_failed')) {
+         return false
+      }
+      
+      // If the error is something like 'NotImplemented', 'PluginNotInstalled', or the device
+      // doesn't have a secure screen lock set up, we gracefully bypass instead of permanent lockout.
+      console.warn('Bypassing biometric lock due to hardware/plugin constraint.')
+      return true
     }
   }
 }
