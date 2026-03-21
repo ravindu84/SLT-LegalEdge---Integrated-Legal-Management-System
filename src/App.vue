@@ -25,7 +25,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useAuthStore } from 'src/stores/authStore'
 import { useSyncStore } from 'src/stores/syncStore'
 import { SecurityService } from 'src/services/SecurityService'
@@ -55,27 +55,51 @@ async function checkBiometric() {
 }
 
 onMounted(async () => {
-  // Initial Authorization Check
-  await checkBiometric()
+  // 1. Wait for Auth Store to initialize
+  await authStore.init()
+
+  // 2. Only check biometrics if the user is already logged in
+  if (authStore.isLoggedIn) {
+    if (Capacitor.isNativePlatform()) {
+      await checkBiometric()
+    } else {
+      isUnlocked.value = true
+    }
+  } else {
+    // Not logged in -> Let them reach the Login Page
+    isUnlocked.value = true
+  }
   
   // Set up background sync listener
   syncStore.initializeNetworkListener()
-  
-  // Auth Store Init
-  authStore.init()
 
-  // App resume hook (re-verify biometrics if app was in background)
+  // App resume hook (re-verify biometrics if app was in background AND user is logged in)
   if (Capacitor.isNativePlatform()) {
     App.addListener('appStateChange', async ({ isActive }) => {
-      if (isActive && !isUnlocked.value) {
+      if (isActive && !isUnlocked.value && authStore.isLoggedIn) {
         await checkBiometric()
-      } else if (!isActive) {
-        // Lock app when sending to background
+      } else if (!isActive && authStore.isLoggedIn) {
+        // Lock app when sending to background (only if logged in)
         isUnlocked.value = false
       }
     })
   }
 })
+
+// Watch for manual login/logout events to lock or unlock the screen
+watch(
+  () => authStore.isLoggedIn,
+  async (newVal, oldVal) => {
+    if (newVal && !oldVal && Capacitor.isNativePlatform()) {
+      // User just logged in -> immediately lock and ask for fingerprint
+      isUnlocked.value = false
+      await checkBiometric()
+    } else if (!newVal) {
+      // User logged out -> ensure the unlock screen goes away so Login Page is visible
+      isUnlocked.value = true
+    }
+  }
+)
 </script>
 
 <style scoped>
