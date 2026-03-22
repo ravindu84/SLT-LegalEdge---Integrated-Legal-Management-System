@@ -673,5 +673,20 @@ export default {
         desc: 'To address advanced security concerns, we are designing a robust Cybersecurity framework utilizing a private Blockchain ledger system. This integration will provide cryptographic proof-of-authenticity, absolute immutability, and tamper-proof audit trails for every highly sensitive legal document uploaded to the platform, ensuring evidence remains completely uncompromised.',
       },
     },
+    mobile: {
+      badge: 'COMING SOON',
+      title: 'AI-Powered Mobile Ecosystem',
+      desc: 'Seamless productivity across boundaries. Work from home, in court, or while traveling—ensuring business continuity no matter the global or local challenges, with industrial-grade security at your fingertips.',
+      features: [
+        'Biometric Auth (FaceID / Fingerprint)',
+        'Offline Courtroom Synchronization',
+        'Crisis-Ready Remote Infrastructure',
+      ],
+      availability: {
+        home: 'Work from Home',
+        travel: 'Work while Traveling',
+        secure: '100% Secure',
+      },
+    },
   },
 }

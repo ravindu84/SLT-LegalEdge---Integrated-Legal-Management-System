@@ -104,6 +104,66 @@
         </div>
       </div>
     </div>
+    
+    <!-- ─── MOBILE EXPANSION TEASER ────────────────────────── -->
+    <div class="mobile-teaser-section q-mt-xl q-pa-xl animate-slide-up" style="animation-delay: 0.5s">
+      <div class="row q-col-gutter-xl items-center">
+        <div class="col-12 col-md-6 order-last order-md-first">
+          <div class="mobile-mockup-container">
+            <div class="phone-frame shadow-24">
+              <div class="phone-screen bg-dark overflow-hidden flex flex-center">
+                <q-icon name="auto_awesome" size="120px" class="ai-glow-icon" />
+                <div class="phone-content text-center q-pa-md absolute-bottom q-mb-xl">
+                  <div class="text-h6 text-white text-weight-bolder">LegalEdge AI</div>
+                  <div class="text-caption text-amber-5">System Ready...</div>
+                  <div class="q-mt-md flex flex-center">
+                    <q-spinner-dots color="amber-8" size="24px" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-reflection"></div>
+            <div class="phone-float-shadow"></div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="innovation-badge q-mb-md">
+            <q-icon name="edgesensor_high" size="18px" color="amber-8" class="q-mr-sm" />
+            <span class="text-amber-8 text-weight-bold">{{ $t('innovation.mobile.badge') }}</span>
+          </div>
+          <h2 class="text-h3 text-weight-bolder text-white q-my-md line-height-tight">
+            {{ $t('innovation.mobile.title') }}
+          </h2>
+          <p class="text-subtitle1 text-blue-2 q-mb-xl opacity-90 max-width-500">
+            {{ $t('innovation.mobile.desc') }}
+          </p>
+          
+          <div class="row q-col-gutter-md">
+            <div v-for="(feat, fIdx) in $tm('innovation.mobile.features')" :key="fIdx" class="col-12">
+              <div class="feature-item-pill card-glass-effect">
+                <q-icon name="check_circle" color="amber-8" size="24px" class="q-mr-md" />
+                <span class="text-body1 text-white opacity-90">{{ feat }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="q-mt-xl row q-gutter-sm items-center">
+             <div class="availability-chip">
+              <q-icon name="home" size="18px" />
+              <span>{{ $t('innovation.mobile.availability.home') }}</span>
+            </div>
+            <div class="availability-chip">
+              <q-icon name="directions_car" size="18px" />
+              <span>{{ $t('innovation.mobile.availability.travel') }}</span>
+            </div>
+            <div class="availability-chip highlight">
+              <q-icon name="security" size="18px" />
+              <span>{{ $t('innovation.mobile.availability.secure') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- ─── 3D ROADMAP TIMELINE ──────────────────────────────── -->
     <div class="roadmap-3d-container q-mt-xl q-pb-xl overflow-hidden">
@@ -640,6 +700,179 @@ body.body--light {
     &.label-right {
       left: 80px;
     }
+  }
+}
+
+// ── Mobile Teaser Specific Styles ──────────────────────────
+.mobile-teaser-section {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border-radius: 48px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -20%;
+    width: 60%;
+    height: 150%;
+    background: radial-gradient(circle, rgba(255, 193, 7, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+}
+
+.mobile-mockup-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.phone-frame {
+  width: 280px;
+  height: 560px;
+  background: #0d0d0d;
+  border-radius: 44px;
+  border: 12px solid #1a1a1a;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.7);
+  animation: floatPhone 6s ease-in-out infinite;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 6px;
+    background: #222;
+    border-radius: 10px;
+  }
+}
+
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, #002f6c 0%, #000b21 100%);
+  border-radius: 32px;
+  position: relative;
+}
+
+.ai-glow-icon {
+  color: #ffc107;
+  filter: drop-shadow(0 0 30px rgba(255, 193, 7, 0.6));
+  animation: pulseAi 4s ease-in-out infinite;
+}
+
+.feature-item-pill {
+  background: rgba(255, 255, 255, 0.04);
+  padding: 16px 28px;
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  &:hover {
+    background: rgba(255, 193, 7, 0.12);
+    border-color: rgba(255, 193, 7, 0.4);
+    transform: translateX(12px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.availability-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(33, 150, 243, 0.08);
+  color: #90caf9;
+  padding: 10px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(33, 150, 243, 0.15);
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+
+  &.highlight {
+    background: rgba(76, 175, 80, 0.1);
+    color: #81c784;
+    border-color: rgba(76, 175, 80, 0.2);
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    background: rgba(33, 150, 243, 0.15);
+  }
+}
+
+.line-height-tight {
+  line-height: 1.1;
+}
+
+.max-width-500 {
+  max-width: 500px;
+}
+
+@keyframes floatPhone {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(3deg); }
+}
+
+@keyframes pulseAi {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+// Light mode overrides
+body.body--light {
+  .mobile-teaser-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f4f7fc 100%);
+    border: 1px solid rgba(0, 47, 108, 0.1);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+    .text-white { color: #002f6c !important; }
+    .text-blue-2 { color: #455a64 !important; }
+  }
+  .feature-item-pill {
+    background: white;
+    border: 1px solid rgba(0, 47, 108, 0.08);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+    .text-white { color: #002f6c !important; }
+  }
+  .availability-chip {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+    &.highlight {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-color: #c8e6c9;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .phone-frame {
+    transform: scale(0.8);
+    margin: 0 auto;
+  }
+  .mobile-teaser-section {
+    padding: 30px 20px;
+    text-align: center;
+  }
+  .feature-item-pill {
+    justify-content: center;
+    &:hover { transform: scale(1.05); }
+  }
+  .availability-chip {
+    justify-content: center;
+    width: 100%;
   }
 }
 </style>
