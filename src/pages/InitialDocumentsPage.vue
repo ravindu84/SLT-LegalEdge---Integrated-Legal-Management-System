@@ -45,43 +45,41 @@
 
     <!-- ─── Filter Toolbar ───────────────────────────────────────── -->
     <q-card flat bordered class="q-mb-md">
-      <q-card-section :class="['row q-col-gutter-sm items-center q-py-sm', $q.screen.lt.md ? 'column items-stretch' : '']">
+      <q-card-section class="row q-col-gutter-sm items-center q-py-sm">
         <div class="col-12 col-sm-4">
           <q-input v-model="filter" dense outlined clearable placeholder="Search documents…">
             <template #prepend><q-icon name="search" /></template>
           </q-input>
         </div>
-        <div :class="[$q.screen.lt.md ? 'row q-col-gutter-sm' : 'col-6 col-sm-3']">
-          <div :class="[$q.screen.lt.md ? 'col-6' : '']">
-            <q-select
-              v-model="filterStatus"
-              :options="['All', 'Pending', 'Under Review', 'Approved', 'Rejected']"
-              dense
-              outlined
-              label="Status"
-              emit-value
-              map-options
-              behavior="menu"
-              @update:model-value="applyFilters"
-              class="full-width"
-            />
-          </div>
-          <div :class="[$q.screen.lt.md ? 'col-6' : '']">
-            <q-select
-              v-model="filterType"
-              :options="['All', ...caseTypeOptions]"
-              dense
-              outlined
-              label="Case Type"
-              emit-value
-              map-options
-              behavior="menu"
-              @update:model-value="applyFilters"
-              class="full-width"
-            />
-          </div>
+        <div class="col-6 col-sm-3">
+          <q-select
+            v-model="filterStatus"
+            :options="['All', 'Pending', 'Under Review', 'Approved', 'Rejected']"
+            dense
+            outlined
+            label="Status"
+            emit-value
+            map-options
+            behavior="menu"
+            @update:model-value="applyFilters"
+            class="full-width"
+          />
         </div>
-        <div class="col-auto row justify-end">
+        <div class="col-6 col-sm-4">
+          <q-select
+            v-model="filterType"
+            :options="['All', ...caseTypeOptions]"
+            dense
+            outlined
+            label="Case Type"
+            emit-value
+            map-options
+            behavior="menu"
+            @update:model-value="applyFilters"
+            class="full-width"
+          />
+        </div>
+        <div class="col-12 col-sm-1 row justify-end items-center">
           <q-btn flat icon="restart_alt" color="grey-7" dense @click="resetFilters">
             <q-tooltip>Reset Filters</q-tooltip>
           </q-btn>
@@ -214,31 +212,29 @@
                 <q-tooltip>Edit Document</q-tooltip>
               </q-btn>
 
-              <!-- Approve (only if not finalized AND role is Supervisor/Manager/Admin) -->
+              <!-- Approve (only for Supervisor/Manager/Admin, strictly not submitter) -->
               <q-btn
-                v-if="['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
+                v-if="canApproveDoc(props.row)"
                 flat
                 round
                 dense
                 icon="check_circle"
                 color="positive"
                 size="sm"
-                :disable="['Approved', 'Rejected'].includes(props.row.status)"
                 @click="confirmAction(props.row, 'Approve')"
               >
                 <q-tooltip>Approve</q-tooltip>
               </q-btn>
 
-              <!-- Reject (only if not finalized AND role is Supervisor/Manager/Admin) -->
+              <!-- Reject (only for Supervisor/Manager/Admin, strictly not submitter) -->
               <q-btn
-                v-if="['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
+                v-if="canApproveDoc(props.row)"
                 flat
                 round
                 dense
                 icon="cancel"
                 color="negative"
                 size="sm"
-                :disable="['Approved', 'Rejected'].includes(props.row.status)"
                 @click="confirmAction(props.row, 'Reject')"
               >
                 <q-tooltip>Reject</q-tooltip>
@@ -717,23 +713,30 @@
         </q-tab-panels>
 
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn
-            v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status) && ['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
-            flat
-            no-caps
-            color="positive"
-            icon="check_circle"
-            label="Approve"
-            @click="handleApprove(selectedDoc)"
-          />
-          <q-btn
-            v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status) && ['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
-            flat
-            no-caps
-            color="negative"
-            icon="cancel"
-            label="Reject"
-            @click="handleReject(selectedDoc)"
+          <template v-if="canApproveDoc(selectedDoc)">
+            <q-btn
+              flat
+              no-caps
+              color="positive"
+              icon="check_circle"
+              label="Approve"
+              @click="handleApprove(selectedDoc)"
+            />
+            <q-btn
+              flat
+              no-caps
+              color="negative"
+              icon="cancel"
+              label="Reject"
+              @click="handleReject(selectedDoc)"
+            />
+          </template>
+          <q-badge
+            v-else-if="selectedDoc?.status === 'Pending'"
+            outline
+            color="warning"
+            class="q-pa-sm q-mr-sm"
+            label="Awaiting Supervisor / Manager Approval"
           />
           <q-btn unelevated no-caps color="primary" label="Close" v-close-popup />
         </q-card-actions>
@@ -1351,6 +1354,24 @@ function formatAiText(text) {
     .replace(/\*(.*?)\*/g, '<em>$1</em>')
     .replace(/^- (.*)/gm, '• $1')
     .replace(/\n/g, '<br>')
+}
+
+function canApproveDoc(doc) {
+  if (!doc) return false
+  const role = authStore.userRole || authStore.profile?.role
+  // Strict RBAC: Legal Officers can NEVER approve documents
+  if (role === 'legal_officer') return false
+  // Only Supervisor (L1), Manager (L2), and Admin can approve
+  if (!['supervisor', 'manager', 'admin'].includes(role)) return false
+  // Can only act on Pending documents
+  if (['Approved', 'Rejected'].includes(doc.status)) return false
+  // Maker-Checker Rule: Submitter cannot approve their own document
+  const currentUserId = authStore.user?.id || authStore.profile?.id
+  const submitterId = doc.submitted_by || doc.submittedBy
+  if (role !== 'admin' && submitterId && currentUserId && submitterId === currentUserId) {
+    return false
+  }
+  return true
 }
 
 function viewRecordDetails(doc) {

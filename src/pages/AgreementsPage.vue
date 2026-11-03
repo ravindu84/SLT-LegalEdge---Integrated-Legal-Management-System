@@ -831,31 +831,30 @@
             label="Submit for Review"
             @click="handleAdvance(selected, 'submit')"
           />
-          <q-btn
-            v-if="
-              ['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(
-                selected.status,
-              )
-            "
-            unelevated
-            no-caps
-            color="positive"
-            icon="check_circle"
-            :label="approveLabel(selected.status)"
-            @click="handleConfirmWorkflow(selected, 'approve')"
-          />
-          <q-btn
-            v-if="
-              ['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(
-                selected.status,
-              )
-            "
-            unelevated
-            no-caps
-            color="negative"
-            icon="cancel"
-            label="Reject"
-            @click="handleConfirmWorkflow(selected, 'reject')"
+          <template v-if="canApprove(selected)">
+            <q-btn
+              unelevated
+              no-caps
+              color="positive"
+              icon="check_circle"
+              :label="approveLabel(selected.status)"
+              @click="handleConfirmWorkflow(selected, 'approve')"
+            />
+            <q-btn
+              unelevated
+              no-caps
+              color="negative"
+              icon="cancel"
+              label="Reject"
+              @click="handleConfirmWorkflow(selected, 'reject')"
+            />
+          </template>
+          <q-badge
+            v-else-if="['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(selected.status)"
+            outline
+            color="warning"
+            class="q-pa-sm q-mr-sm"
+            :label="selected.status === 'Pending L1 Approval' ? 'Awaiting DGM (L1) Approval' : selected.status === 'Pending L2 Approval' ? 'Awaiting AGM (L2) Approval' : 'Under Review by Supervisor'"
           />
           <q-btn
             v-if="
@@ -1078,12 +1077,18 @@ function approveLabel(status) {
 }
 
 function canApprove(row) {
-  const role = authStore.profile?.role
+  if (!row) return false
+  const role = authStore.userRole || authStore.profile?.role
   if (role === 'admin') return ['Under Review', 'Pending L1 Approval', 'Pending L2 Approval'].includes(row.status)
   
-  if (row.status === 'Under Review' && role === 'legal_officer') return true
-  if (row.status === 'Pending L1 Approval' && role === 'supervisor') return true
-  if (row.status === 'Pending L2 Approval' && role === 'manager') return true
+  // Strict Separation of Duties: Legal Officers cannot approve
+  if (role === 'legal_officer') return false
+  
+  // DGM / Supervisor handles L1 approval (from Under Review or Pending L1)
+  if (role === 'supervisor' && ['Under Review', 'Pending L1 Approval'].includes(row.status)) return true
+  
+  // AGM / Manager handles L2 Final approval
+  if (role === 'manager' && row.status === 'Pending L2 Approval') return true
   
   return false
 }

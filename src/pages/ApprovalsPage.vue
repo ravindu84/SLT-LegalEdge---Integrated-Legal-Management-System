@@ -640,21 +640,30 @@
 
         <q-separator />
         <q-card-actions align="right" class="q-pa-md">
-          <q-btn
-            unelevated
-            no-caps
-            color="positive"
-            icon="check_circle"
-            :label="viewingItemType === 'agreement' ? approveLabel : 'Approve Document'"
-            @click="handleOpenAction(viewingItem, 'approve', viewingItemType)"
-          />
-          <q-btn
-            unelevated
-            no-caps
-            color="negative"
-            icon="cancel"
-            label="Reject"
-            @click="handleOpenAction(viewingItem, 'reject', viewingItemType)"
+          <template v-if="viewingItemType === 'agreement' ? canApproveAgreement(viewingItem) : canApproveDoc(viewingItem)">
+            <q-btn
+              unelevated
+              no-caps
+              color="positive"
+              icon="check_circle"
+              :label="viewingItemType === 'agreement' ? approveLabel : 'Approve Document'"
+              @click="handleOpenAction(viewingItem, 'approve', viewingItemType)"
+            />
+            <q-btn
+              unelevated
+              no-caps
+              color="negative"
+              icon="cancel"
+              label="Reject"
+              @click="handleOpenAction(viewingItem, 'reject', viewingItemType)"
+            />
+          </template>
+          <q-badge
+            v-else
+            outline
+            color="warning"
+            class="q-pa-sm q-mr-sm"
+            label="Awaiting Higher-Level Approval (Read Only)"
           />
           <q-btn flat no-caps label="Close" color="grey-7" @click="showViewDialog = false" />
         </q-card-actions>
@@ -995,16 +1004,27 @@ function viewItem(row, type) {
 //  APPROVAL PERMISSION HELPERS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 function canApproveAgreement(row) {
-  const role = authStore.profile?.role
+  const role = authStore.userRole || authStore.profile?.role
+  if (role === 'legal_officer') return false
   if (role === 'admin') return true
-  if (role === 'supervisor' && row?.status === 'Pending L1 Approval') return true
+  if (role === 'supervisor' && (row?.status === 'Pending L1 Approval' || row?.status === 'Under Review')) return true
   if (role === 'manager' && row?.status === 'Pending L2 Approval') return true
   return false
 }
 
-function canApproveDoc() {
-  const role = authStore.profile?.role
-  return ['admin', 'supervisor', 'manager'].includes(role)
+function canApproveDoc(row) {
+  const role = authStore.userRole || authStore.profile?.role
+  if (role === 'legal_officer') return false
+  if (!['admin', 'supervisor', 'manager'].includes(role)) return false
+  if (row) {
+    if (['Approved', 'Rejected'].includes(row.status)) return false
+    const currentUserId = authStore.user?.id || authStore.profile?.id
+    const submitterId = row.submitted_by || row.submittedBy
+    if (role !== 'admin' && submitterId && currentUserId && submitterId === currentUserId) {
+      return false
+    }
+  }
+  return true
 }
 
 function handleOpenAction(row, type, itemType) {
