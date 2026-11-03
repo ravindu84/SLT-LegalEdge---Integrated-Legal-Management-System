@@ -81,6 +81,8 @@ flowchart TD
   * **Auto Session Recovery:** Login වූ පසු refresh කළද session එක ආරක්ෂිතව පවතී.
   * **Mobile App QR Code & APK Download:** ජංගම යෙදුම සජීවීව බාගත කරගැනීමේ පහසුකම.
 
+![Login Portal & Quick Demo Credentials](./images/00_login_page.png)
+
 ---
 
 ### 3.2 නව ගිණුම් ලියාපදිංචිය (Registration - `/register`)
@@ -99,6 +101,8 @@ flowchart TD
   * **Cases by Category (Bar Chart):** Money Recovery, Damages, Land, Criminal බෙදී ඇති අයුරු.
   * **Pending Approvals Inbox Widget:** තමන්ගේ මට්ටමේ අනුමැතිය බලාපොරොත්තු වන ලේඛන පමණක් පෙන්වයි.
 
+![Executive Dashboard Overview](./images/01_executive_dashboard.png)
+
 ---
 
 ### 3.4 මූලික ලේඛන ග්‍රහණය (Initial Documents Intake - `/initial-docs`)
@@ -112,7 +116,9 @@ flowchart TD
   * **Strict Action Buttons:** Officer කෙනෙකුට Edit සහ View පමණක් ලැබෙන අතර, Approve/Reject බොත්තම් ලැබෙන්නේ DGM/AGM හට පමණි.
   * **Automated Case Spawning:** DGM විසින් ලේඛනයක් Approve කළ සැණින්, ඒ සඳහා **Active Legal Case එකක් (`LC/2026/...`) ස්වයංක්‍රීයව නිර්මාණය වී Legal Cases පිටුවට එකතු වේ!**
 
-![Initial Documents Filter Toolbar UI](./images/02_initial_documents_filter_ui.png)
+![Initial Documents Management & Filter Toolbar](./images/02_initial_documents_filter_ui.png)
+
+![Initial Documents Intake Modal](./images/02b_initial_documents_intake_modal.png)
 
 ---
 
@@ -121,28 +127,28 @@ flowchart TD
 * **කාටද අයිති:** Legal Officers නඩු තොරතුරු යාවත්කාලීන කරයි; DGM/AGM සමස්ත ප්‍රගතිය සහ නඩු තීන්දු අධීක්ෂණය කරයි.
 
 #### 📸 පද්ධති තිර ඡායාරූප විග්‍රහය (Visual Breakdown of the Legal Cases Interface):
-පහත දැක්වෙන්නේ සජීවී පද්ධති තිර ඡායාරූපයේ (Screenshot) ලකුණු කර ඇති සියලුම අංගයන්ගේ සවිස්තර විග්‍රහයයි:
+පහත දැක්වෙන්නේ සජීවී පද්ධති තිර ඡායාරූපයේ (Screenshot) අඩංගු ප්‍රධාන අංගයන්ගේ සවිස්තර විග්‍රහයයි:
 
 ![Legal Cases Interface Breakdown](./images/01_legal_cases_ui_overview.png)
 
 1. **වම්පස පැතිකඩ තීරුව (User Profile Widget):**
-   * වම්පස ඉහළින්ම දැනට Login වී සිටින නිලධාරියාගේ ඡායාරූපය, නම (`K. Fernando, AGM`), System Role එක (`manager`) සහ `Online` තත්ත්වය ප්‍රදර්ශනය වේ.
+   * වම්පස ඉහළින්ම දැනට Login වී සිටින නිලධාරියාගේ ඡායාරූපය, නම, System Role එක සහ `Online` තත්ත්වය ප්‍රදර්ශනය වේ.
 2. **ප්‍රධාන මෙනු පද්ධතිය (Sidebar Navigation & Live Counter Badges):**
    * **MAIN MENU:** Dashboard (ප්‍රධාන පාලක පුවරුව).
-   * **LEGAL CASES:** Initial Documents (අනුමැතියට ඇති ප්‍රමාණය පෙන්වන කහ පැහැති Badge `1` සමඟ), Legal Cases (දැනට තෝරාගෙන ඇති සක්‍රීය පිටුව).
-   * **AGREEMENTS:** Agreements (ගිවිසුම් කළමනාකරණය), Approvals (කළමනාකාරීත්වයේ අනුමැතිය බලාපොරොත්තු වන ප්‍රමාණය පෙන්වන රතු පැහැති Badge `1` සමඟ).
+   * **LEGAL CASES:** Initial Documents (අනුමැතියට ඇති ප්‍රමාණය පෙන්වන കහ පැහැති Badge සමඟ), Legal Cases (දැනට තෝරාගෙන ඇති සක්‍රීය පිටුව).
+   * **AGREEMENTS:** Agreements (ගිවිසුම් කළමනාකරණය), Approvals (කළමනාකාරීත්වයේ අනුමැතිය බලාපොරොත්තු වන ප්‍රමාණය පෙන්වන Badge සමඟ).
    * **SYSTEM:** History, Reports, Help Guide, Settings.
 3. **ශීර්ෂ තීරුව (Header Bar Controls):**
-   * Hamburger Menu Toggle, Search Bar (Global Universal Search), Notification Bell (නොකියවූ දැනුම්දීම් `4` ක් සමඟ), Trilingual Language Globe (සිංහල/English/දෙමළ), Dark/Light Mode Sun Toggle සහ Profile Avatar.
+   * Hamburger Menu Toggle, Search Bar (Global Universal Search), Notification Bell (නොකියවූ දැනුම්දීම් සමඟ), Trilingual Language Globe (සිංහල/English/දෙමළ), Dark/Light Mode Sun Toggle සහ Profile Avatar.
 4. **ක්‍රියාකාරී බොත්තම් (Action Buttons):**
    * **`+ New Case` (නිල් පැහැති ප්‍රධාන බොත්තම):** උසාවියකින් සෘජුවම ලැබුණු නව නඩුවක් පද්ධතියට ඇතුළත් කිරීම.
    * **`Export` බොත්තම:** සම්පූර්ණ නඩු ලැයිස්තුව Excel/CSV හෝ PDF ලෙස ක්ෂණිකව Download කරගැනීම.
 5. **විධායක KPI පුවරු (Executive Metric Cards):**
-   * **Total Cases (68):** පද්ධතිය තුළ ලියාපදිංචි මුළු නඩු සංඛ්‍යාව (නිල් පැහැති Folder Icon).
-   * **Active (44):** අධිකරණයේ විභාග වෙමින් පවතින සක්‍රීය නඩු (කොළ පැහැති Check Icon).
-   * **Pending Hearing (9):** ඉදිරි දිනවල නඩු වාර නියමිත නඩු (තැඹිලි පැහැති Clock Icon).
-   * **Closed (8):** තීන්දු ප්‍රකාශයට පත් කර අවසන් වූ නඩු (අළු පැහැති Lock Icon).
-6. **සමබර පෙරහන් තීරුව (4-Part Filter Toolbar - `q` ලකුණු කළ කොටස්):**
+   * **Total Cases:** පද්ධතිය තුළ ලියාපදිංචි මුළු නඩු සංඛ්‍යාව (නිල් පැහැති Folder Icon).
+   * **Active:** අධිකරණයේ විභාග වෙමින් පවතින සක්‍රීය නඩු (කොළ පැහැති Check Icon).
+   * **Pending Hearing:** ඉදිරි දිනවල නඩු වාර නියමිත නඩු (තැඹිලි පැහැති Clock Icon).
+   * **Closed:** තීන්දු ප්‍රකාශයට පත් කර අවසන් වූ නඩු (අළු පැහැති Lock Icon).
+6. **සමබර පෙරහන් තීරුව (4-Part Balanced Filter Toolbar):**
    * **Search cases...:** නඩු අංකය, පාර්ශ්වයන් හෝ අධිකරණය අනුව ක්ෂණිකව පෙරීම.
    * **Status Dropdown:** `All`, `Active`, `Pending Hearing`, `Under Review`, `Closed`.
    * **Case Type Dropdown:** නඩු කාණ්ඩ 5 අනුව වර්ගීකරණය.
@@ -156,9 +162,9 @@ flowchart TD
    * **EXPOSURE (LKR):** නඩුවට අදාළ මූල්‍ය අවදානම (උදා: `LKR 1,000,000`).
    * **NEXT HEARING:** ඊළඟ නඩු වාර දිනය (දින නියම වී ඇත්නම් රතු පැහැති Calendar Badge එකක් සමඟ).
    * **STATUS:** නඩුවේ තත්ත්වය (`Active` කොළ පැහැයෙන්).
-   * **ස්වයංක්‍රීය නඩු ජනනය පිළිබඳ සාක්ෂිය (Auto-Spawn Proof):** රතු ඊතලයෙන් දක්වා ඇති පළමු පේළියේ `#LC/2026/247 - legal test` යනු DGM විසින් Initial Documents පිටුවෙන් Approve කළ සැනින් මෙහි ස්වයංක්‍රීයව ජනනය වූ නඩුවයි!
+   * **ස්වයංක්‍රීය නඩු ජනනය පිළිබඳ සාක්ෂිය (Auto-Spawn Proof):** පළමු පේළියේ දිස්වන `#LC/2026/247 - legal test` යනු DGM විසින් Initial Documents පිටුවෙන් Approve කළ සැනින් මෙහි ස්වයංක්‍රීයව ජනනය වූ නඩුවයි!
 8. **පිටු සංචලනය සහ AI Copilot (Footer & Floating Controls):**
-   * පහළ දකුණු කෙළවරේ `Records per page: 8`, `1-8 of 68` පෙන්වන Pagination Controls සහ ඕනෑම තැනක සිට විමසීම් කළ හැකි Floating Blue AI Bot බොත්තම.
+   * පහළ දකුණු කෙළවරේ `Records per page`, Pagination Controls සහ ඕනෑම තැනක සිට විමසීම් කළ හැකි Floating Blue AI Bot බොත්තම.
 
 ---
 
@@ -180,7 +186,9 @@ flowchart TD
   4. **AGM (L2)** විසින් "L2 Final Approval" ලබා දී ගිවිසුම **Active** තත්ත්වයට පත් කරයි.
   5. Digital PKI Signature යෙදීමේ පහසුකමද මෙහි ඇත.
 
-![Agreements Creation Modal](./images/05_agreements_creation_modal.png)
+![Agreements & Contracts Management Pipeline](./images/03_agreements_contracts.png)
+
+![Agreements Creation Modal](./images/03b_agreements_creation_modal.png)
 
 ---
 
@@ -192,7 +200,7 @@ flowchart TD
   2. **Pending Initial Documents:** අනුමැතිය බලාපොරොත්තු වන නව ලිපිගොනු.
   3. **My Action History:** තමන් විසින් අනුමත කළ හෝ ප්‍රතික්ෂේප කළ සියලුම ක්‍රියාකාරකම් වල කාල සටහන (Audit Log).
 
----
+![Approvals Hub - Multi-level Executive Inbox](./images/04_approvals_inbox.png)
 
 ### 3.8 වාර්තා සහ විශ්ලේෂණ (Reports & Analytics - `/reports`)
 * **අරමුණ:** ඉහළ පාලක මණ්ඩලයට (Board of Directors / Group CEO) අවශ්‍ය උසස් මූල්‍ය සහ මෙහෙයුම් වාර්තා ජනනය කිරීම.
