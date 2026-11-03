@@ -81,6 +81,19 @@
           </q-list>
         </q-btn-dropdown>
 
+        <!-- Quick Dark/Light Mode Toggle -->
+        <q-btn
+          flat
+          round
+          dense
+          :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+          :color="$q.dark.isActive ? 'amber' : 'white'"
+          class="q-mr-xs"
+          @click="toggleDarkMode"
+        >
+          <q-tooltip>{{ $q.dark.isActive ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}</q-tooltip>
+        </q-btn>
+
         <q-separator vertical inset color="white" class="q-mx-sm opacity-30" v-if="!$q.screen.lt.md" />
 
         <!-- User profile - Condensed on mobile -->
@@ -300,6 +313,18 @@ function changeLang(lang) {
     icon: 'check',
     position: 'top',
     timeout: 1000,
+  })
+}
+
+function toggleDarkMode() {
+  $q.dark.toggle()
+  localStorage.setItem('slt_legaledge_dark_mode', $q.dark.isActive ? 'true' : 'false')
+  $q.notify({
+    type: 'info',
+    icon: $q.dark.isActive ? 'dark_mode' : 'light_mode',
+    message: $q.dark.isActive ? 'Dark Mode active' : 'Light Mode active',
+    timeout: 1000,
+    dense: true,
   })
 }
 

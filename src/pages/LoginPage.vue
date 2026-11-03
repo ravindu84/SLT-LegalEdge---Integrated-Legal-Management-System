@@ -90,6 +90,20 @@
         class="slt-login-card q-pa-xl"
         :class="$q.dark.isActive ? 'bg-grey-10 text-white' : 'bg-white'"
       >
+        <!-- Quick Theme Toggle -->
+        <div class="row justify-end q-mb-xs">
+          <q-btn
+            flat
+            round
+            dense
+            :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+            :color="$q.dark.isActive ? 'amber' : 'grey-7'"
+            @click="toggleTheme"
+          >
+            <q-tooltip>{{ $q.dark.isActive ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}</q-tooltip>
+          </q-btn>
+        </div>
+
         <!-- Header -->
         <div class="text-center q-mb-xl">
           <div
@@ -277,6 +291,11 @@ function fillDemoAccount(acc) {
     timeout: 1200,
     dense: true,
   })
+}
+
+function toggleTheme() {
+  $q.dark.toggle()
+  localStorage.setItem('slt_legaledge_dark_mode', $q.dark.isActive ? 'true' : 'false')
 }
 
 // ── LOGIN HANDLER ──────────────────────────────────────────────
