@@ -1130,6 +1130,28 @@ const submitting = ref(false)
 const docFormRef = ref(null)
 const previewDoc = ref(null)
 
+function formatIsoDate(d) {
+  if (!d) return new Date().toISOString().split('T')[0]
+  if (typeof d === 'string' && d.includes('/')) {
+    const parts = d.split('/')
+    if (parts.length === 3) {
+      // If DD/MM/YYYY
+      if (parts[2].length === 4) {
+        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+      }
+    }
+  }
+  return d
+}
+
+async function withTimeout(promise, ms = 10000, fallbackMsg = 'Request timed out') {
+  let timeoutId
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(fallbackMsg)), ms)
+  })
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId))
+}
+
 const emptyForm = () => ({
   id: null,
   refNo: '',
@@ -1180,35 +1202,48 @@ function closeDialog() {
 
 async function submitForm() {
   const valid = await docFormRef.value?.validate()
-  if (!valid) return
+  if (!valid) {
+    $q.notify({ type: 'warning', message: 'Please fill in all required fields.', timeout: 2500 })
+    return
+  }
 
   submitting.value = true
   try {
+    const cleanExposure = Number(String(form.value.financialExposure || '0').replace(/[^0-9.]/g, '')) || 0
+    const cleanDate = formatIsoDate(form.value.dateOfOccurrence)
+    const cleanRef = (form.value.referenceNumber || '').trim() || `REF-${Date.now().toString().slice(-6)}`
+    const cleanUserId = authStore.profile?.id || authStore.user?.id || null
+
     const payload = {
-      reference_number: form.value.referenceNumber,
+      reference_number: cleanRef,
       case_title: form.value.caseTitle,
-      case_type: form.value.caseType,
+      case_type: form.value.caseType || 'Other',
       plaintiff: form.value.plaintiff,
       defendant: form.value.defendant,
-      parties_involved: form.value.partiesInvolved,
+      parties_involved: form.value.partiesInvolved || '',
       nature_of_case: form.value.natureOfCase,
-      date_of_occurrence: form.value.dateOfOccurrence,
-      financial_exposure: form.value.financialExposure,
+      date_of_occurrence: cleanDate,
+      financial_exposure: cleanExposure,
       summary_of_facts: form.value.summaryOfFacts,
-      submitted_by: authStore.profile?.id || authStore.user?.id,
+      submitted_by: cleanUserId,
       status: 'Pending',
     }
 
     if (isEditMode.value) {
-      const { error } = await supabase
-        .from('initial_documents')
-        .update(payload)
-        .eq('id', form.value.id)
+      const { error } = await withTimeout(
+        supabase.from('initial_documents').update(payload).eq('id', form.value.id),
+        12000,
+        'Server took too long to update document'
+      )
 
       if (error) throw error
       $q.notify({ type: 'positive', message: 'Document updated successfully.', icon: 'edit' })
     } else {
-      const { error } = await supabase.from('initial_documents').insert([payload])
+      const { error } = await withTimeout(
+        supabase.from('initial_documents').insert([payload]),
+        12000,
+        'Server took too long to save document'
+      )
 
       if (error) throw error
       $q.notify({
@@ -1217,11 +1252,21 @@ async function submitForm() {
         icon: 'check_circle',
       })
     }
-    await fetchDocuments() // Refresh list
+    
+    // Close dialog immediately on success
     showFormDialog.value = false
+    await fetchDocuments()
   } catch (err) {
     console.error('Submission error:', err)
-    $q.notify({ type: 'negative', message: 'Failed to save document to database.' })
+    let msg = 'Failed to save document to database.'
+    if (err.message?.includes('duplicate key') || err.message?.includes('unique constraint')) {
+      msg = 'Reference Number already exists. Please enter a unique Reference Number.'
+    } else if (err.message?.includes('too long') || err.message?.includes('timed out')) {
+      msg = 'Connection timeout. Please check internet connection and try again.'
+    } else if (err.message) {
+      msg = err.message
+    }
+    $q.notify({ type: 'negative', message: msg, timeout: 4000 })
   } finally {
     submitting.value = false
   }
