@@ -75,7 +75,7 @@
         <div class="col-6 col-sm-3">
           <q-select
             v-model="filterStatus"
-            :options="['All', ...workflowStages.map((s) => s.label)]"
+            :options="[{ label: 'All', value: 'All' }, ...workflowStages.map((s) => ({ label: $t(s.label), value: s.key }))]"
             dense
             outlined
             label="Status"
@@ -1102,10 +1102,41 @@ function stepCircleColor(idx, status) {
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
-//  DATABASE STATE
+//  DATABASE STATE & HELPERS
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const agreements = ref([])
 const loading = ref(false)
+
+function formatIsoDate(d) {
+  if (!d) return new Date().toISOString().split('T')[0]
+  if (typeof d === 'string') {
+    const s = d.trim()
+    if (s.includes('/')) {
+      const parts = s.split('/')
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+        } else if (parts[2].length === 4) {
+          const n0 = parseInt(parts[0], 10)
+          if (n0 > 12) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+          } else {
+            return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`
+          }
+        }
+      }
+    }
+  }
+  return d
+}
+
+async function withTimeout(promise, ms = 10000, fallbackMsg = 'Request timed out') {
+  let timeoutId
+  const timeoutPromise = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => reject(new Error(fallbackMsg)), ms)
+  })
+  return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timeoutId))
+}
 
 async function fetchAgreements() {
   loading.value = true
@@ -1115,11 +1146,15 @@ async function fetchAgreements() {
     // RBAC: All legal staff see all agreements for transparency.
     // Filtering is only for actions (Approve/Reject), not visibility.
 
-    const { data, error } = await query.order('created_at', { ascending: false })
+    const { data, error } = await withTimeout(
+      query.order('created_at', { ascending: false }),
+      10000,
+      'Failed to load agreements'
+    )
 
     if (error) throw error
 
-    agreements.value = data.map((a) => ({
+    agreements.value = (data || []).map((a) => ({
       ...a,
       agreementType: a.agreement_type,
       referenceNo: a.reference_no,
@@ -1315,28 +1350,41 @@ async function submitForm() {
 
   try {
     const cleanVal = Number(String(form.value.value || '0').replace(/[^0-9.]/g, '')) || 0
+    const cleanStartDate = formatIsoDate(form.value.startDate)
+    const cleanExpiryDate = formatIsoDate(form.value.expiryDate)
+    const cleanRef = (form.value.referenceNo || '').trim() || `AGR/${Date.now().toString().slice(-6)}`
+    const cleanCreatedBy = authStore.profile?.id || authStore.user?.id || null
+
     const payload = {
       title: form.value.title,
       agreement_type: form.value.agreementType,
-      reference_no: form.value.referenceNo,
+      reference_no: cleanRef,
       party1: form.value.party1,
       party2: form.value.party2,
       value: cleanVal,
-      start_date: form.value.startDate,
-      expiry_date: form.value.expiryDate,
-      description: form.value.description,
-      linked_case_no: form.value.linkedCaseNo,
+      start_date: cleanStartDate,
+      expiry_date: cleanExpiryDate,
+      description: form.value.description || '',
+      linked_case_no: form.value.linkedCaseNo || null,
       status: isEditMode.value ? form.value.status : 'Draft',
-      created_by: authStore.user?.id,
+      created_by: cleanCreatedBy,
       updated_at: new Date().toISOString(),
     }
 
     if (isEditMode.value) {
-      const { error } = await supabase.from('agreements').update(payload).eq('id', form.value.id)
+      const { error } = await withTimeout(
+        supabase.from('agreements').update(payload).eq('id', form.value.id),
+        12000,
+        'Server took too long to update agreement'
+      )
       if (error) throw error
       $q.notify({ type: 'positive', message: 'Agreement updated.', icon: 'edit' })
     } else {
-      const { error } = await supabase.from('agreements').insert([payload])
+      const { error } = await withTimeout(
+        supabase.from('agreements').insert([payload]),
+        12000,
+        'Server took too long to save agreement'
+      )
       if (error) throw error
       $q.notify({ type: 'positive', message: 'Agreement saved as Draft.', icon: 'save' })
     }
@@ -1345,7 +1393,15 @@ async function submitForm() {
     closeDialog()
   } catch (err) {
     console.error('Submit error:', err)
-    $q.notify({ type: 'negative', message: 'Failed to save agreement' })
+    let msg = 'Failed to save agreement.'
+    if (err.message?.includes('duplicate key') || err.message?.includes('unique constraint')) {
+      msg = 'Agreement Reference Number already exists. Please use a unique reference number.'
+    } else if (err.message?.includes('too long') || err.message?.includes('timed out')) {
+      msg = 'Connection timeout. Please check internet connection and try again.'
+    } else if (err.message) {
+      msg = err.message
+    }
+    $q.notify({ type: 'negative', message: msg, timeout: 4000 })
   } finally {
     submitting.value = false
   }

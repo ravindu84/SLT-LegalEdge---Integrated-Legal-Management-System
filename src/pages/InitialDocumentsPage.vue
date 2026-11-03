@@ -1132,12 +1132,21 @@ const previewDoc = ref(null)
 
 function formatIsoDate(d) {
   if (!d) return new Date().toISOString().split('T')[0]
-  if (typeof d === 'string' && d.includes('/')) {
-    const parts = d.split('/')
-    if (parts.length === 3) {
-      // If DD/MM/YYYY
-      if (parts[2].length === 4) {
-        return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+  if (typeof d === 'string') {
+    const s = d.trim()
+    if (s.includes('/')) {
+      const parts = s.split('/')
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`
+        } else if (parts[2].length === 4) {
+          const n0 = parseInt(parts[0], 10)
+          if (n0 > 12) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`
+          } else {
+            return `${parts[2]}-${parts[0].padStart(2, '0')}-${parts[1].padStart(2, '0')}`
+          }
+        }
       }
     }
   }

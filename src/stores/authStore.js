@@ -30,6 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
   // ── Actions ─────────────────────────────────────────────────────
 
   let initPromise = null
+  let authListenerRegistered = false
 
   /**
    * Initialize auth state — call on app startup
@@ -51,18 +52,23 @@ export const useAuthStore = defineStore('auth', () => {
           await fetchProfile()
         }
 
-        // Listen for auth state changes
-        supabase.auth.onAuthStateChange(async (event, session) => {
-          if (event === 'SIGNED_IN' && session?.user) {
-            user.value = session.user
-            isLoggedIn.value = true
-            await fetchProfile()
-          } else if (event === 'SIGNED_OUT') {
-            user.value = null
-            profile.value = null
-            isLoggedIn.value = false
-          }
-        })
+        // Register listener only once and defer callbacks to prevent mutex deadlock
+        if (!authListenerRegistered) {
+          authListenerRegistered = true
+          supabase.auth.onAuthStateChange((event, session) => {
+            setTimeout(async () => {
+              if (event === 'SIGNED_IN' && session?.user) {
+                user.value = session.user
+                isLoggedIn.value = true
+                await fetchProfile()
+              } else if (event === 'SIGNED_OUT') {
+                user.value = null
+                profile.value = null
+                isLoggedIn.value = false
+              }
+            }, 0)
+          })
+        }
       } catch (err) {
         console.error('Auth init error:', err)
       } finally {

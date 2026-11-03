@@ -373,7 +373,7 @@ async function fetchDashboardData() {
     const { data: pendingApprovals } = await supabase
       .from('agreements')
       .select('*')
-      .in('status', ['Pending L1 Approval', 'Pending L2 Approval', 'Under Review', 'Approval'])
+      .in('status', ['Pending L1 Approval', 'Pending L2 Approval', 'Under Review'])
       .limit(10)
 
     approvalItems.value = pendingApprovals?.map(item => {
