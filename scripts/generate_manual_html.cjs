@@ -1,153 +1,151 @@
 const fs = require('fs');
 const path = require('path');
 
-const mdPath = path.join(__dirname, '../docs/SLT_LegalEdge_Definitive_System_Manual_SI.md');
-const outPath = path.join(__dirname, '../docs/SLT_LegalEdge_Definitive_System_Manual_SI.html');
+function generateHtml(mdPath, outPath, lang = 'en', title = 'SLT LegalEdge - Definitive System Manual') {
+  let md = fs.readFileSync(mdPath, 'utf8');
 
-let md = fs.readFileSync(mdPath, 'utf8');
+  function renderMarkdown(content) {
+    const lines = content.split('\n');
+    let inTable = false;
+    let inMermaid = false;
+    let mermaidCode = [];
+    let html = [];
 
-function renderMarkdown(content) {
-  const lines = content.split('\n');
-  let inTable = false;
-  let inMermaid = false;
-  let mermaidCode = [];
-  let html = [];
+    for (let i = 0; i < lines.length; i++) {
+      let line = lines[i];
 
-  for (let i = 0; i < lines.length; i++) {
-    let line = lines[i];
+      // Mermaid code block start
+      if (line.trim().startsWith('```mermaid')) {
+        inMermaid = true;
+        mermaidCode = [];
+        continue;
+      }
+      if (inMermaid) {
+        if (line.trim().startsWith('```')) {
+          inMermaid = false;
+          html.push(`<div class="mermaid-container"><pre class="mermaid">${mermaidCode.join('\n')}</pre></div>`);
+          continue;
+        }
+        mermaidCode.push(line);
+        continue;
+      }
 
-    // Mermaid code block start
-    if (line.trim().startsWith('```mermaid')) {
-      inMermaid = true;
-      mermaidCode = [];
-      continue;
-    }
-    if (inMermaid) {
+      // Skip generic code fences
       if (line.trim().startsWith('```')) {
-        inMermaid = false;
-        html.push(`<div class="mermaid-container"><pre class="mermaid">${mermaidCode.join('\n')}</pre></div>`);
         continue;
       }
-      mermaidCode.push(line);
-      continue;
-    }
 
-    // Skip generic code fences
-    if (line.trim().startsWith('```')) {
-      continue;
-    }
+      // Images
+      const imgMatch = line.match(/^!\[(.*?)\]\((.*?)\)/);
+      if (imgMatch) {
+        const caption = imgMatch[1];
+        const relPath = imgMatch[2];
+        const absPath = path.resolve(path.dirname(mdPath), relPath);
+        let imgSrc = relPath;
 
-    // Images
-    const imgMatch = line.match(/^!\[(.*?)\]\((.*?)\)/);
-    if (imgMatch) {
-      const caption = imgMatch[1];
-      const relPath = imgMatch[2];
-      const absPath = path.resolve(path.dirname(mdPath), relPath);
-      let imgSrc = relPath;
+        if (fs.existsSync(absPath)) {
+          const ext = path.extname(absPath).slice(1);
+          const b64 = fs.readFileSync(absPath).toString('base64');
+          imgSrc = `data:image/${ext};base64,${b64}`;
+        }
 
-      if (fs.existsSync(absPath)) {
-        const ext = path.extname(absPath).slice(1);
-        const b64 = fs.readFileSync(absPath).toString('base64');
-        imgSrc = `data:image/${ext};base64,${b64}`;
-      }
-
-      html.push(`
-        <div class="img-container">
-          <img src="${imgSrc}" alt="${caption}" />
-          <div class="caption">📸 ${caption}</div>
-        </div>
-      `);
-      continue;
-    }
-
-    // Headers
-    if (line.startsWith('# ')) {
-      html.push(`<h1>${line.slice(2)}</h1>`);
-      continue;
-    }
-    if (line.startsWith('## ')) {
-      html.push(`<h2>${line.slice(3)}</h2>`);
-      continue;
-    }
-    if (line.startsWith('### ')) {
-      html.push(`<h3>${line.slice(4)}</h3>`);
-      continue;
-    }
-    if (line.startsWith('#### ')) {
-      html.push(`<h4>${line.slice(5)}</h4>`);
-      continue;
-    }
-
-    // Horizontal Rule
-    if (line.trim() === '---') {
-      html.push('<hr/>');
-      continue;
-    }
-
-    // Blockquote
-    if (line.startsWith('> ')) {
-      html.push(`<blockquote>${line.slice(2)}</blockquote>`);
-      continue;
-    }
-
-    // Tables
-    if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
-      if (!inTable) {
-        inTable = true;
-        html.push('<table>');
-        const headers = line.split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
-        html.push(`<thead><tr>${headers}</tr></thead><tbody>`);
-        i++; // skip separator line |:---|:---|
-        continue;
-      } else {
-        const cols = line.split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
-        html.push(`<tr>${cols}</tr>`);
+        html.push(`
+          <div class="img-container">
+            <img src="${imgSrc}" alt="${caption}" />
+            <div class="caption">📸 ${caption}</div>
+          </div>
+        `);
         continue;
       }
-    } else if (inTable) {
-      inTable = false;
-      html.push('</tbody></table>');
+
+      // Headers
+      if (line.startsWith('# ')) {
+        html.push(`<h1>${line.slice(2)}</h1>`);
+        continue;
+      }
+      if (line.startsWith('## ')) {
+        html.push(`<h2>${line.slice(3)}</h2>`);
+        continue;
+      }
+      if (line.startsWith('### ')) {
+        html.push(`<h3>${line.slice(4)}</h3>`);
+        continue;
+      }
+      if (line.startsWith('#### ')) {
+        html.push(`<h4>${line.slice(5)}</h4>`);
+        continue;
+      }
+
+      // Horizontal Rule
+      if (line.trim() === '---') {
+        html.push('<hr/>');
+        continue;
+      }
+
+      // Blockquote
+      if (line.startsWith('> ')) {
+        html.push(`<blockquote>${line.slice(2)}</blockquote>`);
+        continue;
+      }
+
+      // Tables
+      if (line.trim().startsWith('|') && line.trim().endsWith('|')) {
+        if (!inTable) {
+          inTable = true;
+          html.push('<table>');
+          const headers = line.split('|').filter(c => c.trim().length > 0).map(c => `<th>${c.trim()}</th>`).join('');
+          html.push(`<thead><tr>${headers}</tr></thead><tbody>`);
+          i++; // skip separator line |:---|:---|
+          continue;
+        } else {
+          const cols = line.split('|').filter(c => c.trim().length > 0).map(c => `<td>${c.trim()}</td>`).join('');
+          html.push(`<tr>${cols}</tr>`);
+          continue;
+        }
+      } else if (inTable) {
+        inTable = false;
+        html.push('</tbody></table>');
+      }
+
+      // List items
+      if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+        html.push(`<li>${line.trim().slice(2)}</li>`);
+        continue;
+      }
+
+      const numMatch = line.trim().match(/^(\d+)\.\s+(.*)/);
+      if (numMatch) {
+        html.push(`<li><strong>${numMatch[1]}.</strong> ${numMatch[2]}</li>`);
+        continue;
+      }
+
+      // Paragraph
+      if (line.trim().length > 0) {
+        html.push(`<p>${line}</p>`);
+      }
     }
 
-    // List items
-    if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
-      html.push(`<li>${line.trim().slice(2)}</li>`);
-      continue;
-    }
+    if (inTable) html.push('</tbody></table>');
 
-    const numMatch = line.trim().match(/^(\d+)\.\s+(.*)/);
-    if (numMatch) {
-      html.push(`<li><strong>${numMatch[1]}.</strong> ${numMatch[2]}</li>`);
-      continue;
-    }
+    let finalHtml = html.join('\n');
 
-    // Paragraph
-    if (line.trim().length > 0) {
-      html.push(`<p>${line}</p>`);
-    }
+    // Inline formatting
+    finalHtml = finalHtml
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/`([^`]+)`/g, '<code>$1</code>')
+      .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+    return finalHtml;
   }
 
-  if (inTable) html.push('</tbody></table>');
+  const rendered = renderMarkdown(md);
 
-  let finalHtml = html.join('\n');
-
-  // Inline formatting
-  finalHtml = finalHtml
-    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank">$1</a>');
-
-  return finalHtml;
-}
-
-const rendered = renderMarkdown(md);
-
-const fullHtml = `<!DOCTYPE html>
-<html lang="si">
+  const fullHtml = `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SLT LegalEdge - Definitive System Manual (නිරූපණ අත්පොත)</title>
+  <title>${title}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -348,5 +346,16 @@ const fullHtml = `<!DOCTYPE html>
 </body>
 </html>`;
 
-fs.writeFileSync(outPath, fullHtml);
-console.log('Self-contained HTML successfully generated at:', outPath);
+  fs.writeFileSync(outPath, fullHtml);
+  console.log(`Generated: ${outPath} (${(fs.statSync(outPath).size / 1024 / 1024).toFixed(2)} MB)`);
+}
+
+// 1. Sinhala Manual
+const siMd = path.join(__dirname, '../docs/SLT_LegalEdge_Definitive_System_Manual_SI.md');
+const siHtml = path.join(__dirname, '../docs/SLT_LegalEdge_Definitive_System_Manual_SI.html');
+generateHtml(siMd, siHtml, 'si', 'SLT LegalEdge - Definitive System Manual (නිරූපණ අත්පොත)');
+
+// 2. English Manual
+const enMd = path.join(__dirname, '../docs/SLT_LegalEdge_Definitive_System_Manual_EN.md');
+const enHtml = path.join(__dirname, '../docs/SLT_LegalEdge_Definitive_System_Manual_EN.html');
+generateHtml(enMd, enHtml, 'en', 'SLT LegalEdge - Definitive System Manual (English Edition)');
