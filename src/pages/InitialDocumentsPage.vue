@@ -718,7 +718,7 @@
 
         <q-card-actions align="right" class="q-pa-md">
           <q-btn
-            v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status)"
+            v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status) && ['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
             flat
             no-caps
             color="positive"
@@ -727,7 +727,7 @@
             @click="handleApprove(selectedDoc)"
           />
           <q-btn
-            v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status)"
+            v-if="selectedDoc && !['Approved', 'Rejected'].includes(selectedDoc.status) && ['admin', 'supervisor', 'manager'].includes(authStore.profile?.role)"
             flat
             no-caps
             color="negative"
@@ -1348,9 +1348,38 @@ async function executeAction() {
 
     if (error) throw error
 
+    // Automatically spawn active Legal Case upon Approval
+    if (pendingAction.value === 'Approve') {
+      const doc = pendingDoc.value
+      const year = new Date().getFullYear()
+      const rand = String(Math.floor(100 + Math.random() * 900))
+      const caseNo = `LC/${year}/${rand}`
+      try {
+        await supabase.from('legal_cases').insert([
+          {
+            case_no: caseNo,
+            title: doc.caseTitle || doc.title,
+            case_type: doc.caseType || 'Other',
+            status: 'Active',
+            initial_document_id: doc.id,
+            plaintiff: doc.plaintiff || 'Sri Lanka Telecom PLC',
+            defendant: doc.defendant || 'Third Party',
+            nature_of_case: doc.natureOfCase || doc.summaryOfFacts || '',
+            financial_exposure: doc.financialExposure || 0,
+            summary_of_facts: doc.summaryOfFacts || '',
+            assigned_lawyer: authStore.profile?.full_name || 'Legal Officer',
+            court: doc.courtAuthority || 'Commercial High Court Colombo',
+            filed_date: new Date().toISOString().split('T')[0]
+          }
+        ])
+      } catch (caseSpawnErr) {
+        console.error('Failed to auto-spawn legal case:', caseSpawnErr)
+      }
+    }
+
     $q.notify({
       type: pendingAction.value === 'Approve' ? 'positive' : 'negative',
-      message: `Document #${pendingDoc.value.refNo} has been ${pendingAction.value === 'Approve' ? 'approved' : 'rejected'}.`,
+      message: `Document #${pendingDoc.value.refNo} has been ${pendingAction.value === 'Approve' ? 'approved and converted into a Legal Case' : 'rejected'}.`,
       icon: pendingAction.value === 'Approve' ? 'check_circle' : 'cancel',
     })
     await fetchDocuments()

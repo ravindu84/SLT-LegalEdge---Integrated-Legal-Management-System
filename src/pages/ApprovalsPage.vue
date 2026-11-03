@@ -1074,6 +1074,34 @@ async function confirmAction() {
         })
         .eq('id', item.id)
       if (upErr) throw upErr
+
+      // Automatically spawn active Legal Case upon Approval
+      if (isApprove) {
+        const year = new Date().getFullYear()
+        const rand = String(Math.floor(100 + Math.random() * 900))
+        const caseNo = `LC/${year}/${rand}`
+        try {
+          await supabase.from('legal_cases').insert([
+            {
+              case_no: caseNo,
+              title: item.title || item.case_title,
+              case_type: item.caseType || item.case_type || 'Other',
+              status: 'Active',
+              initial_document_id: item.id,
+              plaintiff: item.plaintiff || 'Sri Lanka Telecom PLC',
+              defendant: item.defendant || 'Third Party',
+              nature_of_case: item.nature_of_case || item.summary_of_facts || '',
+              financial_exposure: item.financial_exposure || item.financialExposure || 0,
+              summary_of_facts: item.summary_of_facts || item.summaryOfFacts || '',
+              assigned_lawyer: item.submittedBy || 'Legal Officer',
+              court: item.court_authority || 'Commercial High Court Colombo',
+              filed_date: new Date().toISOString().split('T')[0]
+            }
+          ])
+        } catch (csErr) {
+          console.error('Failed to auto-spawn legal case from approvals:', csErr)
+        }
+      }
     }
 
     $q.notify({
