@@ -1,19 +1,19 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div :class="['row items-center q-mb-md', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="handshake" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="handshake" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('agreements.title') }}
         </div>
         <div class="text-caption text-grey-6">
           {{ $t('agreements.subtitle') }}
         </div>
       </div>
-      <div class="col-auto row q-gutter-sm">
-        <q-btn outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
+      <div :class="['col-auto row q-gutter-sm', $q.screen.lt.md ? 'q-mt-sm full-width' : '']">
         <q-btn
+          :class="$q.screen.lt.md ? 'col' : ''"
           unelevated
           color="primary"
           icon="add"
@@ -21,6 +21,7 @@
           no-caps
           @click="openCreateDialog"
         />
+        <q-btn v-if="!$q.screen.lt.md" outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
       </div>
     </div>
 
@@ -28,8 +29,8 @@
     <q-card flat bordered class="q-mb-md">
       <q-card-section class="q-py-sm">
         <div class="text-caption text-weight-bold text-grey-6 q-mb-sm">APPROVAL PIPELINE</div>
-        <div class="row items-center q-col-gutter-xs">
-          <div v-for="(stage, idx) in workflowStages" :key="stage.key" class="col">
+        <div :class="['row items-center q-col-gutter-xs', $q.screen.lt.md ? 'no-wrap scroll' : '']" :style="$q.screen.lt.md ? 'overflow-x: auto; padding-bottom: 8px;' : ''">
+          <div v-for="(stage, idx) in workflowStages" :key="stage.key" :class="[$q.screen.lt.md ? 'col-auto' : 'col']" :style="$q.screen.lt.md ? 'min-width: 100px;' : ''">
             <div
               class="slt-pipeline-stage"
               :class="{
@@ -50,9 +51,9 @@
                 {{ $t(stage.label) }}
               </div>
             </div>
-            <!-- Arrow between stages -->
+            <!-- Arrow between stages - only on desktop -->
             <q-icon
-              v-if="idx < workflowStages.length - 1"
+              v-if="idx < workflowStages.length - 1 && !$q.screen.lt.md"
               name="chevron_right"
               color="grey-4"
               size="16px"
@@ -67,7 +68,7 @@
     <q-card flat bordered class="q-mb-md">
       <q-card-section class="row q-col-gutter-sm items-center q-py-sm">
         <div class="col-12 col-sm-4">
-          <q-input v-model="filter" dense outlined clearable placeholder="Search agreements…">
+          <q-input v-model="filter" dense outlined clearable :placeholder="$q.screen.lt.md ? 'Search…' : 'Search agreements…'">
             <template #prepend><q-icon name="search" /></template>
           </q-input>
         </div>
@@ -111,10 +112,37 @@
         row-key="id"
         :filter="filter"
         :pagination="{ rowsPerPage: 8 }"
+        :grid="$q.screen.lt.md"
         flat
         class="slt-table"
         no-data-label="No agreements found"
       >
+        <!-- Custom Grid Item for Mobile -->
+        <template v-if="$q.screen.lt.md" v-slot:item="props">
+          <div class="q-pa-xs col-xs-12 col-sm-6">
+            <q-card flat bordered class="exec-case-card" @click="viewAgreement(props.row)">
+              <q-card-section class="q-pa-md">
+                <div class="row justify-between items-start no-wrap q-mb-sm">
+                  <div class="text-weight-bold text-primary col ellipsis">{{ props.row.referenceNo }}</div>
+                  <q-badge rounded :color="statusMeta(props.row.status).color" :label="props.row.status" />
+                </div>
+                <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.title }}</div>
+                <div class="text-caption text-grey-7 q-mb-md">
+                  <q-icon name="people" size="14px" class="q-mr-xs" />{{ props.row.party2 }}
+                </div>
+                
+                <div class="row justify-between items-center">
+                  <q-chip dense size="sm" icon="event" color="grey-3" text-color="grey-9">
+                    Exp: {{ props.row.expiryDate || '—' }}
+                  </q-chip>
+                  <div class="text-caption text-weight-bold" v-if="props.row.value">
+                    LKR {{ fmt(props.row.value) }}
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </template>
         <!-- Title -->
         <template #body-cell-title="props">
           <q-td :props="props">
@@ -285,8 +313,8 @@
     <!-- ═══════════════════════════════════════════════════════════
          CREATE / EDIT DIALOG
     ════════════════════════════════════════════════════════════ -->
-    <q-dialog v-model="showFormDialog" persistent>
-      <q-card style="width: 720px; max-width: 95vw">
+    <q-dialog v-model="showFormDialog" persistent :maximized="$q.screen.lt.md">
+      <q-card :style="$q.screen.lt.md ? '' : 'width: 720px; max-width: 95vw'">
         <q-bar class="slt-dialog-bar text-white">
           <q-icon name="handshake" />
           <div class="text-weight-bold q-ml-sm">
@@ -449,8 +477,8 @@
     <!-- ═══════════════════════════════════════════════════════════
          VIEW DETAILS DIALOG
     ════════════════════════════════════════════════════════════ -->
-    <q-dialog v-model="showViewDialog" persistent>
-      <q-card v-if="selected" style="width: 780px; max-width: 95vw">
+    <q-dialog v-model="showViewDialog" persistent :maximized="$q.screen.lt.md">
+      <q-card v-if="selected" :style="$q.screen.lt.md ? '' : 'width: 780px; max-width: 95vw'">
         <q-bar class="slt-dialog-bar text-white">
           <q-icon name="handshake" />
           <div class="text-weight-bold q-ml-sm col ellipsis">{{ selected.title }}</div>

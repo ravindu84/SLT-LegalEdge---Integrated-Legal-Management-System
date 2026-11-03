@@ -10,18 +10,19 @@
         <q-toolbar-title class="exec-brand cursor-pointer" @click="$router.push('/')">
           <img
             src="~assets/logo-main.png"
-            style="
-              height: 38px;
-              vertical-align: middle;
-              mix-blend-mode: screen;
-              filter: brightness(1.2) contrast(1.1);
-            "
+            :style="{
+              height: $q.screen.lt.md ? '30px' : '38px',
+              verticalAlign: 'middle',
+              mixBlendMode: 'screen',
+              filter: 'brightness(1.2) contrast(1.1)',
+            }"
             class="q-mr-sm"
           />
         </q-toolbar-title>
 
-        <!-- Global Search -->
+        <!-- Global Search - Hidden on Small Screens -->
         <q-input
+          v-if="!$q.screen.lt.md"
           v-model="globalSearch"
           dense
           outlined
@@ -54,14 +55,9 @@
           <q-badge v-if="notifStore.unreadCount" color="negative" floating>
             {{ notifStore.unreadCount }}
           </q-badge>
-          <q-tooltip>{{ $t('common.notifications') }}</q-tooltip>
         </q-btn>
 
-        <q-btn flat round dense icon="help_outline" color="white" class="q-mr-sm" :to="'/help'">
-          <q-tooltip>{{ $t('common.help') }}</q-tooltip>
-        </q-btn>
-
-        <!-- Quick Language Switcher -->
+        <!-- Quick Language Switcher - Icon only on mobile -->
         <q-btn-dropdown flat round dense icon="language" color="white" class="q-mr-xs">
           <q-list style="min-width: 150px">
             <q-item clickable v-close-popup @click="changeLang('en-US')">
@@ -83,28 +79,19 @@
               <q-item-section>தமிழ்</q-item-section>
             </q-item>
           </q-list>
-          <q-tooltip>{{ $t('settings.language') }}</q-tooltip>
         </q-btn-dropdown>
 
-        <!-- Quick Dark Mode Toggle -->
-        <q-btn
-          flat
-          round
-          dense
-          :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
-          color="white"
-          class="q-mr-xs"
-          @click="$q.dark.toggle()"
-        >
-          <q-tooltip>{{
-            $q.dark.isActive ? $t('settings.lightEnabled') : $t('settings.darkEnabled')
-          }}</q-tooltip>
+        <q-separator vertical inset color="white" class="q-mx-sm opacity-30" v-if="!$q.screen.lt.md" />
+
+        <!-- User profile - Condensed on mobile -->
+        <q-btn flat no-caps color="white" class="q-ml-sm" v-if="$q.screen.lt.md" :to="'/profile'">
+          <q-avatar size="28px">
+            <img v-if="authStore.userAvatar" :src="authStore.userAvatar" />
+            <template v-else>{{ authStore.userInitials }}</template>
+          </q-avatar>
         </q-btn>
-
-        <q-separator vertical inset color="white" class="q-mx-sm opacity-30" />
-
-        <!-- User dropdown -->
-        <q-btn-dropdown flat no-caps color="white" class="q-ml-sm">
+        
+        <q-btn-dropdown flat no-caps color="white" class="q-ml-sm" v-else>
           <template #label>
             <q-avatar
               size="32px"
@@ -136,8 +123,8 @@
         </q-btn-dropdown>
       </q-toolbar>
 
-      <!-- Breadcrumbs -->
-      <div class="exec-breadcrumb q-px-md q-py-xs" v-if="breadcrumbs.length">
+      <!-- Breadcrumbs - Hidden on small screens to save space -->
+      <div class="exec-breadcrumb q-px-md q-py-xs" v-if="breadcrumbs.length && !$q.screen.lt.md">
         <q-breadcrumbs active-color="white" class="text-white opacity-80" separator="›">
           <q-breadcrumbs-el
             v-for="crumb in breadcrumbs"
@@ -151,7 +138,14 @@
     </q-header>
 
     <!-- ─── LEFT SIDEBAR ────────────────────────────────────── -->
-    <q-drawer v-model="leftDrawerOpen" show-if-above bordered dark class="exec-drawer">
+    <q-drawer 
+      v-model="leftDrawerOpen" 
+      :show-if-above="!$q.screen.lt.md" 
+      :behavior="$q.screen.lt.md ? 'mobile' : 'desktop'"
+      bordered 
+      dark 
+      class="exec-drawer"
+    >
       <!-- Profile section -->
       <div class="exec-drawer-profile column items-center q-py-md">
         <q-avatar
@@ -239,11 +233,30 @@
       <router-view />
     </q-page-container>
 
-    <!-- ─── NOTIFICATION DRAWER ─────────────────────────────── -->
-    <NotificationsDrawer v-model="showNotifDrawer" />
+    <!-- ─── MOBILE BOTTOM NAV ──────────────────────────────── -->
+    <q-footer v-if="$q.screen.lt.md" class="bg-white text-primary border-top" elevated>
+      <q-tabs
+        v-model="currentTab"
+        indicator-color="transparent"
+        active-color="primary"
+        class="exec-mobile-tabs"
+        align="justify"
+        dense
+      >
+        <q-route-tab to="/" icon="dashboard" :label="$t('nav.dashboard')" no-caps />
+        <q-route-tab to="/cases" icon="gavel" :label="$t('nav.legalCases')" no-caps />
+        <q-route-tab to="/approvals" icon="verified" :label="$t('nav.approvals')" no-caps>
+          <q-badge v-if="notifStore.unreadCount" color="negative" floating>{{ notifStore.unreadCount }}</q-badge>
+        </q-route-tab>
+        <q-route-tab to="/profile" icon="person" :label="$t('common.myProfile')" no-caps />
+      </q-tabs>
+    </q-footer>
 
     <!-- ─── AI COPILOT CHAT ──────────────────────────────────── -->
-    <AiCopilotChat />
+    <AiCopilotChat :style="{ bottom: $q.screen.lt.md ? '60px' : '20px' }" />
+
+    <!-- ─── NOTIFICATIONS DRAWER ──────────────────────────────── -->
+    <NotificationsDrawer v-model="showNotifDrawer" />
   </q-layout>
 </template>
 
@@ -271,6 +284,7 @@ onMounted(() => {
 const leftDrawerOpen = ref(false)
 const showNotifDrawer = ref(false)
 const globalSearch = ref('')
+const currentTab = ref('dashboard')
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value
@@ -557,5 +571,26 @@ const navItems = computed(() => {
     color: #fff !important;
     font-weight: 700;
   }
+}
+
+// ── Mobile Specific ──────────────────────────────────────────
+.exec-mobile-tabs {
+  height: 65px;
+  background: white;
+  color: #64748b;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+
+  :deep(.q-tab__icon) {
+    font-size: 24px;
+    margin-bottom: 2px;
+  }
+  :deep(.q-tab__label) {
+    font-size: 0.65rem;
+    font-weight: 600;
+  }
+}
+
+.border-top {
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
 }
 </style>

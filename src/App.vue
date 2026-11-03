@@ -38,12 +38,14 @@
 
 <script setup>
 import { onMounted, ref, watch } from 'vue'
+import { useQuasar } from 'quasar'
 import { useAuthStore } from 'src/stores/authStore'
 import { useSyncStore } from 'src/stores/syncStore'
 import { SecurityService } from 'src/services/SecurityService'
 import { Capacitor } from '@capacitor/core'
 import { App } from '@capacitor/app'
 
+const $q = useQuasar()
 const authStore = useAuthStore()
 const syncStore = useSyncStore()
 const isUnlocked = ref(false)
@@ -73,6 +75,10 @@ async function checkBiometric() {
 }
 
 onMounted(async () => {
+  const savedDark = localStorage.getItem('slt_legaledge_dark_mode')
+  if (savedDark !== null) {
+    $q.dark.set(savedDark === 'true')
+  }
   // 1. Wait for Auth Store to initialize
   await authStore.init()
 

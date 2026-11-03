@@ -1,10 +1,10 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div :class="['row items-center q-mb-md', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="bar_chart" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="bar_chart" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('reports.title') }}
         </div>
         <div
@@ -22,7 +22,7 @@
           }}</strong>
         </div>
       </div>
-      <div class="col-auto row q-gutter-sm">
+      <div :class="['col-auto row q-gutter-sm', $q.screen.lt.md ? 'q-mt-sm full-width' : '']">
         <q-select
           v-model="timeframe"
           :options="periodOptions"
@@ -30,14 +30,14 @@
           map-options
           dense
           outlined
-          style="min-width: 150px"
-          :label="$t('reports.period')"
+          :style="$q.screen.lt.md ? 'flex: 1' : 'min-width: 150px'"
+          :label="$q.screen.lt.md ? '' : $t('reports.period')"
         />
         <q-btn-dropdown
           outline
           color="primary"
           icon="file_download"
-          :label="$t('reports.export')"
+          :label="$q.screen.lt.md ? '' : $t('reports.export')"
           size="sm"
           no-caps
         >
@@ -137,7 +137,7 @@
             <div class="row items-center q-col-gutter-lg">
               <!-- Doughnut chart -->
               <div class="col-12 col-sm-6">
-                <div style="position: relative; max-width: 280px; margin: 0 auto">
+                <div style="position: relative; max-width: 240px; margin: 0 auto">
                   <Doughnut :data="casesByTypeChartData" :options="doughnutOptions" />
                   <!-- Center label -->
                   <div class="slt-doughnut-center">
@@ -189,7 +189,7 @@
           </q-card-section>
           <q-separator />
           <q-card-section class="q-pa-md">
-            <q-markup-table flat dense separator="none" class="slt-mu-table q-mb-md">
+            <q-markup-table flat dense separator="none" class="slt-mu-table q-mb-md" :style="$q.screen.lt.md ? 'min-width: 300px; display: block; overflow-x: auto;' : ''">
               <thead>
                 <tr>
                   <th class="text-left">{{ $t('reports.status') }}</th>
@@ -325,7 +325,7 @@
             </div>
 
             <!-- Case-level breakdown table — DRILL-DOWN clickable -->
-            <q-markup-table flat dense bordered separator="horizontal" class="slt-mu-table">
+            <q-markup-table flat dense bordered separator="horizontal" class="slt-mu-table" :style="$q.screen.lt.md ? 'display: block; overflow-x: auto;' : ''">
               <thead>
                 <tr>
                   <th class="text-left">{{ $t('reports.caseNo') }}</th>
@@ -555,7 +555,7 @@
             >
               {{ $t('reports.lawyerWorkloadTitle') }}
             </div>
-            <q-markup-table flat dense separator="horizontal" class="slt-mu-table">
+            <q-markup-table flat dense separator="horizontal" class="slt-mu-table" :style="$q.screen.lt.md ? 'display: block; overflow-x: auto;' : ''">
               <thead>
                 <tr>
                   <th class="text-left">{{ $t('reports.attorney') }}</th>
@@ -734,7 +734,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { supabase } from 'src/boot/supabase'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
@@ -1033,12 +1033,14 @@ async function fetchDashboardData() {
   }
 }
 
+let casesChannel = null
+
 onMounted(() => {
   fetchDashboardData()
 
-  // Set up real-time subscriptions
-  const casesChannel = supabase
-    .channel('reports-db-changes')
+  // Set up real-time subscriptions with unique timestamp
+  casesChannel = supabase
+    .channel('reports-db-' + Date.now())
     .on('postgres_changes', { event: '*', schema: 'public', table: 'legal_cases' }, () => {
       fetchDashboardData()
     })
@@ -1053,10 +1055,12 @@ onMounted(() => {
       fetchDashboardData()
     })
     .subscribe()
+})
 
-  // Cleanup subscription on unmount
-  return () => {
+onUnmounted(() => {
+  if (casesChannel) {
     supabase.removeChannel(casesChannel)
+    casesChannel = null
   }
 })
 

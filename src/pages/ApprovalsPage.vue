@@ -1,19 +1,20 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div :class="['row items-center q-mb-md', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="task_alt" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="task_alt" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('approvals.title') }}
         </div>
         <div class="text-caption text-grey-6">
-          {{ $t('approvals.loggedInAs') }}: <strong>K. Fernando, AGM – Legal</strong> &nbsp;·&nbsp;
+          <template v-if="!$q.screen.lt.md">{{ $t('approvals.loggedInAs') }}: <strong>K. Fernando, AGM – Legal</strong> &nbsp;·&nbsp;</template>
           {{ $t('approvals.subtitle') }}
         </div>
       </div>
-      <div class="col-auto">
+      <div :class="['col-auto', $q.screen.lt.md ? 'q-mt-sm full-width' : '']">
         <q-btn
+          :class="$q.screen.lt.md ? 'full-width' : ''"
           outline
           color="primary"
           icon="refresh"
@@ -104,10 +105,41 @@
             :rows="pendingAgreements"
             :columns="agrmCols"
             row-key="id"
+            :grid="$q.screen.lt.md"
             flat
             class="slt-table"
             :pagination="{ rowsPerPage: 8 }"
           >
+            <!-- Custom Grid Item for Mobile -->
+            <template v-if="$q.screen.lt.md" v-slot:item="props">
+              <div class="q-pa-xs col-xs-12 col-sm-6">
+                <q-card flat bordered class="exec-case-card" @click="viewItem(props.row, 'agreement')">
+                  <q-card-section class="q-pa-md">
+                    <div class="row justify-between items-start no-wrap q-mb-sm">
+                      <div class="text-weight-bold text-primary col ellipsis">{{ props.row.referenceNo }}</div>
+                      <q-badge rounded color="warning" :label="props.row.status" />
+                    </div>
+                    <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.title }}</div>
+                    <div class="text-caption text-grey-7 q-mb-md">
+                      {{ props.row.agreementType }} &nbsp;·&nbsp; <q-icon name="timer" size="12px"/> {{ props.row.daysPending }}d
+                    </div>
+                    
+                    <div class="row justify-end q-gutter-sm items-center">
+                      <template v-if="canApproveAgreement(props.row)">
+                        <q-btn flat dense icon="check_circle" color="positive" label="Approve" size="sm" no-caps @click.stop="openAction(props.row, 'approve', 'agreement')" />
+                        <q-btn flat dense icon="cancel" color="negative" label="Reject" size="sm" no-caps @click.stop="openAction(props.row, 'reject', 'agreement')" />
+                      </template>
+                      <q-badge
+                        v-else
+                        outline
+                        :color="props.row.status === 'Pending L1 Approval' ? 'warning' : 'primary'"
+                        :label="props.row.status === 'Pending L1 Approval' ? 'Awaiting DGM (L1)' : 'Awaiting AGM (L2)'"
+                      />
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </template>
             <!-- Title cell -->
             <template #body-cell-title="props">
               <q-td :props="props">
@@ -168,29 +200,38 @@
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn
-                    unelevated
-                    dense
-                    color="positive"
-                    icon="check_circle"
-                    :label="
-                      props.row.status === 'Pending L1 Approval' ? 'L1 Approve' : 'L2 Final Approve'
-                    "
-                    size="sm"
-                    no-caps
-                    class="slt-btn-fixed q-px-sm"
-                    @click="openAction(props.row, 'approve', 'agreement')"
-                  />
-                  <q-btn
-                    unelevated
-                    dense
-                    color="negative"
-                    icon="cancel"
-                    label="Reject"
-                    size="sm"
-                    no-caps
-                    class="slt-btn-fixed q-px-sm"
-                    @click="openAction(props.row, 'reject', 'agreement')"
+                  <template v-if="canApproveAgreement(props.row)">
+                    <q-btn
+                      unelevated
+                      dense
+                      color="positive"
+                      icon="check_circle"
+                      :label="
+                        props.row.status === 'Pending L1 Approval' ? 'L1 Approve' : 'L2 Final Approve'
+                      "
+                      size="sm"
+                      no-caps
+                      class="slt-btn-fixed q-px-sm"
+                      @click="openAction(props.row, 'approve', 'agreement')"
+                    />
+                    <q-btn
+                      unelevated
+                      dense
+                      color="negative"
+                      icon="cancel"
+                      label="Reject"
+                      size="sm"
+                      no-caps
+                      class="slt-btn-fixed q-px-sm"
+                      @click="openAction(props.row, 'reject', 'agreement')"
+                    />
+                  </template>
+                  <q-badge
+                    v-else
+                    outline
+                    :color="props.row.status === 'Pending L1 Approval' ? 'warning' : 'primary'"
+                    :label="props.row.status === 'Pending L1 Approval' ? 'Awaiting DGM (L1)' : 'Awaiting AGM (L2)'"
+                    class="q-px-sm q-py-xs"
                   />
                 </div>
               </q-td>
@@ -212,10 +253,40 @@
             :rows="pendingDocs"
             :columns="docCols"
             row-key="id"
+            :grid="$q.screen.lt.md"
             flat
             class="slt-table"
             :pagination="{ rowsPerPage: 8 }"
           >
+            <!-- Custom Grid Item for Mobile -->
+            <template v-if="$q.screen.lt.md" v-slot:item="props">
+              <div class="q-pa-xs col-xs-12 col-sm-6">
+                <q-card flat bordered class="exec-case-card" @click="viewItem(props.row, 'doc')">
+                  <q-card-section class="q-pa-md">
+                    <div class="row justify-between items-start no-wrap q-mb-sm">
+                      <div class="text-weight-bold text-primary col ellipsis">{{ props.row.referenceNo }}</div>
+                      <q-badge rounded color="orange" :label="props.row.status" />
+                    </div>
+                    <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.title }}</div>
+                    <div class="text-caption text-grey-7 q-mb-md">
+                      {{ props.row.caseType }} &nbsp;·&nbsp; <q-icon name="timer" size="12px"/> {{ props.row.daysPending }}d
+                    </div>
+                    <div class="row justify-end q-gutter-sm items-center">
+                      <template v-if="canApproveDoc()">
+                        <q-btn flat dense icon="check" color="positive" label="Approve" size="sm" no-caps @click.stop="openAction(props.row, 'approve', 'doc')" />
+                        <q-btn flat dense icon="cancel" color="negative" label="Reject" size="sm" no-caps @click.stop="openAction(props.row, 'reject', 'doc')" />
+                      </template>
+                      <q-badge
+                        v-else
+                        outline
+                        color="warning"
+                        label="Awaiting Review"
+                      />
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </template>
             <!-- Title cell -->
             <template #body-cell-title="props">
               <q-td :props="props">
@@ -268,27 +339,36 @@
                   >
                     <q-tooltip>View Details</q-tooltip>
                   </q-btn>
-                  <q-btn
-                    unelevated
-                    dense
-                    color="positive"
-                    icon="check"
-                    label="Approve"
-                    size="sm"
-                    no-caps
-                    class="slt-btn-fixed q-px-sm"
-                    @click="openAction(props.row, 'approve', 'doc')"
-                  />
-                  <q-btn
-                    unelevated
-                    dense
-                    color="negative"
-                    icon="cancel"
-                    label="Reject"
-                    size="sm"
-                    no-caps
-                    class="slt-btn-fixed q-px-sm"
-                    @click="openAction(props.row, 'reject', 'doc')"
+                  <template v-if="canApproveDoc()">
+                    <q-btn
+                      unelevated
+                      dense
+                      color="positive"
+                      icon="check"
+                      label="Approve"
+                      size="sm"
+                      no-caps
+                      class="slt-btn-fixed q-px-sm"
+                      @click="openAction(props.row, 'approve', 'doc')"
+                    />
+                    <q-btn
+                      unelevated
+                      dense
+                      color="negative"
+                      icon="cancel"
+                      label="Reject"
+                      size="sm"
+                      no-caps
+                      class="slt-btn-fixed q-px-sm"
+                      @click="openAction(props.row, 'reject', 'doc')"
+                    />
+                  </template>
+                  <q-badge
+                    v-else
+                    outline
+                    color="warning"
+                    label="Awaiting Review"
+                    class="q-px-sm q-py-xs"
                   />
                 </div>
               </q-td>
@@ -341,8 +421,8 @@
     <!-- ═══════════════════════════════════════════════════════════
          APPROVE / REJECT CONFIRMATION DIALOG
     ════════════════════════════════════════════════════════════ -->
-    <q-dialog v-model="showActionDialog" persistent>
-      <q-card style="width: 480px; max-width: 95vw">
+    <q-dialog v-model="showActionDialog" persistent :maximized="$q.screen.lt.md">
+      <q-card :style="$q.screen.lt.md ? '' : 'width: 480px; max-width: 95vw'">
         <!-- Header bar -->
         <q-bar :class="actionType === 'approve' ? 'bg-positive' : 'bg-negative'" class="text-white">
           <q-icon :name="actionType === 'approve' ? 'check_circle' : 'cancel'" />
@@ -430,8 +510,8 @@
     <!-- ═══════════════════════════════════════════════════════════
          VIEW ITEM DETAIL DIALOG
     ════════════════════════════════════════════════════════════ -->
-    <q-dialog v-model="showViewDialog">
-      <q-card v-if="viewingItem" style="width: 600px; max-width: 95vw">
+    <q-dialog v-model="showViewDialog" :maximized="$q.screen.lt.md">
+      <q-card v-if="viewingItem" :style="$q.screen.lt.md ? '' : 'width: 600px; max-width: 95vw'">
         <q-bar class="slt-dialog-bar text-white">
           <q-icon :name="viewingItemType === 'agreement' ? 'handshake' : 'description'" />
           <div class="text-weight-bold q-ml-sm col ellipsis">{{ viewingItem.title }}</div>

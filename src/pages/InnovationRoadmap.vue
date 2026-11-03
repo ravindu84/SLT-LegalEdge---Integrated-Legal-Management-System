@@ -1,13 +1,13 @@
 <template>
-  <q-page class="innovation-page q-pa-xl">
+  <q-page :class="['innovation-page', $q.screen.lt.md ? 'q-pa-md' : 'q-pa-xl']">
     <!-- ─── HEADER SECTION ───────────────────────────────────── -->
-    <div class="header-section text-center q-mb-xl animate-fade-in">
+    <div :class="['header-section text-center q-mb-xl animate-fade-in', $q.screen.lt.md ? 'q-mt-md' : '']">
       <div class="innovation-badge q-mb-md">
-        <q-icon name="auto_awesome" color="amber-8" size="20px" />
-        <span class="text-amber-8 text-weight-bold q-ml-sm">{{ $t('innovation.badge') }}</span>
+        <q-icon name="auto_awesome" color="amber-8" :size="$q.screen.lt.md ? '16px' : '20px'" />
+        <span :class="['text-amber-8 text-weight-bold q-ml-sm', $q.screen.lt.md ? 'text-caption' : '']">{{ $t('innovation.badge') }}</span>
       </div>
-      <h1 class="text-h2 text-weight-bolder text-white q-my-sm">{{ $t('innovation.title') }}</h1>
-      <p class="text-subtitle1 text-blue-2 opacity-80 max-width-700 mx-auto">
+      <h1 :class="[$q.screen.lt.md ? 'text-h4' : 'text-h2', 'text-weight-bolder text-white q-my-sm']">{{ $t('innovation.title') }}</h1>
+      <p :class="['text-blue-2 opacity-80 mx-auto', $q.screen.lt.md ? 'text-body2' : 'text-subtitle1 max-width-700']">
         {{ $t('innovation.subtitle') }}
       </p>
     </div>
@@ -42,8 +42,8 @@
     <div class="security-banner q-mt-xl q-pa-xl shadow-24 animate-slide-up" style="animation-delay: 0.4s">
       <div class="row q-col-gutter-xl items-center">
         <div class="col-12 col-md-5 text-center">
-          <q-icon name="security" size="100px" color="amber-8" class="q-mb-md glow-amber" />
-          <div class="text-h4 text-weight-bold text-white q-mb-sm">
+          <q-icon name="security" :size="$q.screen.lt.md ? '60px' : '100px'" color="amber-8" class="q-mb-md glow-amber" />
+          <div :class="[$q.screen.lt.md ? 'text-h5' : 'text-h4', 'text-weight-bold text-white q-mb-sm']">
             {{ $t('innovation.security.title') }}
           </div>
           <div class="innovation-badge q-mb-md q-mt-sm">
@@ -106,13 +106,13 @@
     </div>
     
     <!-- ─── MOBILE EXPANSION TEASER ────────────────────────── -->
-    <div class="mobile-teaser-section q-mt-xl q-pa-xl animate-slide-up" style="animation-delay: 0.5s">
+    <div :class="['mobile-teaser-section q-mt-xl animate-slide-up', $q.screen.lt.md ? 'q-pa-lg' : 'q-pa-xl']" style="animation-delay: 0.5s">
       <div class="row q-col-gutter-xl items-center">
         <div class="col-12 col-md-6 order-last order-md-first">
           <div class="mobile-mockup-container">
             <div class="phone-frame shadow-24">
               <div class="phone-screen bg-dark overflow-hidden flex flex-center">
-                <q-icon name="auto_awesome" size="120px" class="ai-glow-icon" />
+                <q-icon name="auto_awesome" :size="$q.screen.lt.md ? '80px' : '120px'" class="ai-glow-icon" />
                 <div class="phone-content text-center q-pa-md absolute-bottom q-mb-xl">
                   <div class="text-h6 text-white text-weight-bolder">LegalEdge AI</div>
                   <div class="text-caption text-amber-5">System Ready...</div>
@@ -131,18 +131,18 @@
             <q-icon name="edgesensor_high" size="18px" color="amber-8" class="q-mr-sm" />
             <span class="text-amber-8 text-weight-bold">{{ $t('innovation.mobile.badge') }}</span>
           </div>
-          <h2 class="text-h3 text-weight-bolder text-white q-my-md line-height-tight">
+          <h2 :class="[$q.screen.lt.md ? 'text-h4' : 'text-h3', 'text-weight-bolder text-white q-my-md line-height-tight']">
             {{ $t('innovation.mobile.title') }}
           </h2>
-          <p class="text-subtitle1 text-blue-2 q-mb-xl opacity-90 max-width-500">
+          <p :class="['text-blue-2 q-mb-xl opacity-90', $q.screen.lt.md ? 'text-body2' : 'text-subtitle1 max-width-500']">
             {{ $t('innovation.mobile.desc') }}
           </p>
           
           <div class="row q-col-gutter-md">
             <div v-for="(feat, fIdx) in $tm('innovation.mobile.features')" :key="fIdx" class="col-12">
               <div class="feature-item-pill card-glass-effect">
-                <q-icon name="check_circle" color="amber-8" size="24px" class="q-mr-md" />
-                <span class="text-body1 text-white opacity-90">{{ feat }}</span>
+                <q-icon name="check_circle" color="amber-8" :size="$q.screen.lt.md ? '20px' : '24px'" class="q-mr-md" />
+                <span :class="[$q.screen.lt.md ? 'text-body2' : 'text-body1', 'text-white opacity-90']">{{ feat }}</span>
               </div>
             </div>
           </div>

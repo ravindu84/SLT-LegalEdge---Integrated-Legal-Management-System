@@ -1,18 +1,19 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div :class="['row items-center q-mb-md', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="gavel" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="gavel" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('cases.title') }}
         </div>
         <div class="text-caption text-grey-6">
           {{ $t('cases.subtitle') }}
         </div>
       </div>
-      <div class="col-auto row q-gutter-sm">
+      <div :class="['col-auto row q-gutter-sm', $q.screen.lt.md ? 'q-mt-sm full-width' : '']">
         <q-btn
+          :class="$q.screen.lt.md ? 'col' : ''"
           color="primary"
           icon="add"
           label="New Case"
@@ -20,7 +21,15 @@
           no-caps
           @click="openCreateDialog"
         />
-        <q-btn outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
+        <q-btn 
+          v-if="!$q.screen.lt.md"
+          outline 
+          color="primary" 
+          icon="file_download" 
+          label="Export" 
+          size="sm" 
+          no-caps 
+        />
       </div>
     </div>
 
@@ -47,7 +56,7 @@
     <q-card flat bordered class="q-mb-md">
       <q-card-section class="row q-col-gutter-sm items-center q-py-sm">
         <div class="col-12 col-sm-4">
-          <q-input v-model="filter" dense outlined clearable placeholder="Search cases…">
+          <q-input v-model="filter" dense outlined clearable :placeholder="$q.screen.lt.md ? 'Search…' : 'Search cases…'">
             <template #prepend><q-icon name="search" /></template>
           </q-input>
         </div>
@@ -100,10 +109,37 @@
         :filter="filter"
         :loading="loading"
         :pagination="{ rowsPerPage: 8 }"
+        :grid="$q.screen.lt.md"
         flat
         class="slt-table"
         no-data-label="No cases found"
       >
+        <!-- Custom Grid Item for Mobile -->
+        <template v-if="$q.screen.lt.md" v-slot:item="props">
+          <div class="q-pa-xs col-xs-12 col-sm-6">
+            <q-card flat bordered class="exec-case-card" @click="openDetails(props.row)">
+              <q-card-section class="q-pa-md">
+                <div class="row justify-between items-start no-wrap q-mb-sm">
+                  <div class="text-weight-bold text-primary">#{{ props.row.caseNo }}</div>
+                  <q-badge rounded :color="statusColor(props.row.status)" :label="props.row.status" />
+                </div>
+                <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.title }}</div>
+                <div class="text-caption text-grey-7 q-mb-md">
+                  <q-icon name="account_balance" size="14px" class="q-mr-xs" />{{ props.row.court }}
+                </div>
+                
+                <div class="row justify-between items-center">
+                  <q-chip dense size="sm" :icon="typeIcon(props.row.caseType)" :color="typeColor(props.row.caseType)" text-color="white">
+                    {{ props.row.caseType }}
+                  </q-chip>
+                  <div class="text-caption text-weight-bold" v-if="props.row.financialExposure">
+                    LKR {{ fmt(props.row.financialExposure) }}
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </template>
         <!-- Case Number -->
         <template #body-cell-caseNo="props">
           <q-td :props="props">

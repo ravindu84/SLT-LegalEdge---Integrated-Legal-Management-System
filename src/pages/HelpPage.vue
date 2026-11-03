@@ -1,10 +1,10 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-lg">
+    <div :class="['row items-center q-mb-lg', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="help_outline" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="help_outline" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('help.title') }}
         </div>
         <div class="text-caption text-grey-6">
@@ -22,6 +22,8 @@
       indicator-color="primary"
       align="left"
       narrow-indicator
+      outside-arrows
+      mobile-arrows
     >
       <q-tab name="standard" icon="menu_book" :label="$t('help.tabs.standard')" />
       <q-tab name="training" icon="school" :label="$t('help.tabs.training')" />

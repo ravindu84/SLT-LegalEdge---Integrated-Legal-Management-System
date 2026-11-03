@@ -1,26 +1,27 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div :class="['row items-center q-mb-md', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="description" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="description" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('initialDocs.title') }}
         </div>
         <div class="text-caption text-grey-6">
           {{ $t('initialDocs.subtitle') }}
         </div>
       </div>
-      <div class="col-auto row q-gutter-sm">
-        <q-btn outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
+      <div :class="['col-auto row q-gutter-sm', $q.screen.lt.md ? 'q-mt-sm full-width' : '']">
+        <q-btn outline color="primary" icon="file_download" :label="!$q.screen.lt.md ? 'Export' : ''" size="sm" no-caps :class="$q.screen.lt.md ? 'col' : ''" />
         <q-btn
           v-if="['admin', 'legal_officer'].includes(authStore.profile?.role)"
           unelevated
           color="primary"
           icon="add"
-          label="Create New Document"
+          :label="$t('initialDocs.createNew')"
           no-caps
           @click="openCreateDialog"
+          :class="$q.screen.lt.md ? 'col-grow' : ''"
         />
       </div>
     </div>
@@ -44,39 +45,43 @@
 
     <!-- ─── Filter Toolbar ───────────────────────────────────────── -->
     <q-card flat bordered class="q-mb-md">
-      <q-card-section class="row q-col-gutter-sm items-center q-py-sm">
+      <q-card-section :class="['row q-col-gutter-sm items-center q-py-sm', $q.screen.lt.md ? 'column items-stretch' : '']">
         <div class="col-12 col-sm-4">
           <q-input v-model="filter" dense outlined clearable placeholder="Search documents…">
             <template #prepend><q-icon name="search" /></template>
           </q-input>
         </div>
-        <div class="col-6 col-sm-3">
-          <q-select
-            v-model="filterStatus"
-            :options="['All', 'Pending', 'Under Review', 'Approved', 'Rejected']"
-            dense
-            outlined
-            label="Status"
-            emit-value
-            map-options
-            behavior="menu"
-            @update:model-value="applyFilters"
-          />
+        <div :class="[$q.screen.lt.md ? 'row q-col-gutter-sm' : 'col-6 col-sm-3']">
+          <div :class="[$q.screen.lt.md ? 'col-6' : '']">
+            <q-select
+              v-model="filterStatus"
+              :options="['All', 'Pending', 'Under Review', 'Approved', 'Rejected']"
+              dense
+              outlined
+              label="Status"
+              emit-value
+              map-options
+              behavior="menu"
+              @update:model-value="applyFilters"
+              class="full-width"
+            />
+          </div>
+          <div :class="[$q.screen.lt.md ? 'col-6' : '']">
+            <q-select
+              v-model="filterType"
+              :options="['All', ...caseTypeOptions]"
+              dense
+              outlined
+              label="Case Type"
+              emit-value
+              map-options
+              behavior="menu"
+              @update:model-value="applyFilters"
+              class="full-width"
+            />
+          </div>
         </div>
-        <div class="col-6 col-sm-3">
-          <q-select
-            v-model="filterType"
-            :options="['All', ...caseTypeOptions]"
-            dense
-            outlined
-            label="Case Type"
-            emit-value
-            map-options
-            behavior="menu"
-            @update:model-value="applyFilters"
-          />
-        </div>
-        <div class="col-auto">
+        <div class="col-auto row justify-end">
           <q-btn flat icon="restart_alt" color="grey-7" dense @click="resetFilters">
             <q-tooltip>Reset Filters</q-tooltip>
           </q-btn>
@@ -93,10 +98,39 @@
         :filter="filter"
         :loading="loading"
         :pagination="{ rowsPerPage: 8 }"
+        :grid="$q.screen.lt.md"
         flat
         class="slt-table"
         no-data-label="No documents found"
       >
+        <!-- Custom Grid Item for Mobile -->
+        <template v-if="$q.screen.lt.md" v-slot:item="props">
+          <div class="q-pa-xs col-xs-12 col-sm-6">
+            <q-card flat bordered class="exec-case-card" @click="viewRecordDetails(props.row)">
+              <q-card-section class="q-pa-md">
+                <div class="row justify-between items-start no-wrap q-mb-sm">
+                  <div class="text-weight-bold text-primary col ellipsis">#{{ props.row.refNo }}</div>
+                  <q-badge rounded :color="statusColor(props.row.status)" :label="props.row.status" />
+                </div>
+                <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.caseTitle }}</div>
+                <div class="text-caption text-grey-7 q-mb-sm">
+                  {{ props.row.caseType }} &nbsp;·&nbsp; {{ props.row.plaintiff }} vs {{ props.row.defendant }}
+                </div>
+                
+                <div class="row justify-between items-center no-wrap">
+                  <div class="text-caption text-weight-bold text-primary">
+                    LKR {{ formatCurrency(props.row.financialExposure) }}
+                  </div>
+                  <div class="row q-gutter-x-xs">
+                    <q-btn flat round dense icon="auto_awesome" color="blue-7" size="sm" @click.stop="summarizeDocument(props.row)" />
+                    <q-btn flat round dense icon="visibility" color="primary" size="sm" @click.stop="viewRecordDetails(props.row)" />
+                    <q-btn v-if="['admin', 'legal_officer'].includes(authStore.profile?.role)" flat round dense icon="edit" color="grey-7" size="sm" :disable="props.row.status !== 'Pending'" @click.stop="editDocument(props.row)" />
+                  </div>
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </template>
         <!-- Ref / Title -->
         <template #body-cell-refNo="props">
           <q-td :props="props">
@@ -429,8 +463,8 @@
     <!-- ═══════════════════════════════════════════════════════════
          VIEW DETAILS DIALOG
     ════════════════════════════════════════════════════════════ -->
-    <q-dialog v-model="showViewDialog">
-      <q-card style="width: 620px; max-width: 95vw">
+    <q-dialog v-model="showViewDialog" :maximized="$q.screen.lt.md">
+      <q-card :style="$q.screen.lt.md ? '' : 'width: 620px; max-width: 95vw'">
         <q-bar class="slt-dialog-bar text-white">
           <q-icon name="visibility" />
           <div class="text-weight-bold q-ml-sm">Document Details</div>

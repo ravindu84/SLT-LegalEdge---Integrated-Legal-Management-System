@@ -1,16 +1,16 @@
 <template>
-  <q-page class="slt-page-bg q-pa-lg">
+  <q-page :class="['slt-page-bg', $q.screen.lt.md ? 'q-pa-md' : 'q-pa-lg']">
     <!-- ─── Page Header ──────────────────────────────────────── -->
     <div class="row items-center q-mb-lg">
       <div class="col">
-        <div class="text-h4 text-weight-bold text-primary q-mb-xs">
+        <div :class="[$q.screen.lt.md ? 'text-h5' : 'text-h4', 'text-weight-bold text-primary q-mb-xs']">
           {{ $t('dashboard.title') }}
         </div>
         <div class="text-subtitle2 text-grey-6">
           {{ $t('dashboard.welcome') }} · {{ formattedCurrentDate }}
         </div>
       </div>
-      <div class="col-auto q-gutter-sm">
+      <div class="col-auto q-gutter-sm" v-if="!$q.screen.lt.sm">
         <q-btn
           unelevated
           color="primary"
@@ -31,8 +31,12 @@
     </div>
 
     <!-- ═══ 5 EXECUTIVE SUMMARY CARDS (balanced single row) ═══ -->
-    <div class="row q-col-gutter-md q-mb-lg exec-row">
-      <div class="col-12 col-sm-6 col-md" v-for="card in summaryCards" :key="card.label">
+    <div :class="['row q-col-gutter-md q-mb-lg exec-row', $q.screen.xs ? 'no-wrap scroll' : '']" :style="$q.screen.xs ? 'overflow-x: auto; padding-bottom: 10px;' : ''">
+      <div 
+        :class="[$q.screen.xs ? 'col-10' : 'col-12 col-sm-6 col-md']" 
+        v-for="card in summaryCards" 
+        :key="card.label"
+      >
         <q-card flat class="exec-summary-card" :style="{ '--accent': card.accent }">
           <q-card-section class="q-pa-lg">
             <div class="row items-start justify-between no-wrap q-mb-md">
@@ -225,39 +229,28 @@
     </div>
 
     <!-- ═══ ROW 4: Project Resources (Flyer Compliance) ══════ -->
-    <div class="row q-col-gutter-md q-mt-md">
+    <div class="row q-col-gutter-md q-mt-md q-pb-xl">
       <div class="col-12 col-md-7">
         <q-card flat bordered class="slt-resource-card full-height">
-          <q-card-section class="row items-center q-pa-md">
+          <q-card-section :class="['row items-center q-pa-md', $q.screen.lt.md ? 'column' : '']">
             <div class="col">
               <div class="text-h6 text-weight-bold text-primary">
                 {{ $t('dashboard.projectResources') }}
               </div>
               <div class="text-caption text-grey-6">
-                Access official challenge documentation and submission forms.
+                Access official challenge documentation.
               </div>
             </div>
-            <div class="col-auto q-gutter-md">
+            <div :class="['col-auto q-gutter-sm', $q.screen.lt.md ? 'q-mt-md full-width' : '']">
               <q-btn
                 unelevated
                 no-caps
                 color="primary"
                 icon="description"
+                class="full-width"
                 :label="$t('dashboard.downloadBRD')"
                 @click="downloadResource('BRD_Challenge_Details.pdf')"
-              >
-                <q-tooltip>Official Business Requirements Document</q-tooltip>
-              </q-btn>
-              <q-btn
-                outline
-                no-caps
-                color="primary"
-                icon="assignment"
-                :label="$t('dashboard.submissionForm')"
-                @click="downloadResource('AI_Coding_Submission_Form.pdf')"
-              >
-                <q-tooltip>Register your prototype submission</q-tooltip>
-              </q-btn>
+              />
             </div>
           </q-card-section>
         </q-card>

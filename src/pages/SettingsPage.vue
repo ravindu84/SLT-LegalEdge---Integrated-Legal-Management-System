@@ -561,6 +561,7 @@ async function updatePassword() {
 // — Dark mode toggle (wired to Quasar API)
 function toggleDarkMode(val) {
   $q.dark.set(val)
+  localStorage.setItem('slt_legaledge_dark_mode', val ? 'true' : 'false')
   $q.notify({
     icon: val ? 'dark_mode' : 'light_mode',
     message: val ? t('settings.darkEnabled') : t('settings.lightEnabled'),

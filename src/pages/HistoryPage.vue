@@ -1,18 +1,18 @@
 <template>
   <q-page class="q-pa-md slt-page-bg">
     <!-- ─── Page Header ──────────────────────────────────────────── -->
-    <div class="row items-center q-mb-md">
+    <div :class="['row items-center q-mb-md', $q.screen.lt.md ? 'column items-start' : '']">
       <div class="col">
-        <div class="text-h5 text-weight-bold text-primary">
-          <q-icon name="history" size="28px" class="q-mr-sm" />
+        <div :class="[$q.screen.lt.md ? 'text-h6' : 'text-h5', 'text-weight-bold text-primary']">
+          <q-icon name="history" :size="$q.screen.lt.md ? '24px' : '28px'" class="q-mr-sm" />
           {{ $t('history.title') }}
         </div>
         <div class="text-caption text-grey-6">
           {{ $t('history.subtitle') }}
         </div>
       </div>
-      <div class="col-auto">
-        <q-btn outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
+      <div :class="['col-auto', $q.screen.lt.md ? 'q-mt-sm full-width' : '']">
+        <q-btn :class="$q.screen.lt.md ? 'full-width' : ''" outline color="primary" icon="file_download" label="Export" size="sm" no-caps />
       </div>
     </div>
 
@@ -77,19 +77,21 @@
 
     <!-- ─── Filters ────────────────────────────────────────────── -->
     <q-card flat bordered class="q-mb-md">
-      <q-card-section class="row q-col-gutter-sm items-center q-py-sm">
+      <q-card-section :class="['row q-col-gutter-sm items-center q-py-sm', $q.screen.lt.md ? 'column items-stretch' : '']">
         <div class="col-12 col-sm-4">
           <q-input v-model="filter" dense outlined clearable placeholder="Search records…">
             <template #prepend><q-icon name="search" /></template>
           </q-input>
         </div>
-        <div class="col-6 col-sm-3">
-          <q-input v-model="dateFrom" dense outlined type="date" stack-label label="From Date" />
+        <div :class="[$q.screen.lt.md ? 'row q-col-gutter-sm' : 'col-6 col-sm-3']">
+          <div :class="[$q.screen.lt.md ? 'col-6' : '']">
+            <q-input v-model="dateFrom" dense outlined type="date" stack-label label="From Date" class="full-width" />
+          </div>
+          <div :class="[$q.screen.lt.md ? 'col-6' : '']">
+            <q-input v-model="dateTo" dense outlined type="date" stack-label label="To Date" class="full-width" />
+          </div>
         </div>
-        <div class="col-6 col-sm-3">
-          <q-input v-model="dateTo" dense outlined type="date" stack-label label="To Date" />
-        </div>
-        <div class="col-auto">
+        <div class="col-auto row justify-end">
           <q-btn flat icon="restart_alt" color="grey-7" dense @click="resetFilters">
             <q-tooltip>Reset</q-tooltip>
           </q-btn>
@@ -109,10 +111,37 @@
             :filter="filter"
             :loading="loading"
             :pagination="{ rowsPerPage: 10 }"
+            :grid="$q.screen.lt.md"
             flat
             class="slt-table"
             no-data-label="No closed cases found"
           >
+            <!-- Custom Grid Item for Mobile -->
+            <template v-if="$q.screen.lt.md" v-slot:item="props">
+              <div class="q-pa-xs col-xs-12 col-sm-6">
+                <q-card flat bordered class="exec-case-card" @click="viewCase(props.row)">
+                  <q-card-section class="q-pa-md">
+                    <div class="row justify-between items-start no-wrap q-mb-sm">
+                      <div class="text-weight-bold text-primary col ellipsis">#{{ props.row.case_no }}</div>
+                      <q-badge rounded color="blue-grey" :label="props.row.status" />
+                    </div>
+                    <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.title }}</div>
+                    <div class="text-caption text-grey-7 q-mb-sm">
+                      {{ props.row.case_type }} &nbsp;·&nbsp; Closed on {{ formatDate(props.row.closed_at) }}
+                    </div>
+                    <div class="row justify-between items-center no-wrap">
+                      <div class="text-caption text-weight-bold text-primary">
+                        LKR {{ fmt(props.row.financial_exposure) }}
+                      </div>
+                      <div class="row q-gutter-x-sm">
+                        <q-btn flat round dense icon="visibility" color="primary" size="sm" @click.stop="viewCase(props.row)" />
+                        <q-btn flat round dense icon="lock_open" color="positive" size="sm" @click.stop="reopenCase(props.row)" />
+                      </div>
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </template>
             <template #body-cell-case_no="props">
               <q-td :props="props">
                 <span class="text-weight-bold text-primary">#{{ props.value }}</span>
@@ -196,10 +225,31 @@
             :filter="filter"
             :loading="loading"
             :pagination="{ rowsPerPage: 10 }"
+            :grid="$q.screen.lt.md"
             flat
             class="slt-table"
             no-data-label="No expired or terminated agreements found"
           >
+            <!-- Custom Grid Item for Mobile -->
+            <template v-if="$q.screen.lt.md" v-slot:item="props">
+              <div class="q-pa-xs col-xs-12 col-sm-6">
+                <q-card flat bordered class="exec-case-card" @click="viewAgreement(props.row)">
+                  <q-card-section class="q-pa-md">
+                    <div class="row justify-between items-start no-wrap q-mb-sm">
+                      <div class="text-weight-bold text-primary col ellipsis">{{ props.row.reference_no }}</div>
+                      <q-badge rounded :color="props.row.status === 'Expired' ? 'negative' : 'blue-grey'" :label="props.row.status" />
+                    </div>
+                    <div class="text-subtitle1 text-weight-bold q-mb-xs">{{ props.row.title }}</div>
+                    <div class="text-caption text-grey-7 q-mb-sm">
+                      {{ props.row.agreement_type }} &nbsp;·&nbsp; Expired on {{ formatDate(props.row.expiry_date) }}
+                    </div>
+                    <div class="row justify-end items-center no-wrap">
+                      <q-btn flat round dense icon="visibility" color="primary" size="sm" @click.stop="viewAgreement(props.row)" />
+                    </div>
+                  </q-card-section>
+                </q-card>
+              </div>
+            </template>
             <template #body-cell-agreement_type="props">
               <q-td :props="props" class="text-center">
                 <q-chip dense size="sm" color="orange" text-color="white">
@@ -312,8 +362,8 @@
     </q-card>
 
     <!-- ═══ CASE DETAIL DIALOG ═══ -->
-    <q-dialog v-model="showCaseDialog">
-      <q-card v-if="selectedCase" style="width: 650px; max-width: 95vw">
+    <q-dialog v-model="showCaseDialog" :maximized="$q.screen.lt.md">
+      <q-card v-if="selectedCase" :style="$q.screen.lt.md ? '' : 'width: 650px; max-width: 95vw'">
         <q-bar class="slt-dialog-bar text-white">
           <q-icon name="gavel" />
           <div class="text-weight-bold q-ml-sm">
@@ -506,8 +556,8 @@
     </q-dialog>
 
     <!-- ═══ AGREEMENT DETAIL DIALOG ═══ -->
-    <q-dialog v-model="showAgrmDialog">
-      <q-card v-if="selectedAgrm" style="width: 650px; max-width: 95vw">
+    <q-dialog v-model="showAgrmDialog" :maximized="$q.screen.lt.md">
+      <q-card v-if="selectedAgrm" :style="$q.screen.lt.md ? '' : 'width: 650px; max-width: 95vw'">
         <q-bar class="slt-dialog-bar text-white">
           <q-icon name="handshake" />
           <div class="text-weight-bold q-ml-sm">{{ selectedAgrm.title }}</div>
