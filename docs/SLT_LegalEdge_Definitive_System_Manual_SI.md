@@ -112,6 +112,8 @@ flowchart TD
   * **Strict Action Buttons:** Officer කෙනෙකුට Edit සහ View පමණක් ලැබෙන අතර, Approve/Reject බොත්තම් ලැබෙන්නේ DGM/AGM හට පමණි.
   * **Automated Case Spawning:** DGM විසින් ලේඛනයක් Approve කළ සැණින්, ඒ සඳහා **Active Legal Case එකක් (`LC/2026/...`) ස්වයංක්‍රීයව නිර්මාණය වී Legal Cases පිටුවට එකතු වේ!**
 
+![Initial Documents Filter Toolbar UI](./images/02_initial_documents_filter_ui.png)
+
 ---
 
 ### 3.5 නීතිමය නඩු කළමනාකරණය (Legal Cases Management - `/cases`)
@@ -119,9 +121,9 @@ flowchart TD
 * **කාටද අයිති:** Legal Officers නඩු තොරතුරු යාවත්කාලීන කරයි; DGM/AGM සමස්ත ප්‍රගතිය සහ නඩු තීන්දු අධීක්ෂණය කරයි.
 
 #### 📸 පද්ධති තිර ඡායාරූප විග්‍රහය (Visual Breakdown of the Legal Cases Interface):
-පහත දැක්වෙන්නේ ඔබ විසින් සපයන ලද සජීවී පද්ධති තිර ඡායාරූපයේ (Screenshot) ලකුණු කර ඇති සියලුම අංගයන්ගේ සවිස්තර විග්‍රහයයි:
+පහත දැක්වෙන්නේ සජීවී පද්ධති තිර ඡායාරූපයේ (Screenshot) ලකුණු කර ඇති සියලුම අංගයන්ගේ සවිස්තර විග්‍රහයයි:
 
-![Legal Cases Interface Breakdown](file:///C:/Users/014539/.gemini/antigravity/brain/1b0af3d8-39e3-45fb-8700-f71e6ff22e73/legal_cases_ui_walkthrough.png)
+![Legal Cases Interface Breakdown](./images/01_legal_cases_ui_overview.png)
 
 1. **වම්පස පැතිකඩ තීරුව (User Profile Widget):**
    * වම්පස ඉහළින්ම දැනට Login වී සිටින නිලධාරියාගේ ඡායාරූපය, නම (`K. Fernando, AGM`), System Role එක (`manager`) සහ `Online` තත්ත්වය ප්‍රදර්ශනය වේ.
@@ -177,6 +179,8 @@ flowchart TD
   3. **DGM (L1)** විසින් Review කර "L1 Approve & Send to L2" ලබා දෙයි.
   4. **AGM (L2)** විසින් "L2 Final Approval" ලබා දී ගිවිසුම **Active** තත්ත්වයට පත් කරයි.
   5. Digital PKI Signature යෙදීමේ පහසුකමද මෙහි ඇත.
+
+![Agreements Creation Modal](./images/05_agreements_creation_modal.png)
 
 ---
 

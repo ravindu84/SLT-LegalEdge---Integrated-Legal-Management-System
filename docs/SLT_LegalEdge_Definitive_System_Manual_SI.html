@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SLT LegalEdge - Definitive System Manual (නිරූපණ අත්පොත)</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Sinhala", sans-serif;
+      line-height: 1.7;
+      color: #1e293b;
+      background: #0f172a;
+      margin: 0;
+      padding: 30px 15px;
+    }
+    .wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 50px 60px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    }
+    h1 {
+      color: #0f172a;
+      font-size: 28px;
+      border-bottom: 3px solid #0284c7;
+      padding-bottom: 12px;
+      margin-top: 0;
+    }
+    h2 {
+      color: #0369a1;
+      font-size: 22px;
+      margin-top: 40px;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    h3 {
+      color: #0284c7;
+      font-size: 18px;
+      margin-top: 28px;
+    }
+    h4 {
+      color: #334155;
+      font-size: 16px;
+      margin-top: 20px;
+    }
+    blockquote {
+      background: #f0f9ff;
+      border-left: 5px solid #0284c7;
+      margin: 20px 0;
+      padding: 14px 22px;
+      color: #0369a1;
+      border-radius: 0 8px 8px 0;
+      font-size: 15px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 12px 14px;
+      text-align: left;
+    }
+    th {
+      background: #0284c7;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    tr:nth-child(even) {
+      background: #f8fafc;
+    }
+    tr:hover {
+      background: #f1f5f9;
+    }
+    code {
+      background: #f1f5f9;
+      color: #0f172a;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: Consolas, monospace;
+      border: 1px solid #e2e8f0;
+    }
+    .img-container {
+      margin: 30px 0;
+      text-align: center;
+      background: #090d16;
+      padding: 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+    .img-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      display: block;
+      margin: 0 auto;
+    }
+    .caption {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+    hr {
+      border: 0;
+      height: 1px;
+      background: #cbd5e1;
+      margin: 36px 0;
+    }
+    a {
+      color: #0284c7;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    .action-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .btn-print {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn-print:hover {
+      background: #0369a1;
+    }
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .wrapper {
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .action-bar {
+        display: none;
+      }
+      .img-container {
+        background: white;
+        padding: 0;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <div class="action-bar">
+      <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    </div>
+    <h1>SLT LegalEdge: ඒකාබද්ධ නීති කළමනාකරණ පද්ධතිය (Definitive System Manual)</h1>
+<blockquote><strong>කණ්ඩායම:</strong> NEXGEN CREATORS  </blockquote>
+<blockquote><strong>ආයතනය:</strong> Sri Lanka Telecom PLC (Legal Division)  </blockquote>
+<blockquote><strong>පද්ධති අනුවාදය:</strong> v1.0.0 Production Ready  </blockquote>
+<blockquote><strong>සජීවී වෙබ් ද්වාරය:</strong> <a href="https://slt-legaledge.vercel.app" target="_blank">https://slt-legaledge.vercel.app</a>  </blockquote>
+<blockquote><strong>Git Repository:</strong> <a href="https://github.com/ravindu84/SLT-LegalEdge---Integrated-Legal-Management-System.git" target="_blank">https://github.com/ravindu84/SLT-LegalEdge---Integrated-Legal-Management-System.git</a></blockquote>
+<hr/>
+<h2>1. විධායක සාරාංශය සහ තාක්ෂණික ව්‍යුහය (Architecture & Tech Stack)</h2>
+<p><strong>SLT LegalEdge</strong> යනු ශ්‍රී ලංකා ටෙලිකොම් ආයතනයේ නීති අංශයේ සමස්ත නඩු කටයුතු (Litigation Management), ගිවිසුම් ජීවන චක්‍රය (Contracts & Agreements Lifecycle), බහු-මට්ටමේ ලේඛන අනුමැතිය (Multi-level Approvals) සහ මූල්‍ය අවදානම් අධීක්ෂණය (Financial Exposure Monitoring) 100% ක් ස්වයංක්‍රීයව මෙහෙයවීම සඳහා නිර්මාණය කරන ලද Enterprise මට්ටමේ ඩිජිටල් පරිසර පද්ධතියකි.</p>
+<p>flowchart TD</p>
+<p>    subgraph ClientLayer ["Client Layer (Cross-Platform)"]</p>
+<p>        WebSPA["Web Portal (Vercel SPA)<br/>Vue 3 + Quasar Framework"]</p>
+<p>        MobileApp["Mobile App (Android / Capacitor 8)<br/>Biometric Security + Offline Sync"]</p>
+<p>    end</p>
+<p>    subgraph SecurityGate ["Zero-Trust & Security Gateway"]</p>
+<p>        RBAC["Strict Role-Based Access Control (Maker-Checker)"]</p>
+<p>        BioAuth["Hardware Biometrics (Fingerprint / Face ID)"]</p>
+<p>        NuclearLog["Fail-Safe Clean Session Termination"]</p>
+<p>    end</p>
+<p>    subgraph BackendLayer ["Cloud Backend (Supabase)"]</p>
+<p>        AuthService["Supabase Auth (JWT + Session State)"]</p>
+<p>        PostgresDB["PostgreSQL Database (Row Level Security - RLS)"]</p>
+<p>        StorageS3["Encrypted Document Storage Vault"]</p>
+<p>        EdgeFunctions["Supabase Edge Functions (AI Legal Copilot)"]</p>
+<p>    end</p>
+<p>    ClientLayer --> SecurityGate</p>
+<p>    SecurityGate --> BackendLayer</p>
+<h3>තාක්ෂණික සංරචක (Technology Stack):</h3>
+<li><strong>1.</strong> <strong>Frontend Core:</strong></li>
+<li><strong>Vue 3:</strong> Modern Composition API (<code><script setup></code>) පදනම් කරගත් ප්‍රතික්‍රියාශීලී (reactive) අතුරුමුහුණත.</li>
+<li><strong>Quasar Framework (v2.18+):</strong> Material Design සහ Executive Fintech මට්ටමේ responsive UI සංරචක.</li>
+<li><strong>Pinia:</strong> State management සඳහා (Auth, Notifications, Offline Sync).</li>
+<li><strong>Vue Router 4:</strong> SPA History mode (Vercel URL rewrites සමඟ).</li>
+<li><strong>Chart.js & Vue-Chartjs:</strong> අධිකරණ සහ ගිවිසුම් දත්ත විශ්ලේෂණ ප්‍රස්ථාර (Doughnut, Bar, Trendlines).</li>
+<li><strong>Vue-i18n:</strong> භාෂා ත්‍රිත්ව සහාය (English, සිංහල, தமிழ்).</li>
+<li><strong>2.</strong> <strong>Backend & Data Tier:</strong></li>
+<li><strong>Supabase (Managed PostgreSQL):</strong> Relational tables, Foreign keys, Complex triggers සහ Audit logs.</li>
+<li><strong>Row Level Security (RLS):</strong> Database මට්ටමේදීම අනවසර දත්ත ප්‍රවේශය වැළැක්වීම.</li>
+<li><strong>Storage Buckets:</strong> නඩු ලියකියවිලි, සාක්ෂි සහ ගිවිසුම් PDF ගබඩා කිරීම.</li>
+<li><strong>3.</strong> <strong>Mobile Ecosystem:</strong></li>
+<li><strong>Capacitor 8:</strong> Web codebase එක කෙලින්ම Native Android/iOS යෙදුමක් බවට පත් කිරීම.</li>
+<li><strong>Native Biometric Auth:</strong> Fingerprint සහ Face ID මඟින් පමණක් App එක විවෘත වීම.</li>
+<li><strong>Offline Sync Queue:</strong> උසාවි භූමි වැනි අන්තර්ජාලය දුර්වල ස්ථාන වලදී දත්ත ඇතුළත් කර, සම්බන්ධතාවය ලැබුණු සැණින් Supabase වෙත Flush වීම.</li>
+<hr/>
+<h2>2. පරිශීලක භූමිකාවන් සහ ප්‍රවේශ අයිතීන් (User Roles & Strict Maker-Checker RBAC)</h2>
+<p>පද්ධතියේ ආරක්ෂාව, විනිවිදභාවය සහ මූල්‍ය පාලනය තහවුරු කිරීම සඳහා ශ්‍රී ලංකා ටෙලිකොම් නීති අංශයේ ධූරාවලියට අනුව නිලධාරීන් 4 දෙනෙකු සහ Administrator වෙන් කර ඇත. මෙහි <strong>"Maker-Checker" (Separation of Duties)</strong> මූලධර්මය දැඩිව ක්‍රියාත්මක වේ — එනම් කිසිදු නිලධාරියෙකුට තමන් විසින් ඉදිරිපත් කළ ලේඛනයක් තමන්ටම Approve කරගත නොහැක:</p>
+<table>
+<thead><tr><th>නිලධාරියාගේ නම</th><th>Email</th><th>Password</th><th>පද්ධති Role එක</th><th>ආයතනික තනතුර</th><th>ප්‍රධාන කාර්යභාරය සහ අනුමැති බලතල</th></tr></thead><tbody>
+<tr><td><strong>Ravindu Chinthana</strong></td><td><code>ravindu@slt.com.lk</code></td><td><code>Test@1234</code></td><td><code>legal_officer</code></td><td>Legal Officer</td><td><strong>Maker:</strong> මූලික නඩු ලේඛන දැමීම, Agreements Draft කිරීම, Review එකට යැවීම. (අනුමත කිරීම් තහනම්).</td></tr>
+<tr><td><strong>N. Silva</strong></td><td><code>n.silva@slt.com.lk</code></td><td><code>Password@123</code></td><td><code>legal_officer</code></td><td>Legal Officer</td><td><strong>Maker:</strong> නඩු වාර (Proceedings) යාවත්කාලීන කිරීම, නීතිමය උපදෙස් ලබාදීම.</td></tr>
+<tr><td><strong>S. Karunaratne, DGM</strong></td><td><code>s.karunaratne@slt.com.lk</code></td><td><code>Password@123</code></td><td><code>supervisor</code></td><td>Deputy General Manager</td><td><strong>Checker / L1 Approver:</strong> Initial Docs අනුමත කිරීම (Active Case බවට පත් කිරීම), Agreements L1 අනුමැතිය දී L2 වෙත යැවීම.</td></tr>
+<tr><td><strong>K. Fernando, AGM</strong></td><td><code>k.fernando@slt.com.lk</code></td><td><code>Password@123</code></td><td><code>manager</code></td><td>Assistant General Manager</td><td><strong>Checker / L2 Final Approver:</strong> Agreements වලට අවසන් L2 Approval දී එය "Active" කිරීම, සමස්ත නීති අංශය අධීක්ෂණය.</td></tr>
+<tr><td><strong>System Admin</strong></td><td><code>admin@slt.com.lk</code></td><td><code>Password@123</code></td><td><code>admin</code></td><td>IT / System Admin</td><td>සම්පූර්ණ පද්ධති පරිපාලනය, User Management සහ Audit Logs පරීක්ෂාව.</td></tr>
+</tbody></table>
+<hr/>
+<h2>3. පද්ධතියේ සියලුම පිටු 13 පිළිබඳ සවිස්තරාත්මක විග්‍රහය (Page-by-Page Manual)</h2>
+<h3>3.1 පිවිසුම් පිටුව (Login Portal - <code>/login</code>)</h3>
+<li><strong>අරමුණ:</strong> පද්ධතියට ආරක්ෂිතව ඇතුළු වීම, Demo ගිණුම් ක්ෂණිකව තෝරාගැනීම සහ Mobile App බාගත කරගැනීම.</li>
+<li><strong>කාටද අයිති:</strong> සියලුම නිලධාරීන් සඳහා විවෘතයි.</li>
+<li><strong>ප්‍රධාන අංග:</strong></li>
+<li><strong>Quick Demo Credentials (One-Click Fill Buttons):</strong> ඉදිරිපත් කිරීම් වලදී හෝ පරීක්ෂා කිරීමේදී Email/Password ටයිප් කර වෙහෙස විය යුතු නැත. පිටුවේ ඇති <code>Ravindu (Officer)</code>, <code>N. Silva (Officer)</code>, <code>DGM (L1)</code>, <code>AGM (L2)</code> හෝ <code>Admin</code> යන button එක ක්ලික් කළ සැණින් credentials ස්වයංක්‍රීයව පිරී Sign In විය හැක.</li>
+<li><strong>Header Theme Toggle:</strong> Login පිටුවේදීම Dark Mode / Light Mode මාරු කරගත හැක.</li>
+<li><strong>Auto Session Recovery:</strong> Login වූ පසු refresh කළද session එක ආරක්ෂිතව පවතී.</li>
+<li><strong>Mobile App QR Code & APK Download:</strong> ජංගම යෙදුම සජීවීව බාගත කරගැනීමේ පහසුකම.</li>
+<hr/>
+<h3>3.2 නව ගිණුම් ලියාපදිංචිය (Registration - <code>/register</code>)</h3>
+<li><strong>අරමුණ:</strong> නව නීති නිලධාරීන්ට ආයතනික ගිණුමක් විවෘත කරගැනීම.</li>
+<li><strong>කාටද අයිති:</strong> නව සාමාජිකයින්ට.</li>
+<li><strong>ක්‍රියාකාරීත්වය:</strong> Full Name, SLT Email, Department, Designation සහ Role එක තෝරා ලියාපදිංචි විය හැක. Supabase Auth හරහා Confirmation email සත්‍යාපනය සිදු වේ.</li>
+<hr/>
+<h3>3.3 විධායක උපකරණ පුවරුව (Executive Dashboard - <code>/</code>)</h3>
+<li><strong>අරමුණ:</strong> ආයතනයේ සමස්ත නීතිමය තත්ත්වය සහ මූල්‍ය අවදානම එකවර විධායක මට්ටමින් නිරීක්ෂණය කිරීම.</li>
+<li><strong>කාටද අයිති:</strong> සියලුම නිලධාරීන්ට (ප්‍රදර්ශනය වන දත්ත තමන්ගේ Role එක අනුව අනුගත වේ).</li>
+<li><strong>ප්‍රධාන අංග:</strong></li>
+<li><strong>Executive KPI Strips:</strong> Active Legal Cases, Pending Initial Docs, Total Exposure (LKR), Active Agreements.</li>
+<li><strong>Case Status Overview (Interactive Doughnut Chart):</strong> නඩු තත්ත්වයන් (Active, Pending Hearing, Under Review, Closed) වර්ගීකරණය.</li>
+<li><strong>Cases by Category (Bar Chart):</strong> Money Recovery, Damages, Land, Criminal බෙදී ඇති අයුරු.</li>
+<li><strong>Pending Approvals Inbox Widget:</strong> තමන්ගේ මට්ටමේ අනුමැතිය බලාපොරොත්තු වන ලේඛන පමණක් පෙන්වයි.</li>
+<hr/>
+<h3>3.4 මූලික ලේඛන ග්‍රහණය (Initial Documents Intake - <code>/initial-docs</code>)</h3>
+<li><strong>අරමුණ:</strong> දිවයින පුරා ඇති SLT ප්‍රාදේශීය කාර්යාල වලින් ලැබෙන පැමිණිලි, පොලිස් පොත් පිටපත් සහ හිමිකම් ලිපි පද්ධතියට ගොනු කිරීම.</li>
+<li><strong>කාටද අයිති:</strong></li>
+<li><strong>Legal Officers (Ravindu, N. Silva):</strong> ලේඛන Submit කිරීම සහ Draft සංස්කරණය.</li>
+<li><strong>DGM (L1 Supervisor):</strong> ලේඛන Review කර <strong>Approve</strong> හෝ <strong>Reject</strong> කිරීම.</li>
+<li><strong>ප්‍රධාන අංග:</strong></li>
+<li><strong>"+ New Document" බොත්තම:</strong> Case Title, Case Type, Parties Involved, Occurrence Date, Financial Exposure සහ Supporting Documents (PDF/PNG) එක්කිරීම.</li>
+<li><strong>Perfect 12-Column Balanced Filter Bar:</strong> Search Box (4 cols), Status Filter (3 cols), Case Type Filter (4 cols), Reset Button (1 col) මඟින් තිරය අලංකාරව පිරී පවතී.</li>
+<li><strong>Strict Action Buttons:</strong> Officer කෙනෙකුට Edit සහ View පමණක් ලැබෙන අතර, Approve/Reject බොත්තම් ලැබෙන්නේ DGM/AGM හට පමණි.</li>
+<li><strong>Automated Case Spawning:</strong> DGM විසින් ලේඛනයක් Approve කළ සැණින්, ඒ සඳහා <strong>Active Legal Case එකක් (<code>LC/2026/...</code>) ස්වයංක්‍රීයව නිර්මාණය වී Legal Cases පිටුවට එකතු වේ!</strong></li>
+<div class="img-container"><img src="./images/02_initial_documents_filter_ui.png" alt="Initial Documents Filter Toolbar UI" /><div class="caption">Initial Documents Filter Toolbar UI</div></div>
+<hr/>
+<h3>3.5 නීතිමය නඩු කළමනාකරණය (Legal Cases Management - <code>/cases</code>)</h3>
+<li><strong>අරමුණ:</strong> ශ්‍රී ලංකා අධිකරණ පද්ධතිය තුළ විභාග වන සියලුම සක්‍රීය නඩු දිනෙන් දින මෙහෙයවීම සහ අධීක්ෂණය.</li>
+<li><strong>කාටද අයිති:</strong> Legal Officers නඩු තොරතුරු යාවත්කාලීන කරයි; DGM/AGM සමස්ත ප්‍රගතිය සහ නඩු තීන්දු අධීක්ෂණය කරයි.</li>
+<h4>📸 පද්ධති තිර ඡායාරූප විග්‍රහය (Visual Breakdown of the Legal Cases Interface):</h4>
+<p>පහත දැක්වෙන්නේ සජීවී පද්ධති තිර ඡායාරූපයේ (Screenshot) ලකුණු කර ඇති සියලුම අංගයන්ගේ සවිස්තර විග්‍රහයයි:</p>
+<div class="img-container"><img src="./images/01_legal_cases_ui_overview.png" alt="Legal Cases Interface Breakdown" /><div class="caption">Legal Cases Interface Breakdown</div></div>
+<li><strong>1.</strong> <strong>වම්පස පැතිකඩ තීරුව (User Profile Widget):</strong></li>
+<li>වම්පස ඉහළින්ම දැනට Login වී සිටින නිලධාරියාගේ ඡායාරූපය, නම (<code>K. Fernando, AGM</code>), System Role එක (<code>manager</code>) සහ <code>Online</code> තත්ත්වය ප්‍රදර්ශනය වේ.</li>
+<li><strong>2.</strong> <strong>ප්‍රධාන මෙනු පද්ධතිය (Sidebar Navigation & Live Counter Badges):</strong></li>
+<li><strong>MAIN MENU:</strong> Dashboard (ප්‍රධාන පාලක පුවරුව).</li>
+<li><strong>LEGAL CASES:</strong> Initial Documents (අනුමැතියට ඇති ප්‍රමාණය පෙන්වන කහ පැහැති Badge <code>1</code> සමඟ), Legal Cases (දැනට තෝරාගෙන ඇති සක්‍රීය පිටුව).</li>
+<li><strong>AGREEMENTS:</strong> Agreements (ගිවිසුම් කළමනාකරණය), Approvals (කළමනාකාරීත්වයේ අනුමැතිය බලාපොරොත්තු වන ප්‍රමාණය පෙන්වන රතු පැහැති Badge <code>1</code> සමඟ).</li>
+<li><strong>SYSTEM:</strong> History, Reports, Help Guide, Settings.</li>
+<li><strong>3.</strong> <strong>ශීර්ෂ තීරුව (Header Bar Controls):</strong></li>
+<li>Hamburger Menu Toggle, Search Bar (Global Universal Search), Notification Bell (නොකියවූ දැනුම්දීම් <code>4</code> ක් සමඟ), Trilingual Language Globe (සිංහල/English/දෙමළ), Dark/Light Mode Sun Toggle සහ Profile Avatar.</li>
+<li><strong>4.</strong> <strong>ක්‍රියාකාරී බොත්තම් (Action Buttons):</strong></li>
+<li><strong><code>+ New Case</code> (නිල් පැහැති ප්‍රධාන බොත්තම):</strong> උසාවියකින් සෘජුවම ලැබුණු නව නඩුවක් පද්ධතියට ඇතුළත් කිරීම.</li>
+<li><strong><code>Export</code> බොත්තම:</strong> සම්පූර්ණ නඩු ලැයිස්තුව Excel/CSV හෝ PDF ලෙස ක්ෂණිකව Download කරගැනීම.</li>
+<li><strong>5.</strong> <strong>විධායක KPI පුවරු (Executive Metric Cards):</strong></li>
+<li><strong>Total Cases (68):</strong> පද්ධතිය තුළ ලියාපදිංචි මුළු නඩු සංඛ්‍යාව (නිල් පැහැති Folder Icon).</li>
+<li><strong>Active (44):</strong> අධිකරණයේ විභාග වෙමින් පවතින සක්‍රීය නඩු (කොළ පැහැති Check Icon).</li>
+<li><strong>Pending Hearing (9):</strong> ඉදිරි දිනවල නඩු වාර නියමිත නඩු (තැඹිලි පැහැති Clock Icon).</li>
+<li><strong>Closed (8):</strong> තීන්දු ප්‍රකාශයට පත් කර අවසන් වූ නඩු (අළු පැහැති Lock Icon).</li>
+<li><strong>6.</strong> <strong>සමබර පෙරහන් තීරුව (4-Part Filter Toolbar - <code>q</code> ලකුණු කළ කොටස්):</strong></li>
+<li><strong>Search cases...:</strong> නඩු අංකය, පාර්ශ්වයන් හෝ අධිකරණය අනුව ක්ෂණිකව පෙරීම.</li>
+<li><strong>Status Dropdown:</strong> <code>All</code>, <code>Active</code>, <code>Pending Hearing</code>, <code>Under Review</code>, <code>Closed</code>.</li>
+<li><strong>Case Type Dropdown:</strong> නඩු කාණ්ඩ 5 අනුව වර්ගීකරණය.</li>
+<li><strong>Reset Button:</strong> සියලු පෙරහන් ඉවත් කර මුල් තත්ත්වයට පත් කිරීම.</li>
+<li><strong>7.</strong> <strong>ප්‍රධාන දත්ත වගුව (Main Cases Table & Row Anatomy):</strong></li>
+<li><strong>CASE NO.:</strong> නඩු අංකය (උදා: <code>#LC/2026/247</code>).</li>
+<li><strong>CASE TITLE:</strong> නඩුවේ නම (උදා: <code>legal test</code>).</li>
+<li><strong>TYPE:</strong> නඩු වර්ගීකරණ Badge එක (Damages, Money Recovery, Land Case, Criminal, Inquiry).</li>
+<li><strong>COURT:</strong> නඩුව විභාග වන අධිකරණය (උදා: <code>Commercial High Court Colombo</code>).</li>
+<li><strong>LAWYER:</strong> පවරා ඇති නීතිඥයා හෝ නීති නිලධාරියා (උදා: <code>S. Karunaratne, DGM</code>).</li>
+<li><strong>EXPOSURE (LKR):</strong> නඩුවට අදාළ මූල්‍ය අවදානම (උදා: <code>LKR 1,000,000</code>).</li>
+<li><strong>NEXT HEARING:</strong> ඊළඟ නඩු වාර දිනය (දින නියම වී ඇත්නම් රතු පැහැති Calendar Badge එකක් සමඟ).</li>
+<li><strong>STATUS:</strong> නඩුවේ තත්ත්වය (<code>Active</code> කොළ පැහැයෙන්).</li>
+<li><strong>ස්වයංක්‍රීය නඩු ජනනය පිළිබඳ සාක්ෂිය (Auto-Spawn Proof):</strong> රතු ඊතලයෙන් දක්වා ඇති පළමු පේළියේ <code>#LC/2026/247 - legal test</code> යනු DGM විසින් Initial Documents පිටුවෙන් Approve කළ සැනින් මෙහි ස්වයංක්‍රීයව ජනනය වූ නඩුවයි!</li>
+<li><strong>8.</strong> <strong>පිටු සංචලනය සහ AI Copilot (Footer & Floating Controls):</strong></li>
+<li>පහළ දකුණු කෙළවරේ <code>Records per page: 8</code>, <code>1-8 of 68</code> පෙන්වන Pagination Controls සහ ඕනෑම තැනක සිට විමසීම් කළ හැකි Floating Blue AI Bot බොත්තම.</li>
+<hr/>
+<h3>3.6 ගිවිසුම් ජීවන චක්‍රය (Agreements & Contracts - <code>/agreements</code>)</h3>
+<li><strong>අරමුණ:</strong> විදේශීය සහ දේශීය සැපයුම්කරුවන්, කුළුණු හවුල්කාරීත්ව (Tower Sharing), සහ නඩත්තු ගිවිසුම් (SLA/MOU) කළමනාකරණය.</li>
+<li><strong>කාටද අයිති:</strong> නීති නිලධාරීන් Draft කරයි; DGM (L1) සහ AGM (L2) අනුමැතිය ලබා දෙයි.</li>
+<li><strong>Approval Pipeline Stepper:</strong></li>
+<p>  flowchart LR</p>
+<p>      Draft["Draft<br/>(Officer Creates)"] --> Review["Under Review<br/>(Officer Submits)"]</p>
+<p>      Review --> L1["Pending L1 Approval<br/>(DGM Reviews)"]</p>
+<p>      L1 --> L2["Pending L2 Approval<br/>(AGM Reviews)"]</p>
+<p>      L2 --> Active["Active Contract<br/>(Fully Approved)"]</p>
+<li><strong>ක්‍රියාකාරීත්වය:</strong></li>
+<li><strong>1.</strong> <strong>Ravindu (Officer)</strong> විසින් <code>+ Create Agreement</code> ඔබා Draft එකක් සාදයි.</li>
+<li><strong>2.</strong> "Submit for Review" ඔබා එය Supervisor Review එකට යවයි.</li>
+<li><strong>3.</strong> <strong>DGM (L1)</strong> විසින් Review කර "L1 Approve & Send to L2" ලබා දෙයි.</li>
+<li><strong>4.</strong> <strong>AGM (L2)</strong> විසින් "L2 Final Approval" ලබා දී ගිවිසුම <strong>Active</strong> තත්ත්වයට පත් කරයි.</li>
+<li><strong>5.</strong> Digital PKI Signature යෙදීමේ පහසුකමද මෙහි ඇත.</li>
+<div class="img-container"><img src="./images/05_agreements_creation_modal.png" alt="Agreements Creation Modal" /><div class="caption">Agreements Creation Modal</div></div>
+<hr/>
+<h3>3.7 අනුමැතීන් කේන්ද්‍රස්ථානය (Approvals Hub - <code>/approvals</code>)</h3>
+<li><strong>අරමුණ:</strong> කළමනාකාරීත්වයට (DGM, AGM) තමන් වෙත ලැබී ඇති සියලුම ගිවිසුම් සහ මූලික ලේඛන එකම තැනකින් පරීක්ෂා කර Approve / Reject කිරීම.</li>
+<li><strong>කාටද අයිති:</strong> ප්‍රධාන වශයෙන් <code>supervisor</code> (DGM) සහ <code>manager</code> (AGM) සඳහා. (Legal Officer ට බැලිය හැක්කේ තත්ත්වය පමණි, බොත්තම් අක්‍රියයි).</li>
+<li><strong>ප්‍රධාන Tabs 3:</strong></li>
+<li><strong>1.</strong> <strong>Pending Agreements:</strong> L1 සහ L2 අනුමැතිය බලාපොරොත්තුවෙන් ඇති ගිවිසුම්.</li>
+<li><strong>2.</strong> <strong>Pending Initial Documents:</strong> අනුමැතිය බලාපොරොත්තු වන නව ලිපිගොනු.</li>
+<li><strong>3.</strong> <strong>My Action History:</strong> තමන් විසින් අනුමත කළ හෝ ප්‍රතික්ෂේප කළ සියලුම ක්‍රියාකාරකම් වල කාල සටහන (Audit Log).</li>
+<hr/>
+<h3>3.8 වාර්තා සහ විශ්ලේෂණ (Reports & Analytics - <code>/reports</code>)</h3>
+<li><strong>අරමුණ:</strong> ඉහළ පාලක මණ්ඩලයට (Board of Directors / Group CEO) අවශ්‍ය උසස් මූල්‍ය සහ මෙහෙයුම් වාර්තා ජනනය කිරීම.</li>
+<li><strong>කාටද අයිති:</strong> සියලුම කළමනාකාරීත්වයට.</li>
+<li><strong>ප්‍රධාන වාර්තා 4:</strong></li>
+<li><strong>1.</strong> <strong>Total Financial Exposure vs. Settlements:</strong> මුළු මූල්‍ය අවදානම සහ අයකරගත් මුදල් සංසන්දනය.</li>
+<li><strong>2.</strong> <strong>Lawyer Workload Distribution:</strong> එක් එක් නීතිඥයා යටතේ ඇති නඩු ප්‍රමාණය පෙන්වන Bar Chart.</li>
+<li><strong>3.</strong> <strong>Case Aging Analysis:</strong> නඩු පවතින කාලය (< 30 days, 3-6 months, > 1 year).</li>
+<li><strong>4.</strong> <strong>Upcoming Hearings:</strong> ඉදිරි දින 30 තුළ පැවැත්වෙන නඩු වාර ලැයිස්තුව.</li>
+<li><strong>Export Options:</strong> සියලු වාර්තා PDF, Excel (CSV) හෝ Print ලබාගත හැක.</li>
+<hr/>
+<h3>3.9 ඉතිහාසය සහ ලේඛනාගාරය (History & Archive - <code>/history</code>)</h3>
+<li><strong>අරමුණ:</strong> විසඳා අවසන් වූ නඩු (Closed Cases) සහ කල් ඉකුත් වූ ගිවිසුම් (Expired Agreements) සුරක්ෂිතව තබා ගැනීම.</li>
+<li><strong>විශේෂ විධායක පහසුකම (Case Reopen):</strong> අවසන් වූ නඩුවක් සම්බන්ධයෙන් යම් අභියාචනයක් (Appeal) ආවොත්, DGM හෝ AGM හට නීතිමය හේතු දක්වා නඩුව නැවත විවෘත (Reopen) කළ හැක.</li>
+<hr/>
+<h3>3.10 පරිශීලක සහාය සහ පුහුණු මධ්‍යස්ථානය (Help Guide & Knowledge Portal - <code>/help</code>)</h3>
+<li><strong>අරමුණ:</strong> පද්ධතියට අලුතෙන් එක්වන නීති නිලධාරීන් පුහුණු කිරීම සහ තාක්ෂණික ගැටළු විසඳීම.</li>
+<li><strong>ප්‍රධාන අංශ:</strong></li>
+<li><strong>Getting Started:</strong> පද්ධතිය භාවිතා කිරීම ආරම්භ කරන ආකාරය.</li>
+<li><strong>Video Tutorials & Quick Guides:</strong> නඩු ඇතුළත් කිරීම සහ ගිවිසුම් අනුමත කිරීමේ පියවර.</li>
+<li><strong>Comprehensive FAQ:</strong> නිතර අසන ප්‍රශ්න 15+ කට සවිස්තරාත්මක පිළිතුරු.</li>
+<li><strong>Direct IT Support Hotline:</strong> SLT IT Helpdesk සම්බන්ධතා තොරතුරු.</li>
+<hr/>
+<h3>3.11 පරිශීලක පැතිකඩ (User Profile - <code>/profile</code>)</h3>
+<li><strong>අරමුණ:</strong> තම ආයතනික තොරතුරු, Employee ID, Designation, Department සහ Avatar ඡායාරූපය බලාගැනීම.</li>
+<li><strong>Security Info:</strong> තමන්ට පවරා ඇති System Role එක (<code>legal_officer</code>, <code>supervisor</code>, <code>manager</code>) සහ Active session විස්තර පෙන්වයි.</li>
+<hr/>
+<h3>3.12 පද්ධති සැකසුම් (Settings - <code>/settings</code>)</h3>
+<li><strong>අරමුණ:</strong> පුද්ගලික අභිරුචිය පරිදි පද්ධතිය සකස් කරගැනීම.</li>
+<li><strong>ප්‍රධාන අංග:</strong></li>
+<li><strong>Dark / Light Theme Toggle:</strong> ඇසට පහසු Dark Mode (පිටුව refresh කළද හෝ logout වුවද browser එකෙහි සුරැකී පවතී).</li>
+<li><strong>භාෂාව තේරීම:</strong> සිංහල, ඉංග්‍රීසි, හෝ දෙමළ.</li>
+<li><strong>මුරපදය වෙනස් කිරීම:</strong> Supabase Auth හරහා නව Password එකක් සකස් කිරීම.</li>
+<hr/>
+<h3>3.13 නවෝත්පාදන සහ අනාගත දැක්ම (Innovation Roadmap - <code>/innovation</code>)</h3>
+<li><strong>අරමුණ:</strong> තරගයේදී ඉදිරිපත් කළ සහ ඉදිරියට ක්‍රියාත්මක කිරීමට නියමිත AI, Mobile සහ Blockchain තාක්ෂණයන්ගේ සම්පූර්ණ Blueprint එක.</li>
+<hr/>
+<h2>4. නවෝත්පාදන විග්‍රහය: AI, Blockchain සහ Mobile Ecosystem</h2>
+<h3>🤖 1. AI Legal Copilot (කෘත්‍රිම බුද්ධිය)</h3>
+<li><strong>ප්‍රායෝගික භාවිතය:</strong></li>
+<li><strong>1.</strong> <strong>Document Summarizer:</strong> පිටු 80 ක සංකීර්ණ කොන්ත්‍රාත්තුවක් Upload කළ සැණින්, එහි ඇති වැදගත්ම නීතිමය අවදානම් (Liabilities), ගෙවීම් කොන්දේසි සහ දඩ මුදල් සාරාංශ කර දෙයි.</li>
+<li><strong>2.</strong> <strong>Interactive Copilot Chatbot (<code>AiCopilotChat.vue</code>):</strong> තිරයේ දකුණු පස පහළ ඇති Bot මගින් නීතිමය ප්‍රශ්න වලට ශ්‍රී ලංකා නීති රාමුවට (Civil Procedure Code, Telecommunications Act) අනුව ක්ෂණික පිළිතුරු ලබාගත හැක.</li>
+<li><strong>3.</strong> <strong>Trilingual Processing:</strong> සිංහලෙන් ලැබෙන පොලිස් පැමිණිලි ඉංග්‍රීසි නඩු ගොනුවට ස්වයංක්‍රීයව පරිවර්තනය කරයි.</li>
+<h3>🔗 2. Blockchain & Zero-Trust Security (බ්ලොක්චේන් තාක්ෂණය)</h3>
+<li><strong>ප්‍රායෝගික භාවිතය:</strong></li>
+<li><strong>1.</strong> <strong>Cryptographic Proof of Authenticity:</strong> උසාවියට ඉදිරිපත් කරන ලේඛනයක් Upload කළ සැණින් එහි <strong>SHA-256 Hash Value</strong> එකක් නිර්මාණය වේ. මෙම Hash එක වෙනස් කළ නොහැකි Immutable Ledger එකක සටහන් වේ.</li>
+<li><strong>2.</strong> <strong>Tamper-Proof Evidence Vault:</strong> යම් අයෙකු පද්ධතියේ ඇති සාක්ෂි ලේඛනයක් හොරෙන් සංස්කරණය කළහොත්, Hash එක නොගැලපී ගොස් ව්‍යාජ එකක් බව ක්ෂණිකව ඔප්පු වේ. මේ හරහා උසාවියේදී ඉලෙක්ට්‍රොනික සාක්ෂි වල නිරවද්‍යතාවය (Evidence Admissibility) 100% තහවුරු වේ.</li>
+<li><strong>3.</strong> <strong>Nuclear Logout:</strong> Share කරන ලද පරිගණක වලදී Session Hijacking වැළැක්වීමට LocalStorage සහ Pinia states ක්ෂණිකව Wipe කර දමයි.</li>
+<h3>📱 3. Mobile Ecosystem (ජංගම යෙදුම)</h3>
+<li><strong>ප්‍රායෝගික භාවිතය:</strong></li>
+<li><strong>1.</strong> <strong>Courtroom Mobility:</strong> නීතිඥයින්ට උසාවිය තුළ සිටියදීම තම Phone එකෙන් නඩු ගොනු බැලීමේ හැකියාව.</li>
+<li><strong>2.</strong> <strong>Hardware Biometric Lock:</strong> ඇඟිලි සලකුණ (Fingerprint) හෝ Face ID මගින් පමණක් App එක Open වීම.</li>
+<li><strong>3.</strong> <strong>Offline Sync Queue:</strong> උසාවි භූමිය තුළ අන්තර්ජාලය නොමැතිව ඇතුළත් කරන නඩු තොරතුරු, ආයතනයට පැමිණි පසු ස්වයංක්‍රීයව Database එකට Sync වීම.</li>
+<hr/>
+<h2>5. ඕනෑම අයෙකුට පද්ධතිය සජීවීව පරීක්ෂා කිරීමේ පියවර (Complete Testing Walkthrough Script)</h2>
+<p>පද්ධතිය පරීක්ෂා කිරීමට පැමිණෙන ඕනෑම ඇගයීම්කරුවෙකුට (Judge/Stakeholder) පහත පියවර 5 අනුගමනය කිරීමෙන් පද්ධතියේ සම්පූර්ණ ක්‍රියාකාරීත්වය මිනිත්තු 3 කින් තහවුරු කරගත හැක:</p>
+<p>sequenceDiagram</p>
+<p>    autonumber</p>
+<p>    actor Officer as Ravindu (Officer)</p>
+<p>    actor DGM as S. Karunaratne (DGM L1)</p>
+<p>    actor AGM as K. Fernando (AGM L2)</p>
+<p>    participant System as SLT LegalEdge Database</p>
+<p>    Note over Officer,System: Step 1: Document Intake (Maker)</p>
+<p>    Officer->>System: Submits Initial Document (Pending)</p>
+<p>    Note over Officer: Officer CANNOT approve!</p>
+<p>    Note over DGM,System: Step 2: L1 Supervisor Approval (Checker)</p>
+<p>    DGM->>System: Approves Initial Document</p>
+<p>    System->>System: Auto-spawns Active Legal Case (LC/2026/...)</p>
+<p>    Note over Officer,System: Step 3: Agreement Draft & Review</p>
+<p>    Officer->>System: Creates Draft Agreement & Submits for Review</p>
+<p>    Note over DGM,System: Step 4: L1 Agreement Approval</p>
+<p>    DGM->>System: L1 Approve & Sends to L2</p>
+<p>    Note over AGM,System: Step 5: L2 Final Sign-Off</p>
+<p>    AGM->>System: L2 Final Approval -> Agreement becomes ACTIVE!</p>
+<h3>පියවරෙන් පියවර විස්තරය:</h3>
+<li><strong>1.</strong> <strong>පියවර 1: පිවිසීම (One-Click Quick Login):</strong></li>
+<li><a href="https://slt-legaledge.vercel.app" target="_blank">https://slt-legaledge.vercel.app</a> වෙත යන්න.</li>
+<li><code>Quick Demo Credentials</code> යටතේ ඇති <strong><code>Ravindu (Officer)</code></strong> button එක ඔබා <strong>Sign In</strong> වන්න.</li>
+<li><strong>2.</strong> <strong>පියවර 2: මූලික ලේඛනයක් දැමීම සහ Maker-Checker තහවුරු කිරීම:</strong></li>
+<li><strong>Initial Documents</strong> (<code>/initial-docs</code>) වෙත යන්න.</li>
+<li><strong><code>+ New Document</code></strong> ඔබා <code>Fiber Cut Damage - Galle Road</code> නමින් තොරතුරු පුරවා Submit කරන්න.</li>
+<li>ලේඛනය <strong>Pending</strong> තත්ත්වයට පත්වේ.</li>
+<li><strong>නිරීක්ෂණය:</strong> රවීන්ද්‍රට (Legal Officer) මෙම ලේඛනය <strong>Approve හෝ Reject කිරීමට බොත්තම් නොමැති බවත්</strong>, View Details බැලූ විට <strong><code>Awaiting Supervisor / Manager Approval</code></strong> ලෙස පමණක් පෙනෙන බවත් තහවුරු කරගන්න.</li>
+<li><strong>3.</strong> <strong>පියවර 3: DGM (L1 Supervisor) ලෙස අනුමත කිරීම සහ නඩුව ස්වයංක්‍රීයව ජනනය වීම:</strong></li>
+<li>Logout වී <strong><code>DGM (L1)</code></strong> button එක ඔබා Sign In වන්න.</li>
+<li><strong>Approvals</strong> (<code>/approvals</code>) පිටුවට යන්න -> Pending Initial Documents ටැබ් එක බලන්න.</li>
+<li>අදාළ Document එක Review කර <strong><code>Approve</code></strong> ඔබන්න.</li>
+<li><strong>ප්‍රතිඵලය:</strong> <strong>Legal Cases</strong> (<code>/cases</code>) පිටුවට යන්න. ඉහත අනුමත කළ ලේඛනයෙන් <strong>Active Legal Case එකක් (<code>LC/2026/...</code>) ස්වයංක්‍රීයව හැදී පළමු පේළියේම ඇති ආකාරය දැකගත හැක!</strong></li>
+<li><strong>4.</strong> <strong>පියවර 4: ගිවිසුමක් L1 සහ L2 අනුමැතිය හරහා Active කිරීම:</strong></li>
+<li><strong>Agreements</strong> (<code>/agreements</code>) වෙත යන්න.</li>
+<li><code>Pending L1 Approval</code> මට්ටමේ ඇති ගිවිසුමකට DGM ලෙස <strong><code>L1 Approve & Send to L2</code></strong> ලබා දෙන්න.</li>
+<li>Logout වී <strong><code>AGM (L2)</code></strong> ලෙස Sign In වන්න.</li>
+<li>Approvals පිටුවට ගොස් එකී ගිවිසුමට <strong><code>L2 Final Approval</code></strong> ලබා දෙන්න.</li>
+<li><strong>ප්‍රතිඵලය:</strong> ගිවිසුම සම්පූර්ණයෙන්ම අනුමත වී <strong><code>Active</code></strong> තත්ත්වයට පත්වේ!</li>
+<li><strong>5.</strong> <strong>පියවර 5: AI Copilot අත්හදා බැලීම:</strong></li>
+<li>තිරයේ පහළ දකුණු කෙළවරේ ඇති නිල් පැහැති AI Bot අයිකනය ඔබන්න.</li>
+<li>*"What are the standard penalty clauses for fiber damages under SLT legal policy?"* හෝ කැමති නීතිමය ප්‍රශ්නයක් විමසා ක්ෂණික බුද්ධිමත් පිළිතුර නිරීක්ෂණය කරන්න.</li>
+<hr/>
+<p>*වාර්තාව සම්පාදනය කළේ: <strong>NEXGEN CREATORS Development Team</strong>  </p>
+<p>ශ්‍රී ලංකා ටෙලිකොම් නීති අංශයේ ඩිජිටල් පරිවර්තනය වෙනුවෙන්.*</p>
+  </div>
+</body>
+</html>
