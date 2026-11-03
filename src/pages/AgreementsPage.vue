@@ -1314,18 +1314,20 @@ async function submitForm() {
   submitting.value = true
 
   try {
+    const cleanVal = Number(String(form.value.value || '0').replace(/[^0-9.]/g, '')) || 0
     const payload = {
       title: form.value.title,
       agreement_type: form.value.agreementType,
       reference_no: form.value.referenceNo,
       party1: form.value.party1,
       party2: form.value.party2,
-      value: form.value.value,
+      value: cleanVal,
       start_date: form.value.startDate,
       expiry_date: form.value.expiryDate,
       description: form.value.description,
       linked_case_no: form.value.linkedCaseNo,
       status: isEditMode.value ? form.value.status : 'Draft',
+      created_by: authStore.user?.id,
       updated_at: new Date().toISOString(),
     }
 

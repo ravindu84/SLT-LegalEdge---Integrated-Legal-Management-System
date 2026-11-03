@@ -176,6 +176,32 @@
           />
         </q-form>
 
+        <!-- Quick Demo Credentials -->
+        <div class="q-mt-lg q-pt-md" style="border-top: 1px dashed rgba(0, 47, 108, 0.2)">
+          <div class="row items-center justify-between q-mb-xs">
+            <span class="text-caption text-weight-bold" :class="$q.dark.isActive ? 'text-blue-3' : 'text-primary'">
+              <q-icon name="badge" size="14px" class="q-mr-xs" /> Quick Demo Credentials
+            </span>
+            <span class="text-caption text-grey-6" style="font-size: 11px">Click to fill</span>
+          </div>
+          <div class="row q-gutter-xs justify-center">
+            <q-btn
+              v-for="acc in demoAccounts"
+              :key="acc.email"
+              outline
+              dense
+              no-caps
+              size="xs"
+              :color="acc.color"
+              class="q-px-sm"
+              @click="fillDemoAccount(acc)"
+            >
+              <q-icon :name="acc.icon" size="11px" class="q-mr-xs" />
+              {{ acc.label }}
+            </q-btn>
+          </div>
+        </div>
+
         <!-- Register Link -->
         <div class="text-center q-mt-lg">
           <span :class="$q.dark.isActive ? 'text-grey-4' : 'text-grey-6'">
@@ -232,6 +258,27 @@ const loading = ref(false)
 const formRef = ref(null)
 const errorMsg = ref('')
 
+// ── DEMO ACCOUNTS ──────────────────────────────────────────────
+const demoAccounts = [
+  { label: 'Ravindu (Officer)', email: 'ravindu@slt.com.lk', pwd: 'Test@1234', color: 'primary', icon: 'gavel' },
+  { label: 'N. Silva (Officer)', email: 'n.silva@slt.com.lk', pwd: 'Password@123', color: 'cyan-8', icon: 'person' },
+  { label: 'DGM (L1)', email: 's.karunaratne@slt.com.lk', pwd: 'Password@123', color: 'teal-7', icon: 'assignment_turned_in' },
+  { label: 'AGM (L2)', email: 'k.fernando@slt.com.lk', pwd: 'Password@123', color: 'indigo-7', icon: 'verified' },
+  { label: 'Admin', email: 'admin@slt.com.lk', pwd: 'Password@123', color: 'deep-purple', icon: 'security' },
+]
+
+function fillDemoAccount(acc) {
+  form.value.email = acc.email
+  form.value.password = acc.pwd
+  errorMsg.value = ''
+  $q.notify({
+    type: 'info',
+    message: `Filled: ${acc.label} (${acc.email})`,
+    timeout: 1200,
+    dense: true,
+  })
+}
+
 // ── LOGIN HANDLER ──────────────────────────────────────────────
 async function handleLogin() {
   errorMsg.value = ''
@@ -240,7 +287,9 @@ async function handleLogin() {
 
   loading.value = true
   try {
-    await authStore.login(form.value.email, form.value.password)
+    const cleanEmail = (form.value.email || '').trim().toLowerCase()
+    const cleanPassword = (form.value.password || '').trim()
+    await authStore.login(cleanEmail, cleanPassword)
 
     $q.notify({
       type: 'positive',

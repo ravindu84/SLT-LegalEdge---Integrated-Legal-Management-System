@@ -305,9 +305,8 @@ function changeLang(lang) {
 
 // ── ULTRA-ROBUST LOGOUT (Fail-Safe) ───────────────────────────
 const handleLogout = async () => {
-  console.log('--- EMERGENCY LOGOUT TRIGGERED ---')
+  console.log('--- LOGOUT INITIATED ---')
   
-  // 1. Force UI feedback
   if ($q && $q.loading) {
     $q.loading.show({
       message: t('common.loggingOut') || 'Logging out...',
@@ -315,46 +314,39 @@ const handleLogout = async () => {
     })
   }
   
-  // 2. Clear Auth Store FIRST (so it can use session info)
-  if (authStore && authStore.logout) {
-    authStore.logout().catch(e => console.error('SignOut background error:', e))
+  try {
+    if (authStore && authStore.logout) {
+      await authStore.logout()
+    }
+  } catch (e) {
+    console.error('Logout error:', e)
   }
-  
-  // 3. Clear local state synchronously
+
+  // Preserve theme setting across logout
+  const darkModeSetting = localStorage.getItem('slt_legaledge_dark_mode')
   localStorage.clear()
   sessionStorage.clear()
+  if (darkModeSetting !== null) {
+    localStorage.setItem('slt_legaledge_dark_mode', darkModeSetting)
+  }
 
-  // ** MOBILE NUCLEAR LOGOUT **
   try {
     await Preferences.clear()
-    console.log('Capacitor Preferences WIPED for total security.')
   } catch (err) {
-    console.warn('Not in Capacitor context or Failed to clear Preferences:', err)
+    console.warn('Preferences clear ignored:', err)
   }
   
-  // 4. Force state clear in memory
   if (authStore) {
     authStore.isLoggedIn = false
     authStore.user = null
     authStore.profile = null
   }
   
-  // 5. Hard Redirect to Login Page (Multiple methods)
-  const loginUrl = window.location.origin + '/login'
-  console.log('Redirecting to:', loginUrl)
-  
-  // Method A
-  window.location.href = loginUrl
-  
-  // Method B (Fallback)
-  setTimeout(() => {
-    window.location.assign('/login')
-  }, 100)
-  
-  // Method C (Nuclear fallback if everything else fails)
-  setTimeout(() => {
-    window.location.reload() 
-  }, 500)
+  if ($q && $q.loading) {
+    $q.loading.hide()
+  }
+
+  window.location.replace('/login')
 }
 
 // ── Role color ────────────────────────────────────────────────

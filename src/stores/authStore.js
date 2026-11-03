@@ -109,9 +109,12 @@ export const useAuthStore = defineStore('auth', () => {
    * Login with email and password
    */
   async function login(email, password) {
+    const cleanEmail = (email || '').trim().toLowerCase()
+    const cleanPassword = (password || '').trim()
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: cleanEmail,
+      password: cleanPassword,
     })
 
     if (error) throw error
@@ -156,7 +159,11 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       profile.value = null
       isLoggedIn.value = false
+      const darkPref = localStorage.getItem('slt_legaledge_dark_mode')
       localStorage.clear() // Extra safety
+      if (darkPref !== null) {
+        localStorage.setItem('slt_legaledge_dark_mode', darkPref)
+      }
       sessionStorage.clear()
     }
   }

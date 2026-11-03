@@ -2090,6 +2090,9 @@ function openCreateDialog() {
 async function submitCreateCase() {
   loading.value = true
   try {
+    const rawExposure = String(newCaseForm.value.financialExposure || '0').replace(/[^0-9.]/g, '')
+    const numExposure = Number(rawExposure) || 0
+
     const { error } = await supabase
       .from('legal_cases')
       .insert([
@@ -2102,7 +2105,7 @@ async function submitCreateCase() {
           defendant: newCaseForm.value.defendant,
           nature_of_case: newCaseForm.value.natureOfCase,
           summary_of_facts: newCaseForm.value.summaryOfFacts,
-          financial_exposure: newCaseForm.value.financialExposure,
+          financial_exposure: numExposure,
           assigned_lawyer: newCaseForm.value.assignedLawyer,
           status: newCaseForm.value.status,
           created_at: new Date().toISOString(),
@@ -2308,6 +2311,9 @@ async function saveCase() {
   saving.value = true
   try {
     // 1. Update main case record
+    const rawExposure = String(activeCase.value.financialExposure || '0').replace(/[^0-9.]/g, '')
+    const numExposure = Number(rawExposure) || 0
+
     const { error } = await supabase
       .from('legal_cases')
       .update({
@@ -2317,7 +2323,7 @@ async function saveCase() {
         plaintiff: activeCase.value.plaintiff,
         defendant: activeCase.value.defendant,
         summary_of_facts: activeCase.value.summaryOfFacts,
-        financial_exposure: activeCase.value.financialExposure,
+        financial_exposure: numExposure,
         next_hearing: activeCase.value.nextHearing,
         updated_at: new Date().toISOString(),
       })
