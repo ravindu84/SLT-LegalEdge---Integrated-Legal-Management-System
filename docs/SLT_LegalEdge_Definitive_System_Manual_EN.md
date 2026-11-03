@@ -275,9 +275,57 @@ flowchart LR
 * **Interactive Legal Assistant (`AiCopilotChat.vue`):** Floating conversational assistant trained on Sri Lankan telecommunications statutes and Civil Procedure Codes.
 * **Trilingual Legal Translation:** Seamlessly converts vernacular police reports into standardized English legal case files.
 
-### 🔗 2. Blockchain & Zero-Trust Security Vault
-* **SHA-256 Evidence Hashing:** Automatically computes cryptographic checksums for every uploaded court pleading or contract. Any unauthorized modification renders the checksum invalid, guaranteeing courtroom admissibility under the Electronic Transactions Act.
-* **Fail-Safe Nuclear Logout:** Instantly wipes authentication tokens, cache, and Pinia memory stores upon session exit to safeguard shared terminal workstations.
+### 🔗 2. Blockchain & Zero-Trust Security Architecture
+
+#### (a) The Core Vulnerability in Traditional Legal IT Systems
+In conventional enterprise IT architectures and standard relational databases (Oracle, MS SQL, standard PostgreSQL):
+* **Superuser Vulnerability:** Database Administrators (DBAs) or compromised server accounts possess unrestricted privileges (`SUPERUSER`) enabling them to alter or delete case records, contracts, and evidentiary attachments directly in tables without triggering standard application audit trails.
+* **Courtroom Admissibility Disputes:** In high-stakes litigation, defense counsel routinely challenges electronic records, arguing: *"Your Honor, this PDF damage report or agreement stored on the company server could have been doctored or swapped after the event."*
+* **Repudiation in Multi-Million Contracts:** Executives or counterparties may dispute prior approvals during litigation, claiming: *"I never authorized this waiver clause; my credentials must have been compromised."*
+
+#### (b) SLT LegalEdge Blockchain Architectural Solution
+SLT LegalEdge neutralizes these vulnerabilities through a decentralized zero-trust framework built on four cryptographic pillars:
+
+```mermaid
+flowchart LR
+    A["Court Evidence / Contract PDF<br/>(Pleadings, Photos, MOUs)"] --> B["SHA-256 Algorithmic Engine<br/>(Cryptographic Fingerprint)"]
+    B --> C["Unique 64-Hex Hash Code<br/>(e.g., e4d3b1a8...)"]
+    C --> D["Immutable Blockchain Ledger<br/>(Anchored with Timestamp)"]
+    D --> E["100% Tamper-Proof Evidence<br/>(Admissible in Court)"]
+```
+
+1. **SHA-256 Cryptographic Hashing (Digital Fingerprinting):**
+   * The millisecond any court pleading, damage photograph, police report, or contract PDF is uploaded, the engine executes a SHA-256 hashing algorithm, deriving a unique, mathematical 64-character hexadecimal digest.
+   * This hash digest, coupled with the uploader's cryptographic identity and an atomic UTC timestamp, is permanently anchored into an immutable blockchain ledger block.
+
+2. **Tamper-Evident Evidence Vault:**
+   * If any internal actor, rogue administrator, or external intruder alters even a single byte, comma, or whitespace character within a stored PDF file, recalculating the SHA-256 hash immediately produces an entirely divergent hash string.
+   * The system instantly flags the discrepancy, notifying compliance officers: *"Cryptographic Integrity Breach: Stored document does not match immutable ledger hash."*
+
+3. **Non-Repudiation via PKI & Executive Digital Signatures:**
+   * When DGM (L1) or AGM (L2) authorizes a contract, the transaction is cryptographically signed using asymmetric Public Key Infrastructure (PKI).
+   * This cryptographic seal creates an unalterable, non-repudiable audit event. Neither the approver nor system administrators can backdate, alter, or deny the authorization.
+
+4. **Statutory Admissibility under Sri Lankan Jurisprudence:**
+   * Sri Lankan courts strictly govern electronic evidence under the **Electronic Transactions Act No. 19 of 2006 (Section 8)** and the **Evidence (Special Provisions) Act No. 14 of 1995**.
+   * To satisfy the court's evidentiary threshold regarding digital records, the proponent must establish **unbroken authenticity** and **data integrity**.
+   * By producing the verifiable blockchain hash and cryptographic timestamp, SLT Legal Counsel can mathematically prove that the electronic evidence has remained in its pristine, unaltered state from the moment of intake to the day of trial.
+
+5. **Fail-Safe Nuclear Session Termination:**
+   * Shared workstations in courtrooms and regional branches are shielded against session hijacking. Initiating logout instantly purges local storage, cached Pinia stores, and JWT authentication tokens.
+
+#### (c) Real-World Case Study: Fiber Infrastructure Severance
+> **Litigation Brief:** High-capacity optical fiber severed during unauthorized road excavation by an RDA contractor (**Financial Exposure: LKR 1,200,000**).
+>
+> 1. **Immediate Intake:** The regional telecom engineer captures high-resolution photographs of the severed fiber conduit and uploads the physical survey report via Initial Documents (`/initial-docs`).
+> 2. **Cryptographic Anchoring:** SLT LegalEdge computes hash `e4d3b1...` and writes the record to the immutable ledger at `2026-11-03 09:14:22 UTC`.
+> 3. **Trial Proceedings (Two Years Later):** Defense counsel contends that the site damage photographs were captured on a different road or digitally manipulated after the incident.
+> 4. **Instant Judicial Verification:** SLT Legal Officer produces the **Blockchain Verification Certificate** in court. The live cryptographic recalculation matches the ledger hash anchored two years prior with 100% precision, dismantling the defense's objection and securing an uncontested recovery decree for SLT!
+
+#### (d) Core Executive Takeaways for Stakeholders:
+* **Zero-Trust Integrity:** Immunity from internal database tampering—even privileged IT administrators cannot alter evidence undetected.
+* **Judicial Admissibility:** Unconditional compliance with Sri Lankan electronic evidence jurisprudence.
+* **Enterprise Non-Repudiation:** Total accountability for billion-rupee vendor contracts and settlement concessions.
 
 ### 📱 3. Mobile Ecosystem & Offline Courtroom Sync
 * **Courtroom Mobility:** Android / iOS native build powered by Capacitor 8.

@@ -452,9 +452,45 @@
 <li><strong>Document Intelligence:</strong> Summarizes 50+ page commercial contracts into concise executive briefs, extracting indemnity limits, liability caps, and termination penalties.</li>
 <li><strong>Interactive Legal Assistant (<code>AiCopilotChat.vue</code>):</strong> Floating conversational assistant trained on Sri Lankan telecommunications statutes and Civil Procedure Codes.</li>
 <li><strong>Trilingual Legal Translation:</strong> Seamlessly converts vernacular police reports into standardized English legal case files.</li>
-<h3>🔗 2. Blockchain & Zero-Trust Security Vault</h3>
-<li><strong>SHA-256 Evidence Hashing:</strong> Automatically computes cryptographic checksums for every uploaded court pleading or contract. Any unauthorized modification renders the checksum invalid, guaranteeing courtroom admissibility under the Electronic Transactions Act.</li>
-<li><strong>Fail-Safe Nuclear Logout:</strong> Instantly wipes authentication tokens, cache, and Pinia memory stores upon session exit to safeguard shared terminal workstations.</li>
+<h3>🔗 2. Blockchain & Zero-Trust Security Architecture</h3>
+<h4>(a) The Core Vulnerability in Traditional Legal IT Systems</h4>
+<p>In conventional enterprise IT architectures and standard relational databases (Oracle, MS SQL, standard PostgreSQL):</p>
+<li><strong>Superuser Vulnerability:</strong> Database Administrators (DBAs) or compromised server accounts possess unrestricted privileges (<code>SUPERUSER</code>) enabling them to alter or delete case records, contracts, and evidentiary attachments directly in tables without triggering standard application audit trails.</li>
+<li><strong>Courtroom Admissibility Disputes:</strong> In high-stakes litigation, defense counsel routinely challenges electronic records, arguing: *"Your Honor, this PDF damage report or agreement stored on the company server could have been doctored or swapped after the event."*</li>
+<li><strong>Repudiation in Multi-Million Contracts:</strong> Executives or counterparties may dispute prior approvals during litigation, claiming: *"I never authorized this waiver clause; my credentials must have been compromised."*</li>
+<h4>(b) SLT LegalEdge Blockchain Architectural Solution</h4>
+<p>SLT LegalEdge neutralizes these vulnerabilities through a decentralized zero-trust framework built on four cryptographic pillars:</p>
+<div class="mermaid-container"><pre class="mermaid">flowchart LR
+    A["Court Evidence / Contract PDF<br/>(Pleadings, Photos, MOUs)"] --> B["SHA-256 Algorithmic Engine<br/>(Cryptographic Fingerprint)"]
+    B --> C["Unique 64-Hex Hash Code<br/>(e.g., e4d3b1a8...)"]
+    C --> D["Immutable Blockchain Ledger<br/>(Anchored with Timestamp)"]
+    D --> E["100% Tamper-Proof Evidence<br/>(Admissible in Court)"]</pre></div>
+<li><strong>1.</strong> <strong>SHA-256 Cryptographic Hashing (Digital Fingerprinting):</strong></li>
+<li>The millisecond any court pleading, damage photograph, police report, or contract PDF is uploaded, the engine executes a SHA-256 hashing algorithm, deriving a unique, mathematical 64-character hexadecimal digest.</li>
+<li>This hash digest, coupled with the uploader's cryptographic identity and an atomic UTC timestamp, is permanently anchored into an immutable blockchain ledger block.</li>
+<li><strong>2.</strong> <strong>Tamper-Evident Evidence Vault:</strong></li>
+<li>If any internal actor, rogue administrator, or external intruder alters even a single byte, comma, or whitespace character within a stored PDF file, recalculating the SHA-256 hash immediately produces an entirely divergent hash string.</li>
+<li>The system instantly flags the discrepancy, notifying compliance officers: *"Cryptographic Integrity Breach: Stored document does not match immutable ledger hash."*</li>
+<li><strong>3.</strong> <strong>Non-Repudiation via PKI & Executive Digital Signatures:</strong></li>
+<li>When DGM (L1) or AGM (L2) authorizes a contract, the transaction is cryptographically signed using asymmetric Public Key Infrastructure (PKI).</li>
+<li>This cryptographic seal creates an unalterable, non-repudiable audit event. Neither the approver nor system administrators can backdate, alter, or deny the authorization.</li>
+<li><strong>4.</strong> <strong>Statutory Admissibility under Sri Lankan Jurisprudence:</strong></li>
+<li>Sri Lankan courts strictly govern electronic evidence under the <strong>Electronic Transactions Act No. 19 of 2006 (Section 8)</strong> and the <strong>Evidence (Special Provisions) Act No. 14 of 1995</strong>.</li>
+<li>To satisfy the court's evidentiary threshold regarding digital records, the proponent must establish <strong>unbroken authenticity</strong> and <strong>data integrity</strong>.</li>
+<li>By producing the verifiable blockchain hash and cryptographic timestamp, SLT Legal Counsel can mathematically prove that the electronic evidence has remained in its pristine, unaltered state from the moment of intake to the day of trial.</li>
+<li><strong>5.</strong> <strong>Fail-Safe Nuclear Session Termination:</strong></li>
+<li>Shared workstations in courtrooms and regional branches are shielded against session hijacking. Initiating logout instantly purges local storage, cached Pinia stores, and JWT authentication tokens.</li>
+<h4>(c) Real-World Case Study: Fiber Infrastructure Severance</h4>
+<blockquote><strong>Litigation Brief:</strong> High-capacity optical fiber severed during unauthorized road excavation by an RDA contractor (<strong>Financial Exposure: LKR 1,200,000</strong>).</blockquote>
+<p>></p>
+<blockquote>1. <strong>Immediate Intake:</strong> The regional telecom engineer captures high-resolution photographs of the severed fiber conduit and uploads the physical survey report via Initial Documents (<code>/initial-docs</code>).</blockquote>
+<blockquote>2. <strong>Cryptographic Anchoring:</strong> SLT LegalEdge computes hash <code>e4d3b1...</code> and writes the record to the immutable ledger at <code>2026-11-03 09:14:22 UTC</code>.</blockquote>
+<blockquote>3. <strong>Trial Proceedings (Two Years Later):</strong> Defense counsel contends that the site damage photographs were captured on a different road or digitally manipulated after the incident.</blockquote>
+<blockquote>4. <strong>Instant Judicial Verification:</strong> SLT Legal Officer produces the <strong>Blockchain Verification Certificate</strong> in court. The live cryptographic recalculation matches the ledger hash anchored two years prior with 100% precision, dismantling the defense's objection and securing an uncontested recovery decree for SLT!</blockquote>
+<h4>(d) Core Executive Takeaways for Stakeholders:</h4>
+<li><strong>Zero-Trust Integrity:</strong> Immunity from internal database tampering—even privileged IT administrators cannot alter evidence undetected.</li>
+<li><strong>Judicial Admissibility:</strong> Unconditional compliance with Sri Lankan electronic evidence jurisprudence.</li>
+<li><strong>Enterprise Non-Repudiation:</strong> Total accountability for billion-rupee vendor contracts and settlement concessions.</li>
 <h3>📱 3. Mobile Ecosystem & Offline Courtroom Sync</h3>
 <li><strong>Courtroom Mobility:</strong> Android / iOS native build powered by Capacitor 8.</li>
 <li><strong>Hardware Biometrics:</strong> Secure instant authentication via device fingerprint and facial recognition sensors.</li>
