@@ -18,7 +18,7 @@
           unelevated
           color="primary"
           icon="add"
-          :label="$t('initialDocs.createNew')"
+          :label="$t('initialDocs.addNew') || 'New Document'"
           no-caps
           @click="openCreateDialog"
           :class="$q.screen.lt.md ? 'col-grow' : ''"

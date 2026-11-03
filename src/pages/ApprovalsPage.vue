@@ -992,6 +992,27 @@ function viewItem(row, type) {
 }
 
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+//  APPROVAL PERMISSION HELPERS
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
+function canApproveAgreement(row) {
+  const role = authStore.profile?.role
+  if (role === 'admin') return true
+  if (role === 'supervisor' && row?.status === 'Pending L1 Approval') return true
+  if (role === 'manager' && row?.status === 'Pending L2 Approval') return true
+  return false
+}
+
+function canApproveDoc() {
+  const role = authStore.profile?.role
+  return ['admin', 'supervisor', 'manager'].includes(role)
+}
+
+function handleOpenAction(row, type, itemType) {
+  showViewDialog.value = false
+  openAction(row, type, itemType)
+}
+
+// ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 //  ACTION (APPROVE / REJECT) DIALOG
 // ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ── ──
 const showActionDialog = ref(false)
